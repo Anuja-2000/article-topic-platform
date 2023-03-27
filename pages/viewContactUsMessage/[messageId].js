@@ -12,15 +12,43 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/router";
 import * as React from "react";
-import { theme } from "../components/theme";
+import { theme } from "/components/theme";
 
 
+export const getStaticPaths = async () =>{
+  const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/messages');
+  const data = await response.json();
 
-export default function ViewContactUsMessage({}) {
+  const paths = data.messages.map(item =>{
+    return{
+      params : {
+        messageId:item.messageId,
+        email: item.email
+      }
+    }
+  })
+
+  return {
+    paths,
+    fallback:false
+  }
+}
+
+export const getStaticProps = async (context) =>{
+  const id = context.params.messageId;
+  const email = context.params.email;
+  const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message?messageId='+id+'&email='+email);
+  const data = await response.json();
+
+  return {
+    props:{item:data}
+  }
+}
+
+export default function ViewContactUsMessage({item}) {
   const router = useRouter();
   const email = router.query.itemEmail;
-  const name = router.query.itemName;
-  const message = router.query.itemMessage;
+  const messageId = router.query.itemMessageId;
 
 
   const [open, setOpen] = React.useState(false);
@@ -76,7 +104,7 @@ export default function ViewContactUsMessage({}) {
                 align="left"
                 padding={2}
               >
-                Name : {name}
+                Name : {item.name}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -86,7 +114,7 @@ export default function ViewContactUsMessage({}) {
                 align="left"
                 marginLeft={2}
               >
-                Email : {email}
+                Email : 
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -96,14 +124,14 @@ export default function ViewContactUsMessage({}) {
                 align="left"
                 padding={2}
               >
-                Message : {message}
+                Message : 
               </Typography>
             </Grid>
             <Grid item xs={12} textAlign="right">
               <Button
                 variant="contained"
                 endIcon={<Send />}
-                onClick={handleButtonClick}
+                onClick={handleButtonClick(messageId)}
                 sx={{ margin: 2 }}
               >
                 Reply
