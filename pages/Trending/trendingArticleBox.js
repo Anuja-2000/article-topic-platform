@@ -2,7 +2,7 @@ import * as React from 'react';
 import Grid from '@mui/material/Grid';
 import ArticleCard from '../../components/articleCard';
 
-function SearchArticleBox() {
+function TrendingArticleBox() {
  
   return (
     <div style={{marginTop:'20px', width:'100%'}}>
@@ -22,4 +22,4 @@ function SearchArticleBox() {
   );
 }
 
-export default SearchArticleBox;
+export default TrendingArticleBox;

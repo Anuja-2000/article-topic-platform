@@ -14,7 +14,7 @@ function ArticleCard() {
           <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" 
           sx={{ width: 25, height: 25, marginTop:1,marginBottom:2}}/>
           <Typography gutterBottom variant="h5" component="div" 
-          style={{color: '#111', fontWeight:600,height:70,fontSize:20}}>
+          style={{color: '#111', fontWeight:600,height:70,fontSize:20, fontFamily:'ubuntu'}}>
             CSS Nesting is now available with Vanilla CSS
           </Typography>
         </CardContent>

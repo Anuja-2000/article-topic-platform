@@ -1,0 +1,52 @@
+.outer{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.navBar{
+    width: 100vw;
+    height: 12vh;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    background-color:#fff ;
+    overflow: hidden;
+    z-index: 5;
+    
+}
+
+.introBox{
+    width: 100vw;
+    height: 62vh;
+    background-color:#AAF670 ;
+    top: 12vh;
+}
+
+.h1{
+    margin-left: 7vw;
+    font-size: 60px;
+    padding-top: 20vh;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.paragraph{
+    margin-left: 7vw;
+    margin-top: 3vh;
+    font-size: 25px;
+    width: 30vw;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.trending{
+    margin-top: 5vh;
+    font-size: 30px;
+    margin-left: 6vw;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.trends{
+    margin-top: 5vh;
+    width: 100vw;
+}
