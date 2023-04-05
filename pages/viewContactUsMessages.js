@@ -26,7 +26,6 @@ export async function getStaticProps() {
   return { props: { messages } };
 }
 
-
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -97,7 +96,7 @@ TablePaginationActions.propTypes = {
 };
 
 export default function ViewContactUsMessages({ messages }) {
-  let msgs = sort_by_key(messages.messages,"savedAt");
+  let msgs = sort_by_key(messages.messages, "savedAt");
   const rows = msgs;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -156,7 +155,7 @@ export default function ViewContactUsMessages({ messages }) {
                 <TableCell>{row.email}</TableCell>
                 <TableCell>
                   <Button variant="contained">
-                     <Link
+                    <Link
                       href={{
                         pathname: "viewContactUsMessage",
                         query: {

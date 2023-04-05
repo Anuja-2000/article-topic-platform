@@ -30,6 +30,7 @@ export default function ContactUs() {
     });
   };
 
+  
   const validateForm = () => {
     const newErrors = {};
     if (!values.name) {

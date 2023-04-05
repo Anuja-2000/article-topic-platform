@@ -1,7 +1,7 @@
 import { Send } from "@mui/icons-material";
-import Snackbar from '@mui/material/Snackbar';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Container,
@@ -14,14 +14,11 @@ import { useRouter } from "next/router";
 import * as React from "react";
 import { theme } from "../components/theme";
 
-
-
 export default function ViewContactUsMessage({}) {
   const router = useRouter();
   const email = router.query.itemEmail;
   const name = router.query.itemName;
   const message = router.query.itemMessage;
-
 
   const [open, setOpen] = React.useState(false);
 
@@ -31,7 +28,6 @@ export default function ViewContactUsMessage({}) {
     }
 
     setOpen(false);
-
   };
 
   const action = (
@@ -50,12 +46,12 @@ export default function ViewContactUsMessage({}) {
     </React.Fragment>
   );
 
-  const handleButtonClick = async (messageId,em) => {
-   // const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
-   //   method: 'PATCH',
-   //   body: JSON.stringify({ messageId: messageId, email:email, updateKey:replied, updateValue:true})
-   // });
-  //  console.log(response.status);
+  const handleButtonClick = async (messageId, em) => {
+    // const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
+    //   method: 'PATCH',
+    //   body: JSON.stringify({ messageId: messageId, email:email, updateKey:replied, updateValue:true})
+    // });
+    //  console.log(response.status);
     setOpen(true);
     //window.open("mailto:" + email);
   };
