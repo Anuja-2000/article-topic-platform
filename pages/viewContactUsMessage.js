@@ -13,12 +13,38 @@ import {
 import { useRouter } from "next/router";
 import * as React from "react";
 import { theme } from "../components/theme";
+import axios from "axios";
 
-export default function ViewContactUsMessage({}) {
+
+const updateReplied = async (messageId, email) => {
+  // const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
+  //    method: 'PATCH',
+  //    body: JSON.stringify({ messageId: messageId, email:email, updateKey:'replied', updateValue:true})
+  //  });
+  //   console.log(response.status);
+  const reponse = await axios.patch("https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message", {
+    params : {
+      messageId: messageId,
+       email:email, 
+       updateKey:'replied',
+        updateValue:true
+      }
+})
+  const data = reponse.data;
+  console.log(data);
+  }
+
+const handleButtonClick = async (messageId, email) => {
+ await updateReplied(messageId, email);
+  setOpen(true);
+  //window.open("mailto:" + email);
+};
+
+
+export default function ViewContactUsMessage() {
   const router = useRouter();
-  const email = router.query.itemEmail;
-  const name = router.query.itemName;
-  const message = router.query.itemMessage;
+  const {messageId,name,email,message} = router.query;
+
 
   const [open, setOpen] = React.useState(false);
 
@@ -46,15 +72,7 @@ export default function ViewContactUsMessage({}) {
     </React.Fragment>
   );
 
-  const handleButtonClick = async (messageId, em) => {
-    // const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
-    //   method: 'PATCH',
-    //   body: JSON.stringify({ messageId: messageId, email:email, updateKey:replied, updateValue:true})
-    // });
-    //  console.log(response.status);
-    setOpen(true);
-    //window.open("mailto:" + email);
-  };
+
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="lg" sx={{ marginTop: 10 }}>
@@ -99,7 +117,7 @@ export default function ViewContactUsMessage({}) {
               <Button
                 variant="contained"
                 endIcon={<Send />}
-                onClick={handleButtonClick}
+                onClick={()=>handleButtonClick(messageId, email)}
                 sx={{ margin: 2 }}
               >
                 Reply
