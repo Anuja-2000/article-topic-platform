@@ -6,7 +6,6 @@
 .navBar{
     width: 100vw;
     height: 12vh;
-    border: 1px solid black;
     display: flex;
     align-items: center;
     position: fixed;

@@ -33,7 +33,7 @@ function ChangePassword(){
                      <TextField id="standard-basic" label="New Password" variant="standard"   sx={{ mt: 4, width: '55ch',fontFamily: 'FontAwesome'}} /><br/>
                 </div>
                 <div className={Style.rtPassword}> 
-                    <TextField id="standard-basic" label="Confirm Password" variant="standard"   sx={{ mt: 4, width: '55ch',fontFamily: 'FontAwesome'}} /><br/>
+                    <TextField id="standard-basic" label="Confirm Password" variant="standard"   sx={{ mt: 2, width: '55ch',fontFamily: 'FontAwesome'}} /><br/>
                 </div>
                 
                 <div className={Style.code}>{/*

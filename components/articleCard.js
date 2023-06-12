@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { Button, CardActionArea, CardActions } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 
-function ArticleCard() {
+function ArticleCard(props) {
   return (
     <Card sx={{ width: 320,height:350,borderRadius: 4, backgroundColor: '#eee',boxShadow:4 }}>
       <CardActionArea>
@@ -15,7 +15,9 @@ function ArticleCard() {
           sx={{ width: 25, height: 25, marginTop:1,marginBottom:2}}/>
           <Typography gutterBottom variant="h5" component="div" 
           style={{color: '#111', fontWeight:600,height:70,fontSize:20, fontFamily:'ubuntu'}}>
-            CSS Nesting is now available with Vanilla CSS
+
+            {props.name} 
+           
           </Typography>
         </CardContent>
         <CardMedia
