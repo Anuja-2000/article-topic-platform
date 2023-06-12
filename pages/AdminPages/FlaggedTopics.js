@@ -27,11 +27,11 @@ function createData(id, name) {
 export default function FlaggedTopics() {
   const [rows, setRows] = useState([
     
-    createData(1, 'First flagged topic'),
-    createData(2, 'Second flagged topic'),
-    createData(3, 'Third flagged topic'),
-    createData(4, 'First flagged topic'),
-    createData(5, 'Second flagged topic'),
+    createData(1, '1st flagged topic'),
+    createData(2, '2nd flagged topic'),
+    createData(3, '3rd flagged topic'),
+    createData(4, '4th flagged topic'),
+    createData(5, '5th flagged topic'),
     createData(6, 'Third flagged topic'),
     createData(7, 'First flagged topic'),
     createData(8, 'Second flagged topic'),
@@ -141,7 +141,7 @@ export default function FlaggedTopics() {
                   <TableCell component="th" scope="row">
                     {row.id}
                   </TableCell>
-                  <TableCell style={{ width: 250 }} align="Left">
+                  <TableCell style={{ width: 250 }} >
                     {row.name}
                   </TableCell>
                   <TableCell>
