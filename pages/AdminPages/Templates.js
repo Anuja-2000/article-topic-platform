@@ -330,6 +330,9 @@ export default function Templates({ articleTypes }) {
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
+
+
+
 import TablePaginationActions from '../../components/TablePaginationActions';
 
 import TextField from '@mui/material/TextField'; // Add missing import
@@ -348,7 +351,8 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
-import { FormControl, InputLabel, Grid} from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment'
+import { FormControl, InputLabel, Grid } from '@mui/material';
 
 export const getStaticProps = async () => {
   try {
@@ -426,6 +430,11 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
       alert('All fields are required.');
       return;
     }
+      if (!/^temp\d+$/.test(newTemplate.templateId)) {
+        alert('Please enter a template ID starting with "temp" and only containing numbers.');
+        return;
+      }
+      
 
     // Add the new template to the data array
     const updatedData = [...data, newTemplate];
@@ -612,7 +621,7 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
       </Box>
 
       {/* Add Template Modal */}
-     
+
 
       <Modal
         open={showAddModal}
@@ -620,6 +629,7 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
         aria-labelledby="add-template-modal-title"
         aria-describedby="add-template-modal-description"
       >
+
         <Box
           sx={{
             position: 'absolute',
@@ -648,78 +658,86 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
                       templateId: e.target.value,
                     }))
                   }
+               
+                  helperText={
+                    !/^temp\d+$/.test(newTemplate.templateId) &&
+                    'Template Id should start with "temp" and only contain numbers'
+                  }
+                 
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Template Content"
-                  value={newTemplate.templateContent}
+            
+
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Template Content"
+                value={newTemplate.templateContent}
+                onChange={(e) =>
+                  setNewTemplate((prevTemplate) => ({
+                    ...prevTemplate,
+                    templateContent: e.target.value,
+                  }))
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl required fullWidth>
+                <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
+                <Select
+                  labelId="topic-domain-label"
+                  value={newTemplate.topicDomain}
                   onChange={(e) =>
                     setNewTemplate((prevTemplate) => ({
                       ...prevTemplate,
-                      templateContent: e.target.value,
+                      topicDomain: e.target.value,
                     }))
                   }
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl required fullWidth>
-                  <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
-                  <Select
-                    labelId="topic-domain-label"
-                    value={newTemplate.topicDomain}
-                    onChange={(e) =>
-                      setNewTemplate((prevTemplate) => ({
-                        ...prevTemplate,
-                        topicDomain: e.target.value,
-                      }))
-                    }
-                  >
-                    {topicDomains.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl required fullWidth>
-                  <InputLabel id="article-type-label">Article Type</InputLabel>
-                  <Select
-                    labelId="article-type-label"
-                    value={newTemplate.articleType}
-                    onChange={(e) =>
-                      setNewTemplate((prevTemplate) => ({
-                        ...prevTemplate,
-                        articleType: e.target.value,
-                      }))
-                    }
-                  >
-                    {articleTypes.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <Button variant="contained" color="primary" fullWidth onClick={handleAddTemplate}>
-                  Add
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button variant="contained" color="primary" fullWidth onClick={handleCloseAddModal}>
-                  Cancel
-                </Button>
-              </Grid>
+                >
+                  {topicDomains.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
-          </div>
-        </Box>
-      </Modal>
+            <Grid item xs={12}>
+              <FormControl required fullWidth>
+                <InputLabel id="article-type-label">Article Type</InputLabel>
+                <Select
+                  labelId="article-type-label"
+                  value={newTemplate.articleType}
+                  onChange={(e) =>
+                    setNewTemplate((prevTemplate) => ({
+                      ...prevTemplate,
+                      articleType: e.target.value,
+                    }))
+                  }
+                >
+                  {articleTypes.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <Button variant="contained" color="primary" fullWidth onClick={handleAddTemplate}>
+                Add
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button variant="contained" color="primary" fullWidth onClick={handleCloseAddModal}>
+                Cancel
+              </Button>
+            </Grid>
+          </Grid>
+        </div>
+      </Box>
+    </Modal >
 
 
     </>
