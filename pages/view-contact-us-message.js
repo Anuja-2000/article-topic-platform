@@ -14,31 +14,10 @@ import { useRouter } from "next/router";
 import * as React from "react";
 import { theme } from "../components/theme";
 import axios from "axios";
+import NavBar from "../components/Navbar";
 
 
-const updateReplied = async (messageId, email) => {
-  // const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
-  //    method: 'PATCH',
-  //    body: JSON.stringify({ messageId: messageId, email:email, updateKey:'replied', updateValue:true})
-  //  });
-  //   console.log(response.status);
-  const reponse = await axios.patch("https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message", {
-    params : {
-      messageId: messageId,
-       email:email, 
-       updateKey:'replied',
-        updateValue:true
-      }
-})
-  const data = reponse.data;
-  console.log(data);
-  }
 
-const handleButtonClick = async (messageId, email) => {
- await updateReplied(messageId, email);
-  setOpen(true);
-  //window.open("mailto:" + email);
-};
 
 
 export default function ViewContactUsMessage() {
@@ -72,14 +51,39 @@ export default function ViewContactUsMessage() {
     </React.Fragment>
   );
 
-
+  const updateReplied = async () => {
+    // const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
+    //    method: 'PATCH',
+    //    body: JSON.stringify({ messageId: messageId, email:email, updateKey:'replied', updateValue:true})
+    //  });
+    //   console.log(response.status);
+    const reponse = await axios.patch("https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message", {
+    params : {
+        messageId: messageId,
+         email:email, 
+         updateKey:'replied',
+          updateValue:true
+        }
+  })
+    const data = reponse.data;
+    console.log(data);
+    }
+  
+  const handleButtonClick =  () => {
+    //console.log("clicked");
+    updateReplied();
+   // setOpen(true);
+   // window.open("mailto:" + email);
+  };
   return (
+    <>
+    <NavBar/>
     <ThemeProvider theme={theme}>
-      <Container maxWidth="lg" sx={{ marginTop: 10 }}>
+      <Container maxWidth="md" sx={{ marginTop: 10,mr:20 }}>
         <Paper elevation={4}>
           <Grid Container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h4" color="primary" align="center">
+              <Typography variant="h4" color="primary" align="center" sx={{p:1}}>
                 View Message
               </Typography>
             </Grid>
@@ -117,7 +121,7 @@ export default function ViewContactUsMessage() {
               <Button
                 variant="contained"
                 endIcon={<Send />}
-                onClick={()=>handleButtonClick(messageId, email)}
+                onClick={() =>handleButtonClick}
                 sx={{ margin: 2 }}
               >
                 Reply
@@ -136,5 +140,6 @@ export default function ViewContactUsMessage() {
         </div>
       </Container>
     </ThemeProvider>
+    </>
   );
 }

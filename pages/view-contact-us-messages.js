@@ -19,6 +19,7 @@ import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import GetContactUsMessages from "./api/ContactUsMessages";
 import { useRouter } from "next/router";
+import NavBar from "../components/Navbar";
 
 export async function getStaticProps() {
   const messages = await GetContactUsMessages();
@@ -113,7 +114,7 @@ export default function ViewContactUsMessages({ messages }) {
   const router = useRouter();
   function getMessage(data){
    router.push({
-    pathname: '/viewContactUsMessage',
+    pathname: '/view-contact-us-message',
     query: { messageId:data.messageId,name:data.name,email:data.email,message:data.message},
    },
    undefined,
@@ -134,7 +135,9 @@ export default function ViewContactUsMessages({ messages }) {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ marginTop: 5 }}>
+    <div>
+    <NavBar/>
+    <Container maxWidth="md" sx={{ marginTop: 5, mr:20 }}>
       <TableContainer component={Paper} elevation={4}>
         <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
           <TableHead>
@@ -211,5 +214,6 @@ export default function ViewContactUsMessages({ messages }) {
         </Table>
       </TableContainer>
     </Container>
+    </div>
   );
 }
