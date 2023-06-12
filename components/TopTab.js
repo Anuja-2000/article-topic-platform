@@ -10,7 +10,7 @@ import EditOffIcon from '@mui/icons-material/EditOff';
 
 
 export default function TopTab() {
-  const [value, setValue] = React.useState(-1);
+  const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     if (newValue !== -1 && value !== newValue) {

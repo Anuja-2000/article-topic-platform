@@ -1,0 +1,10 @@
+export default async function getMessage(messageId,email) {
+  const response = await axios.get('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message',{
+      params: {
+        messageId: messageId,
+        email: email,
+    }});
+        const data = await response.data;
+        console.log(data.name);
+        return data;
+}

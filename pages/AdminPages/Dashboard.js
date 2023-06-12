@@ -1,16 +1,9 @@
 import React from 'react';
 import Navbar from '../../components/Navbar';
-import { Button, Alert,Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 function Dashboard() {
-  const [showClearAlert, setClearAlert] = React.useState(false);
-
-  const handleClearButtonClick = () => {
-    setClearAlert(true);
-    setTimeout(() => {
-      setClearAlert(false);
-    }, 2000);
-  };
 
   return (
     <div>
@@ -25,7 +18,18 @@ function Dashboard() {
           color: 'white',
         }}
       >
-      <h1>DashBoard</h1>
+        <Typography variant="h6" noWrap component="div"
+            sx={{
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'black',
+              textDecoration: 'none',
+              paddingLeft: '10px'
+            }}>
+        Welcome to your Dashboard 
+          </Typography>
+      
       
      
       </Box>

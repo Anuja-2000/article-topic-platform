@@ -30,6 +30,7 @@ export default function ContactUs() {
     });
   };
 
+  
   const validateForm = () => {
     const newErrors = {};
     if (!values.name) {
@@ -57,7 +58,7 @@ export default function ContactUs() {
     }
   };
   async function saveToDatabase(){
-    const messageId = uuidv4();
+    const messageId = "#message-"+uuidv4();
     const timestamp = new Date();
     const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
       method: 'POST',
