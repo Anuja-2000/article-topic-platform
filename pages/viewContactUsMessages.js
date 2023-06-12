@@ -19,13 +19,11 @@ import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import GetContactUsMessages from "./api/ContactUsMessages";
 import { useRouter } from "next/router";
-import Link from "next/link";
 
 export async function getStaticProps() {
   const messages = await GetContactUsMessages();
   return { props: { messages } };
 }
-
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -96,8 +94,10 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
+
+
 export default function ViewContactUsMessages({ messages }) {
-  let msgs = sort_by_key(messages.messages,"savedAt");
+  let msgs = sort_by_key(messages.messages, "savedAt");
   const rows = msgs;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -109,6 +109,16 @@ export default function ViewContactUsMessages({ messages }) {
       return x > y ? -1 : x < y ? 1 : 0;
     });
   }
+
+  const router = useRouter();
+  function getMessage(data){
+   router.push({
+    pathname: '/viewContactUsMessage',
+    query: { messageId:data.messageId,name:data.name,email:data.email,message:data.message},
+   },
+   undefined,
+    { shallow: true }
+   )}
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -155,19 +165,19 @@ export default function ViewContactUsMessages({ messages }) {
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.email}</TableCell>
                 <TableCell>
-                  <Button variant="contained">
-                    <Link
+                  <Button variant="contained" onClick={()=>getMessage(row)}>
+         
+                    {/* <Link
                       href={{
                         pathname: "viewContactUsMessage",
                         query: {
-                          itemName: row.name,
+                          itemMessageId: row.messageId,
                           itemEmail: row.email,
-                          itemMessage: row.message,
                         },
                       }}
-                    >
+                    > */}
                       View Message
-                    </Link>
+                    {/* </Link> */}
                   </Button>
                 </TableCell>
               </TableRow>
