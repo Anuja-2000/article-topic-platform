@@ -1,3 +1,6 @@
+import HomePage from './homePage'
+
+
 
 function Home() {
 
