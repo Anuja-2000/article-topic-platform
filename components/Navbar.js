@@ -83,7 +83,7 @@ export default function NavBar() {
               color: '#9399f7',
               textDecoration: 'none',
             }}>
-            Admin
+            Writer
           </Typography>
           <Typography variant="h6" noWrap component="div"
             sx={{
@@ -94,7 +94,7 @@ export default function NavBar() {
               textDecoration: 'none',
               paddingLeft: '10px'
             }}>
-            LOGO
+            GATE
           </Typography>
           <div style={{ flexGrow: 1 }}></div>
           <IconButton
