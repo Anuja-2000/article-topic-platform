@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import style from "../styles/search.module.css";
 import Head from "next/Head"
 import Box from '@mui/material/Box';
@@ -28,6 +28,11 @@ const SearchTextField = styled(TextField)({
 });
 
 function Search(){
+    const [searchKey, setSearchKey] = useState('');
+
+    const handleInputChange = (event) => {
+      setSearchKey(event.target.value);
+    };
     return(
         
         <div className={style.outer}>
@@ -76,11 +81,11 @@ function Search(){
                             <SearchIcon />
                           </IconButton>
                         </InputAdornment>
-                      )}} />
+                      )}}  value={searchKey} onChange={handleInputChange} />
                 </Box>
             </div>
             <div className={style.articleBoxOuter}>
-                < SearchArticleBox />
+                < SearchArticleBox keyword={searchKey}/>
             </div>
         </div>
     );

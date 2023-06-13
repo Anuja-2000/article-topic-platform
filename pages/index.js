@@ -1,9 +1,9 @@
-import Head from "next/Head"
-import Login from './login'
+import HomePage from './homePage'
 
 
 
 function Home() {
+
   return (
     
    <></>
