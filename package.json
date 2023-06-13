@@ -18,13 +18,10 @@
     "@mui/x-data-grid": "^6.0.4",
     "@mui/x-data-grid-generator": "^6.0.4",
     "@next/font": "13.1.1",
-<<<<<<< HEAD
-    "aws-sdk": "^2.1343.0",
-    "dotenv": "^16.0.3",
-=======
     "aws-sdk": "^2.1336.0",
     "axios": "^1.4.0",
->>>>>>> 949ed80ddae54d3e374019b8178c46dc80bbdd44
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
     "moment": "^2.29.4",
