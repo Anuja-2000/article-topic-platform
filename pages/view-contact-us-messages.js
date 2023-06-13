@@ -112,14 +112,15 @@ export default function ViewContactUsMessages({ messages }) {
   }
 
   const router = useRouter();
-  function getMessage(data){
-   router.push({
-    pathname: '/view-contact-us-message',
-    query: { messageId:data.messageId,name:data.name,email:data.email,message:data.message},
-   },
-   undefined,
-    { shallow: true }
-   )}
+  function getMessage(data) {
+    router.push({
+      pathname: '/view-contact-us-message',
+      query: { messageId: data.messageId, name: data.name, email: data.email, message: data.message },
+    },
+      undefined,
+      { shallow: true }
+    )
+  }
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -136,41 +137,41 @@ export default function ViewContactUsMessages({ messages }) {
 
   return (
     <div>
-    <NavBar/>
-    <Container maxWidth="md" sx={{ marginTop: 5, mr:20 }}>
-      <TableContainer component={Paper} elevation={4}>
-        <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" colSpan={3}>
-                <Typography variant="h5" color="primary">
-                  View Messages
-                </Typography>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Message</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(rowsPerPage > 0
-              ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              : rows
-            ).map((row) => (
-              <TableRow
-                key={row.messageId}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.email}</TableCell>
-                <TableCell>
-                  <Button variant="contained" onClick={()=>getMessage(row)}>
-         
-                    {/* <Link
+      <NavBar />
+      <Container maxWidth="md" sx={{ marginTop: 5, mr: 20 }}>
+        <TableContainer component={Paper} elevation={4}>
+          <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell align="center" colSpan={3}>
+                  <Typography variant="h5" color="primary">
+                    View Messages
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Message</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(rowsPerPage > 0
+                ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                : rows
+              ).map((row) => (
+                <TableRow
+                  key={row.messageId}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.email}</TableCell>
+                  <TableCell>
+                    <Button variant="contained" onClick={() => getMessage(row)}>
+
+                      {/* <Link
                       href={{
                         pathname: "viewContactUsMessage",
                         query: {
@@ -180,40 +181,40 @@ export default function ViewContactUsMessages({ messages }) {
                       }}
                     > */}
                       View Message
-                    {/* </Link> */}
-                  </Button>
-                </TableCell>
+                      {/* </Link> */}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                  colSpan={3}
+                  count={rows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  SelectProps={{
+                    inputProps: {
+                      "aria-label": "rows per page",
+                    },
+                    native: true,
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                />
               </TableRow>
-            ))}
-            {emptyRows > 0 && (
-              <TableRow style={{ height: 53 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                colSpan={3}
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                SelectProps={{
-                  inputProps: {
-                    "aria-label": "rows per page",
-                  },
-                  native: true,
-                }}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
-    </Container>
+            </TableFooter>
+          </Table>
+        </TableContainer>
+      </Container>
     </div>
   );
 }

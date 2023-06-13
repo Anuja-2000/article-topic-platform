@@ -22,22 +22,39 @@ import NavBar from "../components/Navbar";
 
 export default function ViewContactUsMessage() {
   const router = useRouter();
-  const {messageId,name,email,message} = router.query;
+  const { messageId, name, email, message } = router.query;
 
+  const updateReplied = async (value) => {
+    const reponse = await axios.patch("https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message", {
+      "messageId": messageId,
+      "email": email,
+      "updateKey": 'replied',
+      "updateValue": value
+    }).then((res) => {
+      console.log(res);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
 
   const [open, setOpen] = React.useState(false);
 
-  const handleClose = (event, reason) => {
+  const handleClose = (reason) => {
     if (reason === "clickaway") {
       return;
     }
+    if (reason === "undo") {
+      console.log("undo");
+      updateReplied(false);
+      return;
+    } 
 
     setOpen(false);
   };
 
   const action = (
     <React.Fragment>
-      <Button color="secondary" size="small" onClick={handleClose}>
+      <Button color="secondary" size="small" onClick={()=>handleClose("undo")}>
         UNDO
       </Button>
       <IconButton
@@ -51,95 +68,76 @@ export default function ViewContactUsMessage() {
     </React.Fragment>
   );
 
-  const updateReplied = async () => {
-    // const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
-    //    method: 'PATCH',
-    //    body: JSON.stringify({ messageId: messageId, email:email, updateKey:'replied', updateValue:true})
-    //  });
-    //   console.log(response.status);
-    const reponse = await axios.patch("https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message", {
-    params : {
-        messageId: messageId,
-         email:email, 
-         updateKey:'replied',
-          updateValue:true
-        }
-  })
-    const data = reponse.data;
-    console.log(data);
-    }
-  
-  const handleButtonClick =  () => {
-    //console.log("clicked");
-    updateReplied();
-   // setOpen(true);
-   // window.open("mailto:" + email);
+  const handleButtonClick = () => {
+    updateReplied(true);
+    setOpen(true);
+    // window.open("mailto:" + email);
   };
   return (
     <>
-    <NavBar/>
-    <ThemeProvider theme={theme}>
-      <Container maxWidth="md" sx={{ marginTop: 10,mr:20 }}>
-        <Paper elevation={4}>
-          <Grid Container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant="h4" color="primary" align="center" sx={{p:1}}>
-                View Message
-              </Typography>
+      <NavBar />
+      <ThemeProvider theme={theme}>
+        <Container maxWidth="md" sx={{ marginTop: 10, mr: 20 }}>
+          <Paper elevation={4}>
+            <Grid Container spacing={2}>
+              <Grid item xs={12}>
+                <Typography variant="h4" color="primary" align="center" sx={{ p: 1 }}>
+                  View Message
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  color="primary.dark"
+                  align="left"
+                  padding={2}
+                >
+                  Name : {name}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  color="primary.dark"
+                  align="left"
+                  marginLeft={2}
+                >
+                  Email : {email}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h5"
+                  color="primary.dark"
+                  align="left"
+                  padding={2}
+                >
+                  Message : {message}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} textAlign="right">
+                <Button
+                  variant="contained"
+                  endIcon={<Send />}
+                  onClick={handleButtonClick}
+                  sx={{ margin: 2 }}
+                >
+                  Reply
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                color="primary.dark"
-                align="left"
-                padding={2}
-              >
-                Name : {name}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                color="primary.dark"
-                align="left"
-                marginLeft={2}
-              >
-                Email : {email}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                color="primary.dark"
-                align="left"
-                padding={2}
-              >
-                Message : {message}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} textAlign="right">
-              <Button
-                variant="contained"
-                endIcon={<Send />}
-                onClick={() =>handleButtonClick}
-                sx={{ margin: 2 }}
-              >
-                Reply
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
-        <div>
-          <Snackbar
-            open={open}
-            autoHideDuration={6000}
-            onClose={handleClose}
-            message="Replied to Message"
-            action={action}
-          />
-        </div>
-      </Container>
-    </ThemeProvider>
+          </Paper>
+          <div>
+            <Snackbar
+              open={open}
+              autoHideDuration={5000}
+              onClose={handleClose}
+              message="Replied to Message"
+              action={action}
+            />
+          </div>
+        </Container>
+      </ThemeProvider>
     </>
   );
 }
