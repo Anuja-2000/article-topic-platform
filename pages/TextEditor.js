@@ -233,3 +233,8 @@ const TextEditor = () => {
   );
 };
 export default TextEditor;*/
+export default function TextEditor(){
+    return(
+    <></>
+    )
+}
