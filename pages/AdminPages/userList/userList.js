@@ -15,9 +15,11 @@ import UserActions from './userActions';
 
 
 
+
+
 const initialRows = [
   {
-    id:1,
+    id:1001,
     photoURL: 1,
     name: 'Vincent Hartman',
     email: 'vincent@gmail.com',
@@ -26,7 +28,7 @@ const initialRows = [
     createdAt:new Date().getTime(),
   },
   {
-    id: 2,
+    id: 1002,
     photoURL: 1,
     name: 'Autumn Bradford',
     email: 'autumn@gmail.com',
@@ -35,7 +37,7 @@ const initialRows = [
     createdAt:new Date().getTime(),
   },
   {
-    id: 3,
+    id: 1003,
     photoURL: 1,
     name: 'Heaven Dorsey',
     email: 'heaven@gmail.com',
@@ -44,7 +46,7 @@ const initialRows = [
     createdAt:new Date().getTime(),
   },
   {
-    id: 4,
+    id: 1004,
     photoURL: 1,
     name: 'Emanuel Stephens',
     email: 'emanuel@gmail.com',
@@ -53,7 +55,7 @@ const initialRows = [
     createdAt:new Date().getTime(),
   },
   {
-    id: 5,
+    id: 1005,
     photoURL: 1,
     name: 'Carlie Evans',
     email: 'carlie@gmail.com',
@@ -70,7 +72,7 @@ function CustomTypeEditComponent(props) {
     setRows((prevRows) => {
       console.log(prevRows);
       return prevRows.map((row) =>
-        row.id === props.id ? { ...row, account: null } : row,
+        row.userId === props.userId ? { ...row, account: null } : row,
       );
     });
   };
@@ -86,12 +88,43 @@ CustomTypeEditComponent.propTypes = {
   setRows: PropTypes.func.isRequired,
 };
 
-function UserList() {
-  const editingRow = React.useRef(null);
-  const [rows, setRows] = React.useState(initialRows);
-  const [rowId, setRowId] = React.useState(null);
 
- 
+
+function userList() {
+  const editingRow = React.useRef(null);
+  const [rowId, setRowId] = React.useState(null);
+  const [rows, setRows] = React.useState([]);
+  const url = `../api/getUserList`;
+  const method = 'GET';
+  const option = {
+        method: method,
+        
+  }
+  React.useEffect(() => {
+    const fetchData = async () => {
+      console.log("response1");
+    try{
+        const response = await fetch(url, option);
+        const finalData = await response.json();
+        const productsArray = finalData.products;
+        setRows(productsArray);
+        console.log("response");
+      }catch(error){
+  
+          console.error(error);
+          console.log("responseee");
+        }
+       
+      }
+      fetchData()
+  
+      
+    }, []) 
+  
+   console.log(rows);
+   console.log(typeof(rows));
+  
+
   const columns = React.useMemo( 
     () =>
     [
@@ -152,14 +185,14 @@ function UserList() {
   );
 
   const handleCellEditStart = (params) => {
-    editingRow.current = rows.find((row) => row.id === params.id) || null;
+    editingRow.current = rows.find((row) => row.userId === params.userId) || null;
   };
 
   const handleCellEditStop = (params) => {
     if (params.reason === GridCellEditStopReasons.escapeKeyDown) {
       setRows((prevRows) =>
         prevRows.map((row) =>
-          row.id === editingRow.current?.id
+          row.userId === editingRow.current?.userId
             ? { ...row, account: editingRow.current?.account }
             : row,
         ),
@@ -169,11 +202,12 @@ function UserList() {
 
   const processRowUpdate = (newRow) => {
     setRows((prevRows) =>
-      prevRows.map((row) => (row.id === editingRow.current?.id ? newRow : row)),
+      prevRows.map((row) => (row.userId === editingRow.current?.userId ? newRow : row)),
     );
 
     return newRow;
   };
+  const getRowId = (row) => row.userId;
 
   return (
     <Box sx={{ width: '100%', height: 500 }}>
@@ -186,7 +220,8 @@ function UserList() {
         onCellEditStart={handleCellEditStart}
         onCellEditStop={handleCellEditStop}
         processRowUpdate={processRowUpdate}
-        onCellEditCommit = {(params)=>setRowId(params.id)}
+        onCellEditCommit = {(params)=>setRowId(params.userId)}
+        getRowId={getRowId}
       />
     </Box>
   );
