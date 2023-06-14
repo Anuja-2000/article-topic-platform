@@ -177,7 +177,7 @@ const WriterDashboard = () => {
             <Paper className={classes.middleContent}>
 
   <div style={{ padding: "20px", fontFamily: "Poppins" }}> </div>
-  <div style={{ padding: "20px", fontFamily: "Poppins", textAlign: "center", fontWeight: "bold", fontSize: "25px" }}>Welcome to Writer's Dashboard!</div>
+  <div style={{ padding: "20px", fontFamily: "Poppins", textAlign: "center", fontWeight: "bold", fontSize: "25px" }}>Welcome to Writer&apos;s Dashboard!</div>
  
 
 <div className={classes.imageContainer}>
