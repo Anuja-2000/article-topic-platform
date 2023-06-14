@@ -86,7 +86,7 @@ CustomTypeEditComponent.propTypes = {
   setRows: PropTypes.func.isRequired,
 };
 
-function userList() {
+function UserList() {
   const editingRow = React.useRef(null);
   const [rows, setRows] = React.useState(initialRows);
   const [rowId, setRowId] = React.useState(null);
@@ -192,4 +192,4 @@ function userList() {
   );
 }
 
-export default userList;
+export default UserList;
