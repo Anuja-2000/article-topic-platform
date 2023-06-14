@@ -13,7 +13,7 @@ const UserActions = ({ params, rowId , setRowId}) => {
         setTimeout(() => {} , 1500)
     };
      useEffect(()=>{
-        if(rowId === params.id && success) setSuccess(false);
+        if(rowId === params.userId && success) setSuccess(false);
      }, [rowId])
   return (
     <Box
