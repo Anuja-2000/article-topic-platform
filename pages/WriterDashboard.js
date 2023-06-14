@@ -240,3 +240,8 @@ const WriterDashboard = () => {
 
 export default WriterDashboard;
 */
+export default function WriterDashboard(){
+    return(
+    <></>
+    )
+}
