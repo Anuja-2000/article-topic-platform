@@ -60,7 +60,7 @@ return(
                     sx={{ width: 60, height: 60,marginLeft: '70px'}}/>
                 </div>
                 <div className={styles.innerBox}>
-                    <h1>Article Writer's Name</h1>
+                    <h1>Article Writer&apos;s Name</h1>
                     <div className={styles.dateTimeFollow}>
                         <div className={styles.time}>Published Time</div>
                         <div className={styles.date}>Published Date</div>
