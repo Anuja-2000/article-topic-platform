@@ -1,4 +1,4 @@
-import React from "react";
+/*import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import TextEditor from './TextEditor';
@@ -239,3 +239,4 @@ const WriterDashboard = () => {
 };
 
 export default WriterDashboard;
+*/
