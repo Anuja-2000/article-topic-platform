@@ -5,12 +5,13 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { styled } from '@mui/material/styles';
+import axios from 'axios';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
   marginBottom: '20px',
-  
+
 }));
 
 const StyledTitle = styled(Typography)(({ theme }) => ({
@@ -37,6 +38,17 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     return timeString;
+  }
+
+  function getMessageCount() {
+    var data = 0;
+    const response = axios.get('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/messagescount').then((res) => {
+      console.log(res.data.count);
+      data = res.data.count;
+    }).catch((error) => {
+      console.log(error);
+    });
+    return data;
   }
 
   return (
@@ -114,6 +126,17 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
               </StyledCount>
             </CardContent>
           </StyledCard>
+
+          <StyledCard>
+            <CardContent>
+              <StyledTitle variant="h6" component="div">
+                Unread messages Count
+              </StyledTitle>
+              <StyledCount variant="h4" component="div">
+                {getMessageCount}
+              </StyledCount>
+            </CardContent>
+          </StyledCard>
         </Box>
 
         <Typography
@@ -168,7 +191,7 @@ export async function getStaticProps() {
       props: {
         templateCount: data.templates.length,
         topicDomainCount: Array.from(uniqueTopicDomains),
-        articleTypeCount: Array.from(uniqueArticleTypes),
+        articleTypeCount: Array.from(uniqueArticleTypes)
       },
       revalidate: 60, // Refresh every 60 seconds
     };
@@ -178,7 +201,7 @@ export async function getStaticProps() {
       props: {
         templateCount: 0,
         topicDomainCount: [],
-        articleTypeCount: [],
+        articleTypeCount: []
       },
     };
   }
