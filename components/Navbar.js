@@ -31,7 +31,6 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
 
-
 const drawerWidth = 220;  //width for the drawer we can change this
 const AppBarWidth = 64;
 const iconMap = {
@@ -63,8 +62,6 @@ export default function NavBar() {
     setSelectedIndex(index);
   };
 
-
-
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -86,7 +83,7 @@ export default function NavBar() {
               color: '#9399f7',
               textDecoration: 'none',
             }}>
-            Admin
+            Writer
           </Typography>
           <Typography variant="h6" noWrap component="div"
             sx={{
@@ -97,15 +94,16 @@ export default function NavBar() {
               textDecoration: 'none',
               paddingLeft: '10px'
             }}>
-            LOGO
+            GATE
           </Typography>
           <div style={{ flexGrow: 1 }}></div>
           <IconButton
             size="large"
             color="inherit"
             aria-label="search"
+            onClick={() => router.push('/view-contact-us-messages')}
           >
-            < MailIcon />
+            < MailIcon  />
           </IconButton>
           <IconButton
             size="large"

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import style from "../styles/search.module.css";
-import Head from "next/Head"
+import Head from "next/head"
 import Box from '@mui/material/Box';
 import {TextField, IconButton, InputAdornment} from '@mui/material';
 import styled from 'styled-components';

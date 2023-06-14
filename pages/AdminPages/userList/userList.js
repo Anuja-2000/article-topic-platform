@@ -227,4 +227,4 @@ function userList() {
   );
 }
 
-export default userList;
+export default UserList;

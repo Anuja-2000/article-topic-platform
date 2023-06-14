@@ -1,7 +1,7 @@
 import styles from '../styles/article.module.css'
 import Image from 'next/image'
 import React from 'react'
-import Head from "next/Head"
+import Head from "next/head"
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -60,7 +60,7 @@ return(
                     sx={{ width: 60, height: 60,marginLeft: '70px'}}/>
                 </div>
                 <div className={styles.innerBox}>
-                    <h1>Article Writer's Name</h1>
+                    <h1>Article Writer&apos;s Name</h1>
                     <div className={styles.dateTimeFollow}>
                         <div className={styles.time}>Published Time</div>
                         <div className={styles.date}>Published Date</div>
