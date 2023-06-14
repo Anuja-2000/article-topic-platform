@@ -1,7 +1,7 @@
 import styles from '../styles/article.module.css'
 import Image from 'next/image'
 import React from 'react'
-import Head from "next/Head"
+import Head from "next/head"
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
