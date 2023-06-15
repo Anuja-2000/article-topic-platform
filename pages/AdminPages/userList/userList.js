@@ -90,7 +90,7 @@ CustomTypeEditComponent.propTypes = {
 
 
 
-function userList() {
+function UserList() {
   const editingRow = React.useRef(null);
   const [rowId, setRowId] = React.useState(null);
   const [rows, setRows] = React.useState([]);

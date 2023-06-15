@@ -81,7 +81,7 @@ function Search(){
                             <SearchIcon />
                           </IconButton>
                         </InputAdornment>
-                      )}}  value={searchKey} onChange={handleInputChange} />
+                      )}}  onChange={handleInputChange} />
                 </Box>
             </div>
             <div className={style.articleBoxOuter}>
