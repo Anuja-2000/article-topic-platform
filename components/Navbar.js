@@ -40,7 +40,7 @@ const iconMap = {
   'Article Types': < ArticleIcon sx={{ color: 'white' }} />,
   'Flagged Topics': <FlagIcon sx={{ color: 'white' }} />,
   'User Roles': <GroupIcon sx={{ color: 'white' }} />,
-  'Generate Reports': <CheckIcon sx={{ color: 'white' }} />
+  
 };
 
 export default function NavBar() {
@@ -50,21 +50,18 @@ export default function NavBar() {
   useEffect(() => {
     // Update the selected index whenever the route changes
     const path = router.pathname;
-    const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics', 'User Roles', 'Generate Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+    const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics', 'User Roles'].findIndex((text) => path.includes(text.replace(' ', '')));
     setSelectedIndex(index);
   }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
-  useEffect(()=>{
-          selectedIndex
-}
-)
+
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+      
       <AppBar
         position="fixed"
         sx={{
@@ -143,7 +140,7 @@ export default function NavBar() {
 
 
 <List sx={{ overflow: 'hidden' }}>
-          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles', 'Generate Reports'].map((text, index) => (
+          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles'].map((text, index) => (
             <ListItem key={text}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
