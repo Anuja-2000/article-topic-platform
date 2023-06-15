@@ -174,7 +174,7 @@ React.useEffect(() => {
 
 export async function getStaticProps() {
   try {
-    const response = await fetch('https://vrscop1u3m.execute-api.us-east-1.amazonaws.com/templatesProject/templates');
+    const response = await fetch('https://vmm8vve6hg.execute-api.us-east-1.amazonaws.com/topicTemplates/templates');
     const data = await response.json();
 
     const uniqueTopicDomains = new Set();

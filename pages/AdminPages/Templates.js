@@ -4,11 +4,9 @@ import Navbar from '../../components/Navbar';
 import axios from 'axios';
 
 
-
 import TablePaginationActions from '../../components/TablePaginationActions';
 
-import TextField from '@mui/material/TextField'; // Add missing import
-
+import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
@@ -23,15 +21,15 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
-import InputAdornment from '@mui/material/InputAdornment'
+
 import { FormControl, InputLabel, Grid } from '@mui/material';
-import AWS from 'aws-sdk'; // Import AWS SDK
+import AWS from 'aws-sdk';
 
 AWS.config.update({
-  region: 'us-east-1', // Replace with your desired region
-  accessKeyId: 'YOUR_ACCESS_KEY_ID', // Replace with your AWS access key ID
-  secretAccessKey: 'YOUR_SECRET_ACCESS_KEY'
-  
+  region: 'us-east-1',
+  accessKeyId: 'AKIAWXE5Y3RWOMG75RHO',
+  secretAccessKey: 'gMIu3ptBr8foFZgMwrRtorzp+vPtGhAtxCjSQB6W'
+
 });
 
 export const getStaticProps = async () => {
@@ -70,8 +68,8 @@ export const getStaticProps = async () => {
 };
 
 
-
 const dynamodb = new AWS.DynamoDB.DocumentClient();
+
 export default function Templates({ templates, articleTypes, topicDomains }) {
   const [data, setData] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -82,12 +80,15 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
     articleType: '',
   });
 
+  // Sort the templates based on templateId
   useEffect(() => {
     if (templates) {
-      setData(templates);
+      const sortedTemplates = [...templates].sort((a, b) => a.templateId.localeCompare(b.templateId));
+      setData(sortedTemplates);
     }
   }, [templates]);
 
+  //handle Event functions
   const handleOpenAddModal = () => {
     setShowAddModal(true);
   };
@@ -105,16 +106,16 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
   const handleAddTemplate = async () => {
     // Perform validation on the newTemplate object
     if (
-      newTemplate.templateId.trim() === '' ||
-      newTemplate.templateContent.trim() === '' ||
-      newTemplate.topicDomain.trim() === '' ||
-      newTemplate.articleType.trim() === ''
+      newTemplate.templateId === '' ||
+      newTemplate.templateContent === '' ||
+      newTemplate.topicDomain === '' ||
+      newTemplate.articleType === ''
     ) {
       alert('All fields are required.');
       return;
     }
-  
-    // Create a new template object
+
+    // Create a new template object using newTemplate object
     const template = {
       templateId: newTemplate.templateId,
       articleType: newTemplate.articleType,
@@ -122,20 +123,21 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
       topicDomain: newTemplate.topicDomain,
       templateContent: newTemplate.templateContent,
     };
-  
+
     try {
       const params = {
-        TableName: 'topicDom-type-template-pro', // Replace with your DynamoDB table name
+        TableName: 'topicDom-type-template-pro',
         Item: template,
       };
-  
+
       await dynamodb.put(params).promise();
       console.log('Data saved successfully:', template);
-      // Handle the success response
+      alert('Data saved successfully');
+
     } catch (error) {
       console.error('Failed to save data:', error);
     }
-  
+
     // Close the modal and reset the newTemplate object
     handleCloseAddModal();
   };
@@ -161,20 +163,22 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
 
   const handleSaveClick = async (index) => {
     setEditableRowIndex(null); // Reset the editable row index
-  
+
     const updatedRow = data[index];
-  
+
     try {
-      const response = await fetch('https://vmm8vve6hg.execute-api.us-east-1.amazonaws.com/topicTemplates/templates', {
+      console.log(updatedRow);
+      const response = await fetch('https://vmm8vve6hg.execute-api.us-east-1.amazonaws.com/topicTemplates/template', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedRow),
       });
-  
+
       const responseData = await response.json();
       if (response.ok) {
         // Update successful
         console.log('Data updated successfully:', responseData);
+        alert('Data updated successfully');
       } else {
         // Handle update failure
         console.log('Failed to update data:', responseData);
@@ -183,11 +187,11 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
       console.error('Error updating data:', error);
     }
   };
-  
-  
+
+
 
   const handleFieldChange = (index, field, value) => {
-    setData(prevData => {
+    setData((prevData) => {
       const updatedData = [...prevData];
       updatedData[index] = {
         ...updatedData[index],
@@ -196,7 +200,6 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
       return updatedData;
     });
   };
-
   const handleAddClick = () => {
     handleOpenAddModal();
   };
@@ -241,8 +244,7 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
                     <TableCell>{item.templateId}</TableCell>
                     <TableCell>
                       {isRowEditable(index) ? (
-                        <input
-                          type="text"
+                        <TextField
                           value={item.templateContent}
                           onChange={(e) => handleFieldChange(index, 'templateContent', e.target.value)}
                         />
@@ -250,6 +252,8 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
                         item.templateContent
                       )}
                     </TableCell>
+
+
                     <TableCell>
                       {isRowEditable(index) ? (
                         <Select
@@ -320,8 +324,6 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
       </Box>
 
       {/* Add Template Modal */}
-
-
       <Modal
         open={showAddModal}
         onClose={handleCloseAddModal}
@@ -357,86 +359,86 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
                       templateId: e.target.value,
                     }))
                   }
-               
+
                   helperText={
                     !/^temp\d+$/.test(newTemplate.templateId) &&
-                    'Template Id should start with "temp" and only contain numbers'
+                    'Template Id  contains numbers but allow strings also'
                   }
-                 
+
                 />
               </Grid>
-            
 
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                label="Template Content"
-                value={newTemplate.templateContent}
-                onChange={(e) =>
-                  setNewTemplate((prevTemplate) => ({
-                    ...prevTemplate,
-                    templateContent: e.target.value,
-                  }))
-                }
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl required fullWidth>
-                <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
-                <Select
-                  labelId="topic-domain-label"
-                  value={newTemplate.topicDomain}
+
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Template Content"
+                  value={newTemplate.templateContent}
                   onChange={(e) =>
                     setNewTemplate((prevTemplate) => ({
                       ...prevTemplate,
-                      topicDomain: e.target.value,
+                      templateContent: e.target.value,
                     }))
                   }
-                >
-                  {topicDomains.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl required fullWidth>
+                  <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
+                  <Select
+                    labelId="topic-domain-label"
+                    value={newTemplate.topicDomain}
+                    onChange={(e) =>
+                      setNewTemplate((prevTemplate) => ({
+                        ...prevTemplate,
+                        topicDomain: e.target.value,
+                      }))
+                    }
+                  >
+                    {topicDomains.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl required fullWidth>
+                  <InputLabel id="article-type-label">Article Type</InputLabel>
+                  <Select
+                    labelId="article-type-label"
+                    value={newTemplate.articleType}
+                    onChange={(e) =>
+                      setNewTemplate((prevTemplate) => ({
+                        ...prevTemplate,
+                        articleType: e.target.value,
+                      }))
+                    }
+                  >
+                    {articleTypes.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <Button variant="contained" color="primary" fullWidth onClick={handleAddTemplate}>
+                  Add
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button variant="contained" color="primary" fullWidth onClick={handleCloseAddModal}>
+                  Cancel
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <FormControl required fullWidth>
-                <InputLabel id="article-type-label">Article Type</InputLabel>
-                <Select
-                  labelId="article-type-label"
-                  value={newTemplate.articleType}
-                  onChange={(e) =>
-                    setNewTemplate((prevTemplate) => ({
-                      ...prevTemplate,
-                      articleType: e.target.value,
-                    }))
-                  }
-                >
-                  {articleTypes.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <Button variant="contained" color="primary" fullWidth onClick={handleAddTemplate}>
-                Add
-              </Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button variant="contained" color="primary" fullWidth onClick={handleCloseAddModal}>
-                Cancel
-              </Button>
-            </Grid>
-          </Grid>
-        </div>
-      </Box>
-    </Modal >
+          </div>
+        </Box>
+      </Modal >
 
 
     </>
