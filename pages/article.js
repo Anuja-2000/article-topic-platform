@@ -72,9 +72,27 @@ return(
             <div className={styles.box1}>
             <AppBar position="fixed" sx={{backgroundColor: '#0082e6'}}>
                     <Toolbar>
-                        <Typography variant="h6"  >
-                            (our logo)
-                        </Typography>
+                    <Typography variant="h6" noWrap component="div"
+                        sx={{
+                          fontFamily: 'monospace',
+                          fontWeight: 700,
+                          letterSpacing: '.3rem',
+                          color: '#9399f7',
+                          textDecoration: 'none',
+                        }}>
+                        Writer
+                    </Typography>
+                    <Typography variant="h6" noWrap component="div"
+                        sx={{
+                          fontFamily: 'monospace',
+                          fontWeight: 700,
+                          letterSpacing: '.3rem',
+                          color: 'inherit',
+                          textDecoration: 'none',
+                          paddingLeft: '10px'
+                        }}>
+                        GATE
+                    </Typography>
                         <div style={{ flexGrow: 1 }}></div>
                         <IconButton
                         size="large"
