@@ -40,16 +40,15 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
     return timeString;
   }
 
-  function getMessageCount() {
-    var data = 0;
+  const [msgcount, setmsgCount] = React.useState(0);
+React.useEffect(() => {
     const response = axios.get('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/messagescount').then((res) => {
-      console.log(res.data.count);
-      data = res.data.count;
+      const data = res.data.count;
+      setmsgCount(data);
     }).catch((error) => {
       console.log(error);
     });
-    return data;
-  }
+  });
 
   return (
     <div>
@@ -133,7 +132,7 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
                 Unread messages Count
               </StyledTitle>
               <StyledCount variant="h4" component="div">
-                {getMessageCount}
+                 {msgcount}
               </StyledCount>
             </CardContent>
           </StyledCard>

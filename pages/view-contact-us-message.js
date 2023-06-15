@@ -71,7 +71,7 @@ export default function ViewContactUsMessage() {
   const handleButtonClick = () => {
     updateReplied(true);
     setOpen(true);
-    // window.open("mailto:" + email);
+    window.open("mailto:" + email);
   };
   return (
     <>
