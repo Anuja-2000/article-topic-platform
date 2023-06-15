@@ -62,7 +62,7 @@ export default function Login() {
 
         {/*bottom*/}
         <p className={styles.footer}>
-          Don't have an account?
+          Don&apos;t have an account?
           <Link href={"/register"} className={styles.last}>
             Sign Up
           </Link>

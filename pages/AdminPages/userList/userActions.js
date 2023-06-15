@@ -1,4 +1,4 @@
-import SaveIcon from '@mui/icons-material/save';
+import SaveIcon from '@mui/icons-material/Save';
 import CheckIcon from '@mui/icons-material/Check';
 import React, { useEffect, useState } from 'react'
 import { green } from '@mui/material/colors'
@@ -13,7 +13,7 @@ const UserActions = ({ params, rowId , setRowId}) => {
         setTimeout(() => {} , 1500)
     };
      useEffect(()=>{
-        if(rowId === params.id && success) setSuccess(false);
+        if(rowId === params.userId && success) setSuccess(false);
      }, [rowId])
   return (
     <Box

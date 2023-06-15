@@ -8,7 +8,6 @@ function SearchArticleBox(props) {
         const url = `/api/searchApi?keyword=${props.keyword}`;
         const method = 'GET';
         const [data, setData] = useState([]);
-        const [isLoading, setLoading] = useState(false);
         const option = {
             method: method,
             
