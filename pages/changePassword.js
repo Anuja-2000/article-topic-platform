@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import { useForm } from "react-hook-form";
 
 const RestButton = styled(Button)({
     textTransform: 'none' ,
@@ -19,26 +20,44 @@ const RestButton = styled(Button)({
 
 
 function ChangePassword(){
-    const [newPassword, setNewPassword] = React.useState('');
-    const [confirmPassword, setConfirmPassword] = React.useState('');
     const [newPasswordValue, setNewPasswordValue] = React.useState(false);
     const [confirmPasswordValue, setConfirmPasswordValue] = React.useState(false);
+    const { handleSubmit, register, formState: { errors } } = useForm();
+    const [message, setMessage] = React.useState('');
 
-    const handleNewPassword = (event) => {
-        setNewPassword(event.target.value);
-    };
-
-    const handleConfirmPassword = (event) => {
-        setConfirmPassword(event.target.value);
-      };
+      const onSubmit = async (formData) => {
+        const { newPass } = formData;
+        const { confPass } = formData;
+        const authentication = () =>{
+            
+            if(newPass !== confPass){
+                setMessage({ text: 'Passwords do not match', type: 'match' });
+                setConfirmPasswordValue(true);
+            }
+        }  
+        const { email } = formData;
+        try {
+          const response = await fetch(`/api/auth/reset-password`, {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
     
-      const authentication = () =>{
-        if(newPassword === ''){
-            setNewPasswordValue(true);
+          const data = await response.json()
+          if (response.ok) {
+            console.log(response);  
+            setMessage({ text: 'Reset password email sent.', type: 'success' });
+          } else {
+            setMessage({ text: data.error, type: 'error' });
+          }
+        } catch (error) {
+          console.error('An error occurred:', error);
+          setMessage({ text: 'An error occurred while sending the reset password email.', type: 'error' });
         }
-        if(newPassword !== confirmPassword){
-            setConfirmPasswordValue(true);
-        }
+    
+      
       }
 
     return(
@@ -51,26 +70,29 @@ function ChangePassword(){
                  <div className={Style.box2}>
                     <h1 className={Style.title}>Reset <br /> Your Password</h1>
                 </div>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className={Style.nPassword}>
+                        <TextField id="standard-basic" label="New Password" name="newPass"
+                         variant="standard"  type='password' 
+                        sx={{ mt: 4, width: '55ch',fontFamily: 'FontAwesome'}}  
+                        {...register('newPass', { required: true })} /><br/>
+                        {errors.newPass && <span>Password is required</span>}
+                    </div>
+                    <div className={Style.rtPassword}> 
+                        <TextField id="standard-basic" label="Confirm Password" variant="standard" name="confPass" type='password'  
+                        sx={{ mt: 2, width: '55ch',fontFamily: 'FontAwesome'}}  
+                        {...register('confPass', { required: true })}
+                        /><br/>
+                        {errors.confPass && <span>Please enter confirm password</span>}
+                        {message && message.type === 'match' && <p style={{ color: 'red' }}>{message.text}</p>}
+                    </div>
+                    
+                    
+                    <div className={Style.resetButton}>
+                        <RestButton variant="contained" href="changePassword" onSubmit={authentication}>Change Password</RestButton>
+                    </div>
+                </form>
                 
-                <div className={Style.nPassword}>
-                     <TextField id="standard-basic" label="New Password" variant="standard"   
-                     sx={{ mt: 4, width: '55ch',fontFamily: 'FontAwesome'}} onChange={handleNewPassword} /><br/>
-                     {newPasswordValue && <span>Password is required</span>}
-                </div>
-                <div className={Style.rtPassword}> 
-                    <TextField id="standard-basic" label="Confirm Password" variant="standard"   
-                    sx={{ mt: 2, width: '55ch',fontFamily: 'FontAwesome'}} onChange={handleConfirmPassword} /><br/>
-                    {confirmPasswordValue && <span>Passwords do not match</span>}
-                </div>
-                
-                <div className={Style.code}>{/*
-                    <TextField id="standard-basic" label="Code" variant="standard"   sx={{ mt: 4, width: '60ch',fontFamily: 'FontAwesome'}} /><br/>
-                    */}
-                </div> 
-                
-                <div className={Style.resetButton}>
-                    <RestButton variant="contained" href="changePassword" onSubmit={authentication}>Change Password</RestButton>
-                </div>
             </div>
                
            </div>

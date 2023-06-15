@@ -19,13 +19,8 @@ const RestButton = styled(Button)({
 
 
 function forgotPassword() {
-  const [email, setEmail] = React.useState('');
   const { handleSubmit, register, formState: { errors } } = useForm();
   const [message, setMessage] = React.useState('');
-
-  const handleEmail = (event) => {
-    setEmail(event.target.value);
-  };
 
   const onSubmit = async (formData) => {
     const { email } = formData;
@@ -65,7 +60,6 @@ function forgotPassword() {
                label="Email address"
                variant="standard"
                sx={{ mt: 4, width: '60ch', fontFamily: 'FontAwesome' }}
-               onChange={handleEmail}
               {...register('email', { required: true })} 
             /><br/>
             {errors.email && <span>Email is required</span>}

@@ -11,9 +11,54 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
 import DownloadIcon from '@mui/icons-material/Download';
+import moment from 'moment';
+import { useRouter } from 'next/router';
 
 
 function Article(){
+
+  const router = useRouter();
+  const { id } = router.query;
+  
+  const [article, setArticle] = React.useState(null);
+  
+
+
+  const url = `/api/articleApi?id=${id}`;
+  const method = 'GET';
+  const option = {
+      method: method,
+      
+  }
+ 
+  React.useEffect(() => {
+      const fetchData = async () => {
+      
+      try{
+              const response  = await fetch(url, option);
+              const finalData = await response.json();
+              setArticle(finalData);
+             
+              
+      }catch(error){
+
+              console.error(error);
+              console.log("responseee");
+      }
+     
+    }
+    fetchData()
+    
+  }, [id]) 
+
+
+  
+
+ 
+
+  if (!article) {
+    return <div>Loading...</div>;
+  }
 return(
 
         <div>
@@ -60,18 +105,18 @@ return(
                     sx={{ width: 60, height: 60,marginLeft: '70px'}}/>
                 </div>
                 <div className={styles.innerBox}>
-                    <h1>Article Writer&apos;s Name</h1>
+                    <h1>{article.writerName}</h1>
                     <div className={styles.dateTimeFollow}>
-                        <div className={styles.time}>Published Time</div>
-                        <div className={styles.date}>Published Date</div>
+                        <div className={styles.time}>{moment(article.postAt).format('HH:mm:ss')}</div>
+                        <div className={styles.date}>{moment(article.postAt).format('YYYY-MM-DD')}</div>
                         <div className={styles.follow}>Follow</div>
                     </div>
                    
                 </div>
             </div>
             <div className={styles.box3}>
-                <h1 className={styles.title}>Article Title</h1>
-                <div className={styles.articleBody}></div>
+                <h1 className={styles.title}>{article.title}</h1>
+                <div className={styles.articleBody}>{article.content}</div>
             </div>
             <div className={styles.box4}>
                 <div className={styles.like}>
