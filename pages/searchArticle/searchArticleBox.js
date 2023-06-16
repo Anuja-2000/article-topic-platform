@@ -1,7 +1,8 @@
 import React,{ useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import ArticleCard from '../../components/articleCard';
-
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 
 function SearchArticleBox(props) {
@@ -33,14 +34,20 @@ function SearchArticleBox(props) {
 
        console.log(data);
 
+  
+
         return (
             <div style={{marginTop:'20px', width:'100%'}}>
                 <Grid sx={{ flexGrow: 1 }}>
                     <Grid item xs={12}>
                         <Grid container justifyContent="center" spacing={3}>
                         {data.map((item) => (
-                            <Grid key={item.ProductId} item>
-                                <ArticleCard name={item.productName} />
+                            <Grid key={item.articleId} item>
+                                 <Link href={`/article?id=${item.articleId}`} passHref>
+                                    <ArticleCard name={item.title}  />
+                                </Link>
+                               
+                            
                             </Grid>
                         ))}
                         </Grid>
