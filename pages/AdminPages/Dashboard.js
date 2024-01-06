@@ -42,8 +42,8 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
 
   const [msgcount, setmsgCount] = React.useState(0);
 React.useEffect(() => {
-    const response = axios.get('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/messagescount').then((res) => {
-      const data = res.data.count;
+    const response = axios.get('http://localhost:3001/api/contactMessage/get-count').then((res) => {
+      const data = res.data;
       setmsgCount(data);
     }).catch((error) => {
       console.log(error);

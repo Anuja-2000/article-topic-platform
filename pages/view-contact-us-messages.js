@@ -20,11 +20,12 @@ import PropTypes from "prop-types";
 import GetContactUsMessages from "./api/ContactUsMessages";
 import { useRouter } from "next/router";
 import NavBar from "../components/Navbar";
+import axios from "axios";
 
-export async function getStaticProps() {
-  const messages = await GetContactUsMessages();
-  return { props: { messages } };
-}
+// export async function getStaticProps() {
+//   const messages = await GetContactUsMessages();
+//   return { props: { messages } };
+// }
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -97,8 +98,19 @@ TablePaginationActions.propTypes = {
 
 
 
-export default function ViewContactUsMessages({ messages }) {
-  let msgs = sort_by_key(messages.messages, "savedAt");
+export default function ViewContactUsMessages() {
+  let [messages, setMessages] = React.useState([]);
+  React.useEffect(() => {
+    const response = axios.get('http://localhost:3001/api/contactMessage/getAll').then((res) => {
+      const messages = res.data;
+      setMessages(messages);
+    }).catch((error) => {
+      console.log(error);
+    });
+  },[]);
+
+
+  let msgs = sort_by_key(messages, "savedAt");
   const rows = msgs;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -115,7 +127,7 @@ export default function ViewContactUsMessages({ messages }) {
   function getMessage(data) {
     router.push({
       pathname: '/view-contact-us-message',
-      query: { messageId: data.messageId, name: data.name, email: data.email, message: data.message },
+      query: { id: data.messageId }
     },
       undefined,
       { shallow: true }
