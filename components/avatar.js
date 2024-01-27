@@ -11,6 +11,8 @@ import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
+import Link from 'next/link';
+
 
 export default function AvatarIcon() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -91,12 +93,14 @@ export default function AvatarIcon() {
           </ListItemIcon>
           Settings
         </MenuItem>
+        <Link href="/login">
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>
+        </Link>
       </Menu>
     </React.Fragment>
   );

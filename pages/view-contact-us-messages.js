@@ -150,7 +150,7 @@ export default function ViewContactUsMessages() {
   return (
     <div>
       <NavBar />
-      <Container maxWidth="md" sx={{ marginTop: 5, mr: 20 }}>
+      <Container maxWidth="lg" sx={{ marginTop: 5, ml:30}}>
         <TableContainer component={Paper} elevation={4}>
           <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
             <TableHead>

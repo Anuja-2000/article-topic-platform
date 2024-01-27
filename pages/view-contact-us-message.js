@@ -16,6 +16,7 @@ import { theme } from "../components/theme";
 import axios from "axios";
 import NavBar from "../components/Navbar";
 import { set } from "react-hook-form";
+import Divider from "@mui/material/Divider";
 
 
 
@@ -109,13 +110,14 @@ export default function ViewContactUsMessage() {
     <>
       <NavBar />
       <ThemeProvider theme={theme}>
-        <Container maxWidth="md" sx={{ marginTop: 10, mr: 20 }}>
+        <Container maxWidth="lg" sx={{ marginTop: 10, ml:30 }}>
           <Paper elevation={4}>
             <Grid Container spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="h4" color="primary" align="center" sx={{ p: 1 }}>
                   View Message
                 </Typography>
+                <Divider />
               </Grid>
               <Grid item xs={12}>
                 <Typography

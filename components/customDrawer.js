@@ -32,10 +32,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import CheckIcon from '@mui/icons-material/Check';
 
 
-
-
-
-  const drawerWidth = 240;
+const drawerWidth = 240;
 
 
 const openedMixin = (theme) => ({
@@ -142,7 +139,7 @@ const handleListItemClick = (event, index) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="absolute" open={open} elevation={0} sx={{width:400, left:0}}>
+      <AppBar position="fixed" open={open} elevation={0} sx={{width:400, left:0}}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -179,24 +176,25 @@ const handleListItemClick = (event, index) => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open} PaperProps={{sx: {backgroundColor: "primary.main",color: "red",}}}>
+      <Drawer variant="permanent" open={open} PaperProps={{sx: {backgroundColor: "primary.main"}}}>
         <DrawerHeader sx={{backgroundColor:"primary.main"}}>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={handleDrawerClose} sx={{color:"white"}}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List sx={{ overflow: 'hidden' }} >
+        <List>
           {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles'].map((text, index) => (
-            <ListItem key={text}>
+            <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
                   selected={selectedIndex === index}
                   onClick={(event) => handleListItemClick(event, index)}
                   sx={{
                     color: 'primary.main',
-                    padding: '8px 1px',
-                    width: drawerWidth,
+                    minHeight: 48,
+                    justifyContent: open ? 'initial' : 'center',
+                    px: 2.5,
                     ':hover': {
                       color: 'white',
                       backgroundColor: 'primary.dark',
@@ -204,12 +202,18 @@ const handleListItemClick = (event, index) => {
                         color: 'white',
                       },
                     },
-                  }}
+                }}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}
+                  >
                     {iconMap[text]}
                   </ListItemIcon>
-                  <ListItemText primary={text} sx={{color:"primary.contrastText"}}/>
+                  <ListItemText primary={text} sx={{color:"primary.contrastText", opacity: open ? 1 : 0 }}/>
 
                 </ListItemButton>
 
@@ -220,5 +224,6 @@ const handleListItemClick = (event, index) => {
       </Drawer>
       
     </Box>
+    
   );
 }
