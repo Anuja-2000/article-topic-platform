@@ -47,9 +47,11 @@ export default function Login() {
           {/*login buttons */}
           <div className={styles.raw2}>
             <div className="inputbutton">
+              <Link href={"AdminPages/Dashboard"}>
               <button type="submit" className={styles.submit}>
                 Log in
               </button>
+              </Link>
             </div>
             <div className={styles.or}>OR</div>
             <div className={styles.inputbutton2}>
