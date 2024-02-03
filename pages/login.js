@@ -34,6 +34,7 @@ export default function Login() {
     // if (validateForm()) {
     //   Submit the form data
     // }
+    console.log(values);
     sendLoginReqest();
 
   };
@@ -42,12 +43,17 @@ export default function Login() {
       email: values.email,
       password: values.password,
     }).then((response) => {
-      console.log(response.data.data.token);
       if (response.status == 200) {
         const token = response.data.data.token;
+        const type = response.data.data.type;
         localStorage.setItem("token", token);
         setAuthtoken(token);
-        window.location.href = "/AdminPages/Dashboard";
+        if(type == "Admin"){
+          window.location.href = "/AdminPages/Dashboard";
+        }else if (type == "Reader"){
+          window.location.href = "/homePage";
+        }
+        
       }
     }).catch((error) => {
       console.log(error);
