@@ -18,46 +18,23 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MailIcon from '@mui/icons-material/Mail';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CreateIcon from '@mui/icons-material/Create';
-import TopicIcon from '@mui/icons-material/Topic';
-import ArticleIcon from '@mui/icons-material/Article';
-import FlagIcon from '@mui/icons-material/Flag';
-import GroupIcon from '@mui/icons-material/Group';
-import CheckIcon from '@mui/icons-material/Check';
 import IconButton from '@mui/material/IconButton';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-
+import AvatarIcon from '../components/avatar';
+import CustomNotificationIcon from "../components/customNotificationIcon";
+import MenuIcon from '@mui/icons-material/Menu';
+import {handleDrawerOpen,open} from '../components/customDrawer';
+import MiniDrawer from "../components/customDrawer";
 
 
 const drawerWidth = 220;  //width for the drawer we can change this
 const AppBarWidth = 64;
-const iconMap = {
-  'Dashboard': < DashboardIcon sx={{ color: 'white' }} />,
-  'Templates': <CreateIcon sx={{ color: 'white' }} />,
-  'Topic Domains': <TopicIcon sx={{ color: 'white' }} />,
-  'Article Types': < ArticleIcon sx={{ color: 'white' }} />,
-  'Flagged Topics': <FlagIcon sx={{ color: 'white' }} />,
-  'User Roles': <GroupIcon sx={{ color: 'white' }} />,
-  
-};
+
 
 export default function NavBar() {
   const router = useRouter();
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  useEffect(() => {
-    // Update the selected index whenever the route changes
-    const path = router.pathname;
-    const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics', 'User Roles'].findIndex((text) => path.includes(text.replace(' ', '')));
-    setSelectedIndex(index);
-  }, [router.pathname]); //only be executed if router.pathname changes between renders.
-
-
-  const handleListItemClick = (event, index) => {
-    setSelectedIndex(index);
-  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -65,34 +42,14 @@ export default function NavBar() {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: '#3934a1'
+          backgroundColor: "primary.main"
           //width:`calc(100% - ${drawerWidth}px)`,
           // ml: `${drawerWidth}px`,
         }}
       >
         <Toolbar>
-
-          <Typography variant="h6" noWrap component="div"
-            sx={{
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: '#9399f7',
-              textDecoration: 'none',
-            }}>
-            Writer
-          </Typography>
-          <Typography variant="h6" noWrap component="div"
-            sx={{
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              paddingLeft: '10px'
-            }}>
-            GATE
-          </Typography>
+        
+          
           <div style={{ flexGrow: 1 }}></div>
           <IconButton
             size="large"
@@ -102,25 +59,14 @@ export default function NavBar() {
           >
             < MailIcon  />
           </IconButton>
-          <IconButton
-            size="large"
-            color="inherit"
-            aria-label="notifications"
-          >
-            <NotificationsIcon />
-          </IconButton>
-          <IconButton
-            size="large"
-            color="inherit"
-            aria-label="account"
-          >
-            <AccountCircleIcon />
-          </IconButton>
+            <CustomNotificationIcon/>
+            <AvatarIcon/>
         </Toolbar>
       </AppBar>
 
       <Toolbar />
-
+            <MiniDrawer/>
+{/* 
       <Drawer
         sx={{
           width: drawerWidth,
@@ -170,7 +116,7 @@ export default function NavBar() {
             </ListItem>
           ))}
         </List>
-      </Drawer>
+      </Drawer> */}
     </Box>
   );
 }

@@ -2,10 +2,66 @@ import Head from "next/head";
 import LoginLayout from "../components/loginlayout";
 import styles from "../styles/login.module.css";
 import Link from "next/link";
+import { useState } from "react";
+import TextField from "@mui/material/TextField";
+import axios from "axios";
+import setAuthtoken from "./api/auth/axios-set-token";
 
 
 export default function Login() {
-  
+
+  const [values, setValues] = useState({ 
+    email: "",
+    password: "" 
+    });
+
+  const handleChange = (event) => {
+    setValues({
+      ...values,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const resetFields = (event) => {
+    setValues({
+      email: "",
+      password: ""
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // if (validateForm()) {
+    //   Submit the form data
+    // }
+    console.log(values);
+    sendLoginReqest();
+
+  };
+  async function sendLoginReqest() {
+    const response = axios.post("http://localhost:3001/api/user/login", {
+      email: values.email,
+      password: values.password,
+    }).then((response) => {
+      if (response.status == 200) {
+        const token = response.data.data.token;
+        const type = response.data.data.type;
+        localStorage.setItem("token", token);
+        setAuthtoken(token);
+        if(type == "Admin"){
+          window.location.href = "/AdminPages/Dashboard";
+        }else if (type == "Reader"){
+          window.location.href = "/homePage";
+        }
+        
+      }
+    }).catch((error) => {
+      console.log(error);
+      alert("Invalid Login");
+    });
+
+  }
+
   return (
     <LoginLayout>
       <Head>
@@ -19,31 +75,45 @@ export default function Login() {
           </p>
         </div>
         {/*form*/}
-        <form className={styles.form}>
-          <div className={styles.input1}>
-            <input
+        <form className={styles.form} onSubmit={handleSubmit}>
+          {/* <input
               className={styles.email}
               type="email"
               name="email"
               placeholder="Email"
-    
-            />
-            
-          </div>
+            /> */}
+          <TextField
+            onChange={handleChange}
+            name="email"
+            label="Email"
+            type="email"
+            variant="outlined"
+            required
+            margin="normal"
+          />
 
-          <div className={styles.input2}>
+          {/* <div className={styles.input2}>
             <input
               className={styles.password}
               type="Password"
               name="Password"
               placeholder="Password"
+              value={values.password}
+            /> */}
+
+            <TextField
+              onChange={handleChange}
+              name="password"
+              type="password"
+              label="Password"
+              required
             />
 
-            <div className={styles.raw}>
-              <div className={styles.keep}>keep me log in</div>
-              <div className={styles.forgot}>Forgot Password?</div>
-            </div>
+          <div className={styles.raw}>
+            <div className={styles.keep}>keep me log in</div>
+            <div className={styles.forgot}>Forgot Password?</div>
           </div>
+          {/* </div> */}
           {/*login buttons */}
           <div className={styles.raw2}>
             <div className="inputbutton">

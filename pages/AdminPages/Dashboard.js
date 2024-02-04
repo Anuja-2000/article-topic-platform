@@ -57,7 +57,7 @@ React.useEffect(() => {
         sx={{
           padding: '20px',
           marginTop: '2px',
-          marginLeft: '300px',
+          marginLeft: '200px',
           marginRight: '260px',
           backgroundColor: 'white',
           color: 'white',

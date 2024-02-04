@@ -2,65 +2,152 @@ import Head from "next/head"
 import LoginLayout from "../components/loginlayout"
 import styles from "../styles/register.module.css";
 import Link from "next/link";
+import { useState } from "react";
+import TextField from "@mui/material/TextField";
+import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 
-export default function Register(){
-    return(
-        <LoginLayout>
 
-            <Head>
-                <title>Create an account</title>
-            </Head>
 
-            <section className={styles.section}>
+export default function Register() {
+
+  const [values, setValues] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+
+  const handleChange = (event) => {
+    setValues({
+      ...values,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const validateForm =  () => {
+    if (values.username == "" || values.email == "" || values.password == "" || values.confirmPassword == "") {
+      alert("All fields must be filled out");
+      return false;
+    } else if (values.password != values.confirmPassword) {
+      alert("Passwords do not match");
+      return false;
+    }else{
+      return true;
+    }
+    
+  };
+
+  const resetFields = (event) => {
+    setValues({
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
+    });
+  };
+
+  const setValuesAndConfirm = () => {
+
+    setValues({
+      username: values.username,
+      email: values.email,
+      password: values.password,
+      confirmPassword: values.confirmPassword
+    });
+  }
+
+  const submit =  (event) => {
+    event.preventDefault();
+    setValuesAndConfirm();
+    //console.log(values);
+    if(validateForm()){
+      //console.log("Form is valid");
+      saveUser();
+    }
+  };
+
+  const saveUser = async () => {
+
+    const userId = values.username+"-"+uuidv4();
+
+    const response = axios.post("http://localhost:3001/api/user/signup", {
+      userId: userId,
+      email: values.email,
+      name: values.username,
+      type: "Reader",
+      password: values.password,
+    }).then((response) => {
+      if (response.status == 201) {
+        alert("User created successfully");
+        window.location.href = "/login";
+      }
+    }).catch((error) => {
+      console.log(error);
+      alert("Invalid Login");
+    
+    })
+  };
+
+  return (
+    <LoginLayout>
+
+      <Head>
+        <title>Create an account</title>
+      </Head>
+
+      <section className={styles.section}>
         <div className={styles.title}>
           <h1 className={styles.title1}>Create an account</h1>
-        
+
         </div>
         {/*form*/}
-        <form className={styles.form}>
-        <div className={styles.input1}>
-            <input
-              className={styles.username}
-              type="text"
-              name="Username"
-              placeholder="Username"
-    
-            />
-            
-          </div>
-          <div className={styles.input2}>
-            <input
-              className={styles.email}
-              type="email"
-              name="email"
-              placeholder="Email"
-    
-            />
-            
-          </div>
-
-          <div className={styles.input3}>
-            <input
-              className={styles.password}
-              type="Password"
-              name="Password"
-              placeholder="Password"
-            />
-            </div>
-         <div className={styles.input3}>
-            <input
-              className={styles.password}
-              type="Password"
-              name="Password"
-              placeholder="Confirm Password"
-            />
-            
-          </div>
+        <form id="regForm" className={styles.form} onSubmit={submit}>
+        <TextField
+            onChange={handleChange}
+            name="username"
+            value={values.username}
+            label="Username"
+            type="text"
+            variant="outlined"
+            required
+            margin="normal"
+          />
+          <TextField
+            onChange={handleChange}
+            name="email"
+            value={values.email}
+            label="Email"
+            type="email"
+            variant="outlined"
+            required
+            margin="normal"
+          />
+          <TextField
+            onChange={handleChange}
+            name="password"
+            value={values.password}
+            label="Password"
+            type="password"
+            variant="outlined"
+            required
+            margin="normal"
+          />
+          <TextField
+            onChange={handleChange}
+            name="confirmPassword"
+            value={values.confirmPassword}
+            label="Confirm Password"
+            type="password"
+            variant="outlined"
+            required
+            margin="normal"
+          />
           {/*login buttons */}
           <div className={styles.raw2}>
             <div className="inputbutton">
               <button type="submit" className={styles.submit}>
-                Create account  
+                Create account
               </button>
             </div>
             <div className={styles.or}>OR</div>
@@ -80,6 +167,6 @@ export default function Register(){
           </Link>
         </p>
       </section>
-        </LoginLayout>
-    )
+    </LoginLayout>
+  )
 }

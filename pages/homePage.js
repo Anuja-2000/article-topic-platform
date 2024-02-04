@@ -2,7 +2,7 @@ import TrendingArticleBox from "./Trending/trendingArticleBox";
 import Styles from '../styles/homePage.module.css'
 import React from 'react';
 import { Button } from "@mui/material";
-
+import Link from 'next/link';
 
 function HomePage(){
 
@@ -12,9 +12,9 @@ function HomePage(){
                 <div style={{ flexGrow: 0.2 }} ></div>
                 <div>Logo</div>
                 <div style={{ flexGrow: 1 }} ></div>
-                <Button href="#text-buttons" sx={{marginRight:4, textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Contact Us</Button>
-                <Button href="#text-buttons" sx={{marginRight:4 , textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Sign In</Button>
-                <Button sx={{borderRadius:6,marginRight:14,textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}} variant="contained">Sign Up for Free</Button>
+                <Link href="/contactUs"> <Button  sx={{marginRight:4, textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Contact Us</Button></Link>
+                <Link href="/login"> <Button  sx={{marginRight:4 , textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Sign In</Button></Link>
+                <Link href="/register"> <Button sx={{borderRadius:6,marginRight:14,textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}} variant="contained">Sign Up for Free</Button></Link>
             </div>
             <div className={Styles.introBox}>
                 <h1 className={Styles.h1}>Start Today</h1>
