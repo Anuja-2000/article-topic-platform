@@ -103,7 +103,7 @@ function Search(){
                 </Box>
             </div>
             <div className={style.articleBoxOuter}>
-                < SearchArticleBox keyword={searchKey}/>
+                {/* < SearchArticleBox keyword={searchKey}/> */}
             </div>
         </div>
     );

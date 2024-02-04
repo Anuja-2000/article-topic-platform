@@ -15,6 +15,13 @@ import Link from 'next/link';
 
 
 export default function AvatarIcon() {
+  const [username, setUsername] = React.useState(" ");
+
+  React.useEffect(() => {
+    setUsername(localStorage.getItem("username"));
+  }, []);
+   
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -22,6 +29,13 @@ export default function AvatarIcon() {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("type");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
   };
   return (
     <React.Fragment>
@@ -35,7 +49,7 @@ export default function AvatarIcon() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+            <Avatar sx={{ width: 32, height: 32 }}>{username.charAt(0).toUpperCase()}</Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -94,7 +108,7 @@ export default function AvatarIcon() {
           Settings
         </MenuItem>
         <Link href="/login">
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={[handleClose,logout]}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

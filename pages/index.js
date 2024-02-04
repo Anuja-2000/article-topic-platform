@@ -6,7 +6,7 @@ function Home() {
 
   return (
     
-   <Login/>
+   <HomePage/>
   )
 }
 export default Home
