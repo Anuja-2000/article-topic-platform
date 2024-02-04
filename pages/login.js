@@ -11,6 +11,7 @@ import setAuthtoken from "./api/auth/axios-set-token";
 export default function Login() {
 
   const [values, setValues] = useState({ 
+    username: "",
     email: "",
     password: "" 
     });
@@ -22,12 +23,6 @@ export default function Login() {
     });
   };
 
-  const resetFields = (event) => {
-    setValues({
-      email: "",
-      password: ""
-    });
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -40,24 +35,35 @@ export default function Login() {
   };
   async function sendLoginReqest() {
     const response = axios.post("http://localhost:3001/api/user/login", {
+      username: values.username,
       email: values.email,
       password: values.password,
     }).then((response) => {
       if (response.status == 200) {
         const token = response.data.data.token;
         const type = response.data.data.type;
+        const username = response.data.data.username;
+        const email = response.data.data.email;
         localStorage.setItem("token", token);
+        localStorage.setItem("type", type);
+        localStorage.setItem("username", username);
+        localStorage.setItem("email", email);
         setAuthtoken(token);
         if(type == "Admin"){
           window.location.href = "/AdminPages/Dashboard";
         }else if (type == "Reader"){
-          window.location.href = "/homePage";
+          window.location.href = "/search";
         }
         
       }
     }).catch((error) => {
       console.log(error);
-      alert("Invalid Login");
+      if (error.response.status == 404) {
+        alert("User not found! Please register first.");
+      }else{
+        alert("Invalid Login");
+      }
+      
     });
 
   }
@@ -82,6 +88,15 @@ export default function Login() {
               name="email"
               placeholder="Email"
             /> */}
+            <TextField
+            onChange={handleChange}
+            name="username"
+            label="User Name"
+            type="text"
+            variant="outlined"
+            required
+            margin="normal"
+          />
           <TextField
             onChange={handleChange}
             name="email"

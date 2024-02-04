@@ -47,19 +47,10 @@ export default function Register() {
     });
   };
 
-  const setValuesAndConfirm = () => {
 
-    setValues({
-      username: values.username,
-      email: values.email,
-      password: values.password,
-      confirmPassword: values.confirmPassword
-    });
-  }
 
   const submit =  (event) => {
     event.preventDefault();
-    setValuesAndConfirm();
     //console.log(values);
     if(validateForm()){
       //console.log("Form is valid");
@@ -83,8 +74,13 @@ export default function Register() {
         window.location.href = "/login";
       }
     }).catch((error) => {
-      console.log(error);
-      alert("Invalid Login");
+      console.log(error.response.status);
+      if(error.response.status == 409){
+        alert("User already exists");
+      }else{
+        alert("Error creating user. Please try again.");
+      }
+      
     
     })
   };
