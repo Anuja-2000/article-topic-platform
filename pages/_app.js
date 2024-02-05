@@ -5,7 +5,7 @@ import Head from "next/head";
 import { ThemeProvider } from "@mui/material/styles"
 import { theme } from "../components/theme"
 import setAuthToken from "./api/auth/axios-set-token";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 
@@ -13,13 +13,18 @@ import { useEffect } from "react";
 
 export default function App({ Component, pageProps }) {
 
+const [isloading, setLoading] = useState(true);
+
 useEffect(() => {
     // Perform localStorage action
-    const token = localStorage.getItem("token");
-    if (token) {
-        setAuthToken(token);
+    if(isloading){
+      const token = localStorage.getItem("token");
+      if (token) {
+          setAuthToken(token);
+          setLoading(false);
+      }
     }
-  }, [])
+  }, [isloading])
   return (
 
 <ThemeProvider theme={theme}>

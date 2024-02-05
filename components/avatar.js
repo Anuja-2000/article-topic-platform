@@ -18,7 +18,12 @@ export default function AvatarIcon() {
   const [username, setUsername] = React.useState(" ");
 
   React.useEffect(() => {
-    setUsername(localStorage.getItem("username"));
+    const name = localStorage.getItem("username");
+    if (name != null) {
+      setUsername(name);
+    }else{
+      setUsername("!user");
+    }
   }, []);
    
 
@@ -36,7 +41,21 @@ export default function AvatarIcon() {
     localStorage.removeItem("type");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
+
+    window.location.href = "/login";
   };
+
+  // const getFirstLetter = () => {
+  //   try{
+  //     console.log(username);
+  //       const firstLetter = username.charAt(0).toUpperCase();
+  //       return firstLetter;
+  //   }catch(e){
+  //     console.log(e);
+  //     return "User not found! Please login again.";
+  //   }  
+    
+  // }
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -107,14 +126,12 @@ export default function AvatarIcon() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <Link href="/login">
-        <MenuItem onClick={[handleClose,logout]}>
+        <MenuItem onClick={logout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
           Logout
         </MenuItem>
-        </Link>
       </Menu>
     </React.Fragment>
   );

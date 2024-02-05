@@ -41,14 +41,18 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
   }
 
   const [msgcount, setmsgCount] = React.useState(0);
+  const [isLoading, setLoading] = React.useState(true)
 React.useEffect(() => {
+  if(isLoading){
     const response = axios.get('http://localhost:3001/api/contactMessage/get-count').then((res) => {
       const data = res.data;
       setmsgCount(data);
+      setLoading(false);
     }).catch((error) => {
       console.log(error);
     });
-  });
+  }
+  },[isLoading]);
 
   return (
     <div>
