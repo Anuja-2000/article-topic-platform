@@ -21,6 +21,7 @@ import GetContactUsMessages from "./api/ContactUsMessages";
 import { useRouter } from "next/router";
 import NavBar from "../components/Navbar";
 import axios from "axios";
+import { set } from "react-hook-form";
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -100,14 +101,18 @@ TablePaginationActions.propTypes = {
 
 export default function ViewContactUsMessages() {
   let [messages, setMessages] = React.useState([]);
+  const [isLoading, setLoading] = React.useState(true);
   React.useEffect(() => {
-    const response = axios.get('http://localhost:3001/api/contactMessage/getAll').then((res) => {
-      const messages = res.data;
-      setMessages(messages);
-    }).catch((error) => {
-      console.log(error);
-    });
-  },[]);
+    if (isLoading) {
+      const response = axios.get('http://localhost:3001/api/contactMessage/getAll').then((res) => {
+        const messages = res.data;
+        setMessages(messages);
+        setLoading(false);
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
+  },[isLoading]);
 
 
   let msgs = sort_by_key(messages, "savedAt");
