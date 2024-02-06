@@ -56,12 +56,12 @@ React.useEffect(() => {
 
   return (
     <div>
-      <Navbar />
+      <Navbar>
       <Box
         sx={{
           padding: '20px',
           marginTop: '2px',
-          marginLeft: '200px',
+          marginLeft: '20px',
           marginRight: '260px',
           backgroundColor: 'white',
           color: 'white',
@@ -172,6 +172,7 @@ React.useEffect(() => {
           Current Time: {getCurrentTime()}
         </Typography>
       </Box>
+      </Navbar>
     </div>
   );
 }

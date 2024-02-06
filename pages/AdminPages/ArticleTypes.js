@@ -23,7 +23,7 @@ function ArticleTypes({ templates }) {
 
   return (
     <div>
-      <Navbar />
+      <Navbar>
 
      
       <Box
@@ -62,6 +62,7 @@ function ArticleTypes({ templates }) {
           </Table>
         </TableContainer>
       </Box>
+      </Navbar>
     </div>
   );
 };

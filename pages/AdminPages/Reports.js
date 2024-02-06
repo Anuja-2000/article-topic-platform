@@ -21,8 +21,8 @@ function Reports() {
 
     return (
         <>
-            <Navbar />
-            <Container sx={{ml:30}}>
+            <Navbar>
+            <Container sx={{ml:5}}>
                 <Paper elevation={3} style={{ width:600, padding: '20px', marginTop: '20px' }}>
                     <Typography variant="h5" gutterBottom>User Details</Typography>
                 <BarChart
@@ -48,6 +48,7 @@ function Reports() {
                 />
                 </Paper>
             </Container>
+            </Navbar>
         </>
     );
 }
