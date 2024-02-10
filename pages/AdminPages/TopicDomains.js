@@ -73,7 +73,7 @@ const handleSaveClick = async (row) => {
 
   return (
     <div>
-      <Navbar />
+      <Navbar>
       <div className="App" style={{ marginTop: "60px" }}>
         <h2 style={{ textAlign: "center" }}>Topic Domains</h2>
         <Grid container spacing={1}>
@@ -130,6 +130,7 @@ const handleSaveClick = async (row) => {
           <Grid item xs={1}></Grid>
         </Grid>
       </div>
+      </Navbar>
     </div>
   );
 }

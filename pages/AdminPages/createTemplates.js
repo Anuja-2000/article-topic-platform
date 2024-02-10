@@ -44,7 +44,7 @@ function createTemplates({ templates }) {
   return (
     <div>
       <Box sx={{ backgroundColor: '#e6e6ee' }}>
-        <Navbar />
+        <Navbar>
         <Box
           sx={{
             padding: '20px',
@@ -146,6 +146,7 @@ function createTemplates({ templates }) {
             </Grid>
           </Box>
         </Box>
+        </Navbar>
       </Box>
     </div>
   )
