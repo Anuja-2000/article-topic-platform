@@ -10,7 +10,8 @@ import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Navbar from '../../components/Navbar';
-import Box from "@mui/material/Box"
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topicDomains`
@@ -21,6 +22,9 @@ function TopicDomains() {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
+   const [topicDomainName, setTopicDomainName] = useState('');
+  const [description, setDescription] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +67,18 @@ const handleSaveClick = async (row) => {
     }
   };
 
+  const handleAddClick = async () => {
+    try {
+      const response = await api.post("/add", { topicDomainName, description });
+      setData([...data, response.data]);
+      setTopicDomainName('');
+      setDescription('');
+      setShowAddForm(false);
+    } catch (error) {
+      console.error("Error adding data:", error);
+    }
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -76,6 +92,36 @@ const handleSaveClick = async (row) => {
       <Navbar>
       <div className="App" style={{ marginTop: "60px" }}>
         <h2 style={{ textAlign: "center" }}>Topic Domains</h2>
+
+        {/* Add Form */}
+        {showAddForm && (
+          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+            <TextField
+              label="Topic Domain Name"
+              variant="outlined"
+              value={topicDomainName}
+              onChange={(e) => setTopicDomainName(e.target.value)}
+              style={{ marginRight: "10px" }}
+            />
+            <TextField
+              label="Description"
+              variant="outlined"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ marginRight: "10px" }}
+            />
+            <Button variant="contained" color="primary" onClick={handleAddClick}>Add</Button>
+          </div>
+        )}
+
+        {/* Toggle Add Form Button */}
+        <div style={{ textAlign: "Right", marginBottom: "30px", marginRight: "150px"}}>
+          <Button variant="contained" color="primary" onClick={() => setShowAddForm(!showAddForm)}>
+            {showAddForm ? "Hide Form" : "Show Add Form"}
+          </Button>
+        </div>
+
+
         <Grid container spacing={1}>
           <Grid item xs={1}></Grid>
           <Grid item xs={10}>
