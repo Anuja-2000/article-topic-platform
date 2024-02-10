@@ -1,97 +1,42 @@
-.box1{
-    
-    height: 60px;
-    background-color: #D9D9D9;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.box2{
-    
-    height: 120px;
-    display: flex;
-    align-items: center;
-}
-.box3{
-    
-    height: 400px;
-}
-.box4{
-    
-    height: 50px;
-    display: flex;
-    align-items: center;
-}
-.box5{
-    
-    height: 80px;
-    display: flex;
-    align-items: center;
-}
-
-.img1{
-    
-    height: 45px;
-    width: 45px;
-    margin-right: 30px;
-}
-
-.innerBox{
-    
-    height: 60px;
-    width: 350px;
-    margin-left: 20px;
-
-}
-
-.dateTimeFollow{
-    
-    display: flex;
-    flex-direction: row;
-    margin-top: 2px;
-}
-
-.date, .follow{
-    margin-left: 30px;
-}
-
-.title{
-    margin-left: 70px;
-}
-
-.articleBody{
-    height: 355px;
-    width: 1200px;
-    margin-left: 70px;
-    margin-top: 8px;
-    background-color: #D9D9D9;
-
-}
-
-.like{
-    margin-left: 70px;
-    display: flex;
-    align-items:center ;
-}
-
-.like p{
-    margin-left: 5px;
-}
-
-.comment{
-    margin-left: 30px;
-    display: flex;
-    align-items:center ;
-}
-
-.comment p{
-    margin-left: 5px;
-}
-.download{
-    margin-left: 920px;
-}
-.share{
-    margin-left: 30px;
-}
-
+/* styles/article.module.css */
+.root {
+    margin-top: 16px;
+  }
+  
+  /* Apply styles directly to the article container */
+  .articleContainer {
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .imageContainer {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+  
+  .image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 16px;
+    border-radius: 10px;
+  }
+  
+  .title {
+    color: #fff;
+  }
+  
+  .content {
+    margin-top: 16px;
+  }
+  
