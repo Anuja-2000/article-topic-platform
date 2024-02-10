@@ -41,14 +41,18 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
   }
 
   const [msgcount, setmsgCount] = React.useState(0);
+  const [isLoading, setLoading] = React.useState(true)
 React.useEffect(() => {
-    const response = axios.get('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/messagescount').then((res) => {
-      const data = res.data.count;
+  if(isLoading){
+    const response = axios.get('http://localhost:3001/api/contactMessage/get-count').then((res) => {
+      const data = res.data;
       setmsgCount(data);
+      setLoading(false);
     }).catch((error) => {
       console.log(error);
     });
-  });
+  }
+  },[isLoading]);
 
   return (
     <div>
@@ -57,7 +61,7 @@ React.useEffect(() => {
         sx={{
           padding: '20px',
           marginTop: '2px',
-          marginLeft: '300px',
+          marginLeft: '200px',
           marginRight: '260px',
           backgroundColor: 'white',
           color: 'white',

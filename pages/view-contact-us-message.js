@@ -15,21 +15,54 @@ import * as React from "react";
 import { theme } from "../components/theme";
 import axios from "axios";
 import NavBar from "../components/Navbar";
+import { set } from "react-hook-form";
+import Divider from "@mui/material/Divider";
 
 
 
 
 
 export default function ViewContactUsMessage() {
-  const router = useRouter();
-  const { messageId, name, email, message } = router.query;
+   const router = useRouter();
+   const id = router.query.id;
+
+  React.useEffect(() => {
+    const response = axios.get("http://localhost:3001/api/contactMessage/get",{
+      params: {
+        "id":id
+      }
+    }).then((res) => { 
+      setResponse({
+        "messageId": res.data.messageId,
+        "name": res.data.name,
+        "email": res.data.email,
+        "message": res.data.message,
+      });
+    } ).catch((error) => {
+      console.log(error);
+    })
+  },[]);
+
+  let [response,setResponse] = React.useState({
+    messageId:"",
+    name:"",
+    email:"",
+    message:""
+  })
+  
+  var messageId = response.messageId;
+  var name = response.name;
+  var email = response.email;
+  var message = response.message;
 
   const updateReplied = async (value) => {
-    const reponse = await axios.patch("https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message", {
+    const reponse = await axios.put("http://localhost:3001/api/contactMessage/update", {
       "messageId": messageId,
       "email": email,
-      "updateKey": 'replied',
-      "updateValue": value
+      "name" : name,
+      "message":message,
+      "replied": value,
+      "savedAt":""
     }).then((res) => {
       console.log(res);
     }).catch((error) => {
@@ -71,19 +104,20 @@ export default function ViewContactUsMessage() {
   const handleButtonClick = () => {
     updateReplied(true);
     setOpen(true);
-    window.open("mailto:" + email);
+    //window.open("mailto:" + email);
   };
   return (
     <>
       <NavBar />
       <ThemeProvider theme={theme}>
-        <Container maxWidth="md" sx={{ marginTop: 10, mr: 20 }}>
+        <Container maxWidth="lg" sx={{ marginTop: 10, ml:30 }}>
           <Paper elevation={4}>
             <Grid Container spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="h4" color="primary" align="center" sx={{ p: 1 }}>
                   View Message
                 </Typography>
+                <Divider />
               </Grid>
               <Grid item xs={12}>
                 <Typography

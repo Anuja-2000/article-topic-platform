@@ -1,5 +1,6 @@
 import { Paper, Grid, Typography, Button, TextField, colors } from "@mui/material";
 import Container from "@mui/material/Container";
+import axios from "axios";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -24,13 +25,13 @@ export default function ContactUs() {
 
   const resetFields = (event) => {
     setValues({
-      name : "",
+      name: "",
       email: "",
-      message:""
+      message: ""
     });
   };
 
-  
+
   const validateForm = () => {
     const newErrors = {};
     if (!values.name) {
@@ -54,21 +55,26 @@ export default function ContactUs() {
     if (validateForm()) {
       // Submit the form data
       saveToDatabase();
-      resetFields(event);      
+      resetFields(event);
     }
   };
-  async function saveToDatabase(){
-    const messageId = "#message-"+uuidv4();
+  async function saveToDatabase() {
+    const messageId = "#message-" + uuidv4();
     const timestamp = new Date();
-    const response = await fetch('https://2if7bk5j1b.execute-api.us-east-1.amazonaws.com/msg/message', {
-      method: 'POST',
-      body: JSON.stringify({ messageId: messageId, name: values.name, email: values.email, message: values.message ,replied:false ,savedAt:timestamp})
-    });
+
+    const response = axios.post("http://localhost:3001/api/contactMessage/add", {
+      messageId: messageId,
+      name: values.name,
+      email: values.email,
+      message: values.message,
+      replied: false,
+      savedAt: timestamp
+    })
   }
 
 
   return (
-    <Container maxWidth="lg" sx={{marginTop:10}}>
+    <Container maxWidth="lg" sx={{ marginTop: 10 }}>
       <Paper elevation={4}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -102,7 +108,7 @@ export default function ContactUs() {
                 variant="outlined"
                 margin="normal"
                 required
-                sx={{ width: "70%", input:{background:"transparent"}}}
+                sx={{ width: "70%", input: { background: "transparent" } }}
                 error={Boolean(errors.name)}
                 helperText={errors.name}
                 color='primary'

@@ -20,11 +20,13 @@ import PropTypes from "prop-types";
 import GetContactUsMessages from "./api/ContactUsMessages";
 import { useRouter } from "next/router";
 import NavBar from "../components/Navbar";
+import axios from "axios";
+import { set } from "react-hook-form";
 
-export async function getStaticProps() {
-  const messages = await GetContactUsMessages();
-  return { props: { messages } };
-}
+// export async function getStaticProps() {
+//   const messages = await GetContactUsMessages();
+//   return { props: { messages } };
+// }
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -97,8 +99,23 @@ TablePaginationActions.propTypes = {
 
 
 
-export default function ViewContactUsMessages({ messages }) {
-  let msgs = sort_by_key(messages.messages, "savedAt");
+export default function ViewContactUsMessages() {
+  let [messages, setMessages] = React.useState([]);
+  const [isLoading, setLoading] = React.useState(true);
+  React.useEffect(() => {
+    if (isLoading) {
+      const response = axios.get('http://localhost:3001/api/contactMessage/getAll').then((res) => {
+        const messages = res.data;
+        setMessages(messages);
+        setLoading(false);
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
+  },[isLoading]);
+
+
+  let msgs = sort_by_key(messages, "savedAt");
   const rows = msgs;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -115,7 +132,7 @@ export default function ViewContactUsMessages({ messages }) {
   function getMessage(data) {
     router.push({
       pathname: '/view-contact-us-message',
-      query: { messageId: data.messageId, name: data.name, email: data.email, message: data.message },
+      query: { id: data.messageId }
     },
       undefined,
       { shallow: true }
@@ -138,7 +155,7 @@ export default function ViewContactUsMessages({ messages }) {
   return (
     <div>
       <NavBar />
-      <Container maxWidth="md" sx={{ marginTop: 5, mr: 20 }}>
+      <Container maxWidth="lg" sx={{ marginTop: 5, ml:30}}>
         <TableContainer component={Paper} elevation={4}>
           <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
             <TableHead>
