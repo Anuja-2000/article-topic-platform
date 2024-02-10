@@ -1,5 +1,5 @@
-import TrendingArticleBox from "./Trending/trendingArticleBox";
-import Styles from '../styles/homePage.module.css'
+import TrendingArticleBox from "../Trending/trendingArticleBox";
+import Styles from '../../styles/homePage.module.css'
 import React from 'react';
 import { Button } from "@mui/material";
 

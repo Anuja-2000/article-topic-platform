@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import style from "../styles/search.module.css";
+import style from "../../styles/search.module.css";
 import Head from "next/head"
 import Box from '@mui/material/Box';
 import {TextField, IconButton, InputAdornment} from '@mui/material';
 import styled from 'styled-components';
 import SearchIcon from '@mui/icons-material/Search';
-import SearchArticleBox from './searchArticle/searchArticleBox';
+import SearchArticleBox from './searchArticleBox';
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
