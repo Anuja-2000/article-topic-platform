@@ -10,6 +10,7 @@ import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Navbar from '../../components/Navbar';
+import Box from "@mui/material/Box"
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topicDomains`
@@ -19,6 +20,7 @@ function TopicDomains() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [editingRowId, setEditingRowId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +38,22 @@ function TopicDomains() {
     fetchData();
   }, []);
 
-  const handleDelete = async (topicDomainId) => {
+  const handleEditClick = (row) => {
+    setEditingRowId(row.topicDomainId);
+  };
+const handleSaveClick = async (row) => {
+    try {
+      await api.patch(`/edit/${row.topicDomainId}`, row);
+      setEditingRowId(null);
+      // Fetch updated data after saving
+      const response = await api.get("/get");
+      setData(response.data);
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
+
+  const handleDeleteClick = async (topicDomainId) => {
     try {
       await api.delete(`/${topicDomainId}`);
       // Filter out the deleted topic domain from the data
@@ -58,9 +75,7 @@ function TopicDomains() {
     <div>
       <Navbar />
       <div className="App" style={{ marginTop: "60px" }}>
-        <h2 style={{ textAlign: "center" }}>
-          Topic Domains
-        </h2>
+        <h2 style={{ textAlign: "center" }}>Topic Domains</h2>
         <Grid container spacing={1}>
           <Grid item xs={1}></Grid>
           <Grid item xs={10}>
@@ -73,12 +88,39 @@ function TopicDomains() {
                 </tr>
               </thead>
               <tbody>
-                {data && data.map((row, index) => (
-                  <tr key={index}>
-                    <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>{row.topicDomainName}</td>
-                    <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>{row.description}</td>
+                {data.map((row) => (
+                  <tr key={row.topicDomainId}>
                     <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                      <Button onClick={() => handleDelete(row.topicDomainId)}>Delete</Button>
+                      {editingRowId === row.topicDomainId ? (
+                        <input
+                          type="text"
+                          value={row.topicDomainName}
+                          onChange={(e) => setData(data.map((item) => (item.topicDomainId === row.topicDomainId ? { ...item, topicDomainName: e.target.value } : item)))}
+                        />
+                      ) : (
+                        row.topicDomainName
+                      )}
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                      {editingRowId === row.topicDomainId ? (
+                        <input
+                          type="text"
+                          value={row.description}
+                          onChange={(e) => setData(data.map((item) => (item.topicDomainId === row.topicDomainId ? { ...item, description: e.target.value } : item)))}
+                        />
+                      ) : (
+                        row.description
+                      )}
+                    </td>
+                    <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                      {editingRowId === row.topicDomainId ? (
+                        <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
+                      ) : (
+                        <Box sx={{ display: 'flex', gap: '8px' }}>
+                          <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null}>Edit</Button>
+                          <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null}>Delete</Button>
+                        </Box>
+                      )}
                     </td>
                   </tr>
                 ))}
