@@ -208,238 +208,238 @@ export default function Templates({ templates, articleTypes, topicDomains }) {
 
   return (
     <>
-      <Navbar />
+      <Navbar>
 
-      <TablePaginationActions />
-      <Box
-        sx={{
-          padding: '20px',
-          marginTop: '2px',
-          marginLeft: '300px',
-          marginRight: '260px',
-          backgroundColor: 'white',
-          color: 'white',
-        }}
-      >
-        <div style={{ marginBottom: '20px' }}>
-          <Button variant="contained" color="secondary" onClick={handleAddClick}>
-            Add a Template
-          </Button>
-        </div>
-        <div>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="custom pagination table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: '#0e0e42', fontWeight: 700 }}>
-                  <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Template Id</TableCell>
-                  <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Template Content</TableCell>
-                  <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Topic Domain</TableCell>
-                  <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Article Type</TableCell>
-                  <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Edit</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.templateId}</TableCell>
-                    <TableCell>
-                      {isRowEditable(index) ? (
-                        <TextField
-                          value={item.templateContent}
-                          onChange={(e) => handleFieldChange(index, 'templateContent', e.target.value)}
-                        />
-                      ) : (
-                        item.templateContent
-                      )}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {isRowEditable(index) ? (
-                        <Select
-                          value={item.topicDomain}
-                          onChange={(e) => handleFieldChange(index, 'topicDomain', e.target.value)}
-                        >
-                          {topicDomains.map((option, index) => (
-                            <MenuItem key={index} value={option}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      ) : (
-                        item.topicDomain
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {isRowEditable(index) ? (
-                        <Select
-                          value={item.articleType}
-                          onChange={(e) => handleFieldChange(index, 'articleType', e.target.value)}
-                        >
-                          {articleTypes.map((option, index) => (
-                            <MenuItem key={index} value={option}>
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      ) : (
-                        item.articleType
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {isRowEditable(index) ? (
-                        <Button variant="contained" onClick={() => handleSaveClick(index)}>Save</Button>
-                      ) : (
-                        <Button variant="contained" onClick={() => handleEditClick(index)}>Edit</Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-
-              </TableBody>
-
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                    colSpan={3}
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    SelectProps={{
-                      inputProps: {
-                        'aria-label': 'rows per page',
-                      },
-                      native: true,
-                    }}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
-        </div>
-      </Box>
-
-      {/* Add Template Modal */}
-      <Modal
-        open={showAddModal}
-        onClose={handleCloseAddModal}
-        aria-labelledby="add-template-modal-title"
-        aria-describedby="add-template-modal-description"
-      >
-
+        <TablePaginationActions />
         <Box
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
-            boxShadow: 24,
-            p: 4,
+            padding: '20px',
+            marginTop: '2px',
+            marginLeft: '300px',
+            marginRight: '260px',
+            backgroundColor: 'white',
+            color: 'white',
           }}
         >
-          <h2 id="add-template-modal-title">Add a Template</h2>
-          <div id="add-template-modal-description">
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Template Id"
-                  value={newTemplate.templateId}
-                  onChange={(e) =>
-                    setNewTemplate((prevTemplate) => ({
-                      ...prevTemplate,
-                      templateId: e.target.value,
-                    }))
-                  }
+          <div style={{ marginBottom: '20px' }}>
+            <Button variant="contained" color="secondary" onClick={handleAddClick}>
+              Add a Template
+            </Button>
+          </div>
+          <div>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="custom pagination table">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#0e0e42', fontWeight: 700 }}>
+                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Template Id</TableCell>
+                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Template Content</TableCell>
+                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Topic Domain</TableCell>
+                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Article Type</TableCell>
+                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Edit</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.templateId}</TableCell>
+                      <TableCell>
+                        {isRowEditable(index) ? (
+                          <TextField
+                            value={item.templateContent}
+                            onChange={(e) => handleFieldChange(index, 'templateContent', e.target.value)}
+                          />
+                        ) : (
+                          item.templateContent
+                        )}
+                      </TableCell>
 
-                  helperText={
-                    !/^temp\d+$/.test(newTemplate.templateId) &&
-                    'Template Id  contains numbers but allow strings also'
-                  }
 
-                />
-              </Grid>
+                      <TableCell>
+                        {isRowEditable(index) ? (
+                          <Select
+                            value={item.topicDomain}
+                            onChange={(e) => handleFieldChange(index, 'topicDomain', e.target.value)}
+                          >
+                            {topicDomains.map((option, index) => (
+                              <MenuItem key={index} value={option}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        ) : (
+                          item.topicDomain
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {isRowEditable(index) ? (
+                          <Select
+                            value={item.articleType}
+                            onChange={(e) => handleFieldChange(index, 'articleType', e.target.value)}
+                          >
+                            {articleTypes.map((option, index) => (
+                              <MenuItem key={index} value={option}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        ) : (
+                          item.articleType
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {isRowEditable(index) ? (
+                          <Button variant="contained" onClick={() => handleSaveClick(index)}>Save</Button>
+                        ) : (
+                          <Button variant="contained" onClick={() => handleEditClick(index)}>Edit</Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
+                </TableBody>
 
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Template Content"
-                  value={newTemplate.templateContent}
-                  onChange={(e) =>
-                    setNewTemplate((prevTemplate) => ({
-                      ...prevTemplate,
-                      templateContent: e.target.value,
-                    }))
-                  }
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl required fullWidth>
-                  <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
-                  <Select
-                    labelId="topic-domain-label"
-                    value={newTemplate.topicDomain}
-                    onChange={(e) =>
-                      setNewTemplate((prevTemplate) => ({
-                        ...prevTemplate,
-                        topicDomain: e.target.value,
-                      }))
-                    }
-                  >
-                    {topicDomains.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl required fullWidth>
-                  <InputLabel id="article-type-label">Article Type</InputLabel>
-                  <Select
-                    labelId="article-type-label"
-                    value={newTemplate.articleType}
-                    onChange={(e) =>
-                      setNewTemplate((prevTemplate) => ({
-                        ...prevTemplate,
-                        articleType: e.target.value,
-                      }))
-                    }
-                  >
-                    {articleTypes.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <Button variant="contained" color="primary" fullWidth onClick={handleAddTemplate}>
-                  Add
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button variant="contained" color="primary" fullWidth onClick={handleCloseAddModal}>
-                  Cancel
-                </Button>
-              </Grid>
-            </Grid>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                      colSpan={3}
+                      count={data.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      SelectProps={{
+                        inputProps: {
+                          'aria-label': 'rows per page',
+                        },
+                        native: true,
+                      }}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      ActionsComponent={TablePaginationActions}
+                    />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </TableContainer>
           </div>
         </Box>
-      </Modal >
 
+        {/* Add Template Modal */}
+        <Modal
+          open={showAddModal}
+          onClose={handleCloseAddModal}
+          aria-labelledby="add-template-modal-title"
+          aria-describedby="add-template-modal-description"
+        >
+
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 400,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <h2 id="add-template-modal-title">Add a Template</h2>
+            <div id="add-template-modal-description">
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    label="Template Id"
+                    value={newTemplate.templateId}
+                    onChange={(e) =>
+                      setNewTemplate((prevTemplate) => ({
+                        ...prevTemplate,
+                        templateId: e.target.value,
+                      }))
+                    }
+
+                    helperText={
+                      !/^temp\d+$/.test(newTemplate.templateId) &&
+                      'Template Id  contains numbers but allow strings also'
+                    }
+
+                  />
+                </Grid>
+
+
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    label="Template Content"
+                    value={newTemplate.templateContent}
+                    onChange={(e) =>
+                      setNewTemplate((prevTemplate) => ({
+                        ...prevTemplate,
+                        templateContent: e.target.value,
+                      }))
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl required fullWidth>
+                    <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
+                    <Select
+                      labelId="topic-domain-label"
+                      value={newTemplate.topicDomain}
+                      onChange={(e) =>
+                        setNewTemplate((prevTemplate) => ({
+                          ...prevTemplate,
+                          topicDomain: e.target.value,
+                        }))
+                      }
+                    >
+                      {topicDomains.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl required fullWidth>
+                    <InputLabel id="article-type-label">Article Type</InputLabel>
+                    <Select
+                      labelId="article-type-label"
+                      value={newTemplate.articleType}
+                      onChange={(e) =>
+                        setNewTemplate((prevTemplate) => ({
+                          ...prevTemplate,
+                          articleType: e.target.value,
+                        }))
+                      }
+                    >
+                      {articleTypes.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button variant="contained" color="primary" fullWidth onClick={handleAddTemplate}>
+                    Add
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button variant="contained" color="primary" fullWidth onClick={handleCloseAddModal}>
+                    Cancel
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+          </Box>
+        </Modal >
+      </Navbar>
 
     </>
   );

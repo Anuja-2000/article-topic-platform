@@ -123,7 +123,7 @@ function EditTemplates({ templates }) {
   return (
     <div >
       <Box sx={{ backgroundColor: '#e6e6ee' }}>
-      <Navbar />
+      <Navbar>
      
       <Box
         sx={{
@@ -194,6 +194,7 @@ function EditTemplates({ templates }) {
         </TableContainer>
 
       </Box>
+      </Navbar>
       </Box>
     </div>
   );

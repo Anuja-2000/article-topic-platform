@@ -94,7 +94,7 @@ export default function FlaggedTopics() {
   return (
     
     <div>
-      <Navbar />
+      <Navbar>
      
       <TablePaginationActions/>
       <Box
@@ -189,6 +189,7 @@ export default function FlaggedTopics() {
           </Table>
         </TableContainer>
       </Box>
+      </Navbar>
     </div>
   );
 }
