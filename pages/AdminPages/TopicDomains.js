@@ -14,6 +14,8 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog';
 import EditConfirmationDialog from '../../components/EditConfirmationDialog';
+import AddConfirmationDialog from '../../components/AddConfirmationDialog';
+import AlertDialog  from '../../components/AlertDialog';
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topicDomains`
@@ -21,8 +23,10 @@ const api = axios.create({
 
 function TopicDomains() {
   const [data, setData] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+
   const [editingRowId, setEditingRowId] = useState(null);
   const [topicDomainName, setTopicDomainName] = useState('');
   const [description, setDescription] = useState('');
@@ -34,6 +38,15 @@ function TopicDomains() {
   const [showEditConfirmation, setShowEditConfirmation] = useState(false);
   // Define a new state variable to store the currently edited row
   const [editingRow, setEditingRow] = useState(null);
+
+  const [showAddConfirmation, setShowAddConfirmation] = useState(false);
+  const [newItem, setNewItem] = useState({ topicDomainName: '', description: '' });
+
+  // State variables to track whether the fields are empty
+  const [topicDomainNameError, setTopicDomainNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +64,52 @@ function TopicDomains() {
 
     fetchData();
   }, []);
+
+
+
+  const handleAddClick = () => {
+    if (topicDomainName.trim() === "") {
+      setTopicDomainNameError(true);
+      setShowAlert(true);
+      return;
+    } else {
+      setTopicDomainNameError(false);
+    }
+
+    if (description.trim() === "") {
+      setDescriptionError(true);
+      setShowAlert(true);
+      return;
+    } else {
+      setDescriptionError(false);
+    }
+
+    setNewItem({ topicDomainName, description });
+    setShowAddConfirmation(true);
+  };
+
+  const handleConfirmAdd = async () => {
+    try {
+      const response = await api.post("/add", newItem);
+      setData([...data, response.data]);
+      setNewItem({ topicDomainName: '', description: '' });
+      setShowAddConfirmation(false);
+      setShowAddForm(false); // Close the form after adding data
+      setTopicDomainName('');
+      setDescription('');
+    } catch (error) {
+      console.error("Error adding data:", error);
+    }
+  };
+
+  const handleCancelAdd = () => {
+    setShowAddConfirmation(false);
+    setNewItem({ topicDomainName: '', description: '' });
+    setShowAddForm(false); // Close the form after adding data
+    setTopicDomainName('');
+    setDescription('');
+  };
+
 
 
 
@@ -109,17 +168,8 @@ function TopicDomains() {
     }
   };
 
-  const handleAddClick = async () => {
-    try {
-      const response = await api.post("/add", { topicDomainName, description });
-      setData([...data, response.data]);
-      setTopicDomainName('');
-      setDescription('');
-      setShowAddForm(false);
-    } catch (error) {
-      console.error("Error adding data:", error);
-    }
-  };
+
+
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -143,6 +193,7 @@ function TopicDomains() {
                 variant="outlined"
                 value={topicDomainName}
                 onChange={(e) => setTopicDomainName(e.target.value)}
+                error={topicDomainNameError}
                 style={{ marginRight: "10px" }}
               />
               <TextField
@@ -150,6 +201,7 @@ function TopicDomains() {
                 variant="outlined"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                error={descriptionError}
                 style={{ marginRight: "10px" }}
               />
               <Button variant="contained" color="primary" onClick={handleAddClick}>Add</Button>
@@ -206,8 +258,8 @@ function TopicDomains() {
 
                         ) : (
                           <Box sx={{ display: 'flex', gap: '8px' }}>
-                            <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null}>Edit</Button>
-                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null}>Delete</Button>
+                            <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
                           </Box>
                         )}
                       </td>
@@ -231,6 +283,21 @@ function TopicDomains() {
             onClose={handleCancelSave}
             onConfirm={handleConfirmSave}
           />
+
+          <AddConfirmationDialog
+            open={showAddConfirmation}
+            onClose={handleCancelAdd}
+            onConfirm={handleConfirmAdd}
+            newItem={newItem}
+            setNewItem={setNewItem}
+          />
+
+          <AlertDialog
+            open={showAlert}
+            message="Please fill in all required fields."
+            onClose={() => setShowAlert(false)}
+          />
+
         </div>
       </Navbar>
     </div>
