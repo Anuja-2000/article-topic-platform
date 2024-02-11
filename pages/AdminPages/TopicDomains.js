@@ -165,19 +165,36 @@ function TopicDomains() {
     setDeleteTargetId(topicDomainId);
     setShowDeleteConfirmation(true);
   };
-
+  
   const handleConfirmDelete = async () => {
     try {
+      // Attempt to fetch keywords associated with the topic domain
+      const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/${deleteTargetId}`);
+      
+      const keywordsToDelete = keywordsResponse.data;
+      
+      console.log("Keywords to delete:", keywordsToDelete); // Log the keywords to delete
+  
+      // If keywords are found, delete them first
+      if (keywordsToDelete.length > 0) {
+        await Promise.all(keywordsToDelete.map(async keyword => {
+          console.log("Deleting keyword:", keyword); // Log the keyword being deleted
+          await axios.delete(`http://localhost:3001/api/keywords/${deleteTargetId}`);
+        }));
+      }
+  
+      // Delete the topic domain
       await api.delete(`/${deleteTargetId}`);
+  
+      // Update the state to remove the deleted topic domain from the UI
       setData(data.filter((item) => item.topicDomainId !== deleteTargetId));
       setShowDeleteConfirmation(false);
     } catch (error) {
       console.error("Error deleting data:", error);
     }
   };
-
-
-
+  
+  
 
   if (isLoading) {
     return <div>Loading...</div>;
