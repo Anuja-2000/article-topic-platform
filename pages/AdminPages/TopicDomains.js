@@ -15,7 +15,7 @@ import TextField from "@mui/material/TextField";
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog';
 import EditConfirmationDialog from '../../components/EditConfirmationDialog';
 import AddConfirmationDialog from '../../components/AddConfirmationDialog';
-import AlertDialog  from '../../components/AlertDialog';
+import AlertDialog from '../../components/AlertDialog';
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topicDomains`
@@ -84,23 +84,31 @@ function TopicDomains() {
       setDescriptionError(false);
     }
 
-    setNewItem({ topicDomainName, description });
+    // Update newItem state with latest values
+    setNewItem({topicDomainName, description });
+
+    // Show the confirmation dialog
     setShowAddConfirmation(true);
   };
 
+
   const handleConfirmAdd = async () => {
+    console.log("handleConfirmAdd function called"); // Add this line for debugging
+    console.log(newItem);
     try {
       const response = await api.post("/add", newItem);
-      setData([...data, response.data]);
-      setNewItem({ topicDomainName: '', description: '' });
-      setShowAddConfirmation(false);
-      setShowAddForm(false); // Close the form after adding data
-      setTopicDomainName('');
-      setDescription('');
+     
+      setData([...data, response.data]); // Update data array with the new item
+      setNewItem({ topicDomainName: '', description: '' }); // Clear newItem state
+      setShowAddConfirmation(false); // Hide the confirmation dialog
+      setShowAddForm(false); // Close the add form
+      setTopicDomainName(''); // Clear topicDomainName state
+      setDescription(''); // Clear description state
     } catch (error) {
       console.error("Error adding data:", error);
     }
   };
+  
 
   const handleCancelAdd = () => {
     setShowAddConfirmation(false);
