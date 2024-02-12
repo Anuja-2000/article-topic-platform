@@ -11,7 +11,7 @@ export const getStaticProps = async () => {
     props: { templates: data.templates }
   };
 };
-function ArticleTypes({ templates }) {
+function Keywords({ templates }) {
 
 
   const articleTypes = [...new Set(templates.map(template => template.articleType))];
@@ -69,4 +69,4 @@ function ArticleTypes({ templates }) {
 
 
 
-export default ArticleTypes;
+export default Keywords;

@@ -106,10 +106,10 @@ export default function Navbar({children}) {
 
     const iconMap = {
         'Dashboard': < DashboardIcon sx={{ color: 'white' }} />,
-        'Templates': <CreateIcon sx={{ color: 'white' }} />,
-        'Topic Domains': <TopicIcon sx={{ color: 'white' }} />,
-        'Article Types': < ArticleIcon sx={{ color: 'white' }} />,
-        'Flagged Topics': <FlagIcon sx={{ color: 'white' }} />,
+        'Topic Domains': <CreateIcon sx={{ color: 'white' }} />,
+        'Keywords': <TopicIcon sx={{ color: 'white' }} />,
+        'Topics': < ArticleIcon sx={{ color: 'white' }} />,
+        'Deactivate Writers': <FlagIcon sx={{ color: 'white' }} />,
         'User Roles': <GroupIcon sx={{ color: 'white' }} />,
         'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
       };
@@ -119,7 +119,7 @@ const [selectedIndex, setSelectedIndex] = useState(0);
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'Topic Domains', 'Keywords','Topics',  'Deactivate Writers', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
@@ -199,7 +199,7 @@ const handleListItemClick = (event, index) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Topic Domains', 'Keywords','Topics',  'Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
