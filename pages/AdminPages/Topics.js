@@ -70,7 +70,7 @@ export const getStaticProps = async () => {
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-export default function Templates({ templates, articleTypes, topicDomains }) {
+export default function Topics({ templates, articleTypes, topicDomains }) {
   const [data, setData] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTemplate, setNewTemplate] = useState({

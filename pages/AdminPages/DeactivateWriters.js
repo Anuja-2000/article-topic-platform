@@ -24,7 +24,7 @@ function createData(id, name) {
 }
 
 //Flagged Topics
-export default function FlaggedTopics() {
+export default function DeactivateWriters() {
   const [rows, setRows] = useState([
     
     createData(1, '1st flagged topic'),

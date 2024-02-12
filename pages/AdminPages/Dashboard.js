@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -27,7 +28,7 @@ const StyledCount = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
-function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
+function Dashboard({ }) {
   function getCurrentDate() {
     const now = new Date();
     const dateString = now.toLocaleDateString();
@@ -40,19 +41,56 @@ function Dashboard({ templateCount, topicDomainCount, articleTypeCount }) {
     return timeString;
   }
 
-  const [msgcount, setmsgCount] = React.useState(0);
+  const [msgcount, setMsgCount] = React.useState(0);
+  const [topicDomainCount, setTopicDomainCount] = useState(0);
+  const [keywordCount, setKeywordCount] = useState(0);
+  const [topicCount, setTopicCount] = useState(0);
   const [isLoading, setLoading] = React.useState(true)
-React.useEffect(() => {
-  if(isLoading){
-    const response = axios.get('http://localhost:3001/api/contactMessage/get-count').then((res) => {
-      const data = res.data;
-      setmsgCount(data);
+  useEffect(() => {
+    if (isLoading) {
+      axios.get('http://localhost:3001/api/contactMessage/get-count')
+        .then((res) => {
+          const data = res.data;
+          setMsgCount(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      
+      axios.get('http://localhost:3001/api/topicDomains/count')
+        .then((res) => {
+          const data = res.data;
+          setTopicDomainCount(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+        axios.get('http://localhost:3001/api/keywords/count')
+        .then((res) => {
+          const data = res.data;
+          setKeywordCount(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+        
+        axios.get('http://localhost:3001/api/topics/count')
+        .then((res) => {
+          const data = res.data;
+          setTopicCount(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      
+
       setLoading(false);
-    }).catch((error) => {
-      console.log(error);
-    });
-  }
-  },[isLoading]);
+    }
+  }, [isLoading]);
 
   return (
     <div>
@@ -97,16 +135,7 @@ React.useEffect(() => {
             width: '100%',
           }}
         >
-          <StyledCard>
-            <CardContent>
-              <StyledTitle variant="h6" component="div">
-                Template Count
-              </StyledTitle>
-              <StyledCount variant="h4" component="div">
-                {templateCount}
-              </StyledCount>
-            </CardContent>
-          </StyledCard>
+         
 
           <StyledCard>
             <CardContent>
@@ -114,7 +143,17 @@ React.useEffect(() => {
                 Topic Domain Count
               </StyledTitle>
               <StyledCount variant="h4" component="div">
-                {topicDomainCount.length}
+                {topicDomainCount.count}
+              </StyledCount>
+            </CardContent>
+          </StyledCard>
+          <StyledCard>
+            <CardContent>
+              <StyledTitle variant="h6" component="div">
+              Keyword Count
+              </StyledTitle>
+              <StyledCount variant="h4" component="div">
+                {keywordCount.count}
               </StyledCount>
             </CardContent>
           </StyledCard>
@@ -122,10 +161,10 @@ React.useEffect(() => {
           <StyledCard>
             <CardContent>
               <StyledTitle variant="h6" component="div">
-                Article Type Count
+                Topics Count
               </StyledTitle>
               <StyledCount variant="h4" component="div">
-                {articleTypeCount.length}
+              {topicCount.count}
               </StyledCount>
             </CardContent>
           </StyledCard>
@@ -176,39 +215,4 @@ React.useEffect(() => {
     </div>
   );
 }
-
-export async function getStaticProps() {
-  try {
-    const response = await fetch('https://vmm8vve6hg.execute-api.us-east-1.amazonaws.com/topicTemplates/templates');
-    const data = await response.json();
-
-    const uniqueTopicDomains = new Set();
-    const uniqueArticleTypes = new Set();
-
-    // Count the unique topic domains and article types
-    data.templates.forEach((item) => {
-      uniqueTopicDomains.add(item.topicDomain);
-      uniqueArticleTypes.add(item.articleType);
-    });
-
-    return {
-      props: {
-        templateCount: data.templates.length,
-        topicDomainCount: Array.from(uniqueTopicDomains),
-        articleTypeCount: Array.from(uniqueArticleTypes)
-      },
-      revalidate: 60, // Refresh every 60 seconds
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      props: {
-        templateCount: 0,
-        topicDomainCount: [],
-        articleTypeCount: []
-      },
-    };
-  }
-}
-
-export default Dashboard;
+ export default Dashboard;
