@@ -168,33 +168,41 @@ function TopicDomains() {
   
   const handleConfirmDelete = async () => {
     try {
-      // Attempt to fetch keywords associated with the topic domain
-      const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/${deleteTargetId}`);
-      
-      const keywordsToDelete = keywordsResponse.data;
-      
-      console.log("Keywords to delete:", keywordsToDelete); // Log the keywords to delete
-  
-      // If keywords are found, delete them first
-      if (keywordsToDelete.length > 0) {
+        // Fetch keywords associated with the topic domain
+        const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/${deleteTargetId}`);
+        const keywordsToDelete = keywordsResponse.data;
+        console.log("Keywords to delete:", keywordsToDelete);
+
+        // Delete each keyword sequentially
         await Promise.all(keywordsToDelete.map(async keyword => {
           console.log("Deleting keyword:", keyword); // Log the keyword being deleted
-          await axios.delete(`http://localhost:3001/api/keywords/${deleteTargetId}`);
-        }));
-      }
-  
-      // Delete the topic domain
-      await api.delete(`/${deleteTargetId}`);
-  
-      // Update the state to remove the deleted topic domain from the UI
-      setData(data.filter((item) => item.topicDomainId !== deleteTargetId));
-      setShowDeleteConfirmation(false);
+          console.log(`Deleting keyword with ID: ${keyword.keywordId}`);
+          await axios.delete(`http://localhost:3001/api/keywords/delete/${keyword.keywordId}`);
+      }));
+      
+
+        // Fetch topics associated with the topic domain
+        const topicsResponse = await axios.get(`http://localhost:3001/api/topics/${deleteTargetId}`);
+        const topicsToDelete = topicsResponse.data;
+        console.log("Topics to delete:", topicsToDelete);
+
+        // Delete each topic sequentially
+        for (const topic of topicsToDelete) {
+            console.log("Deleting topic:", topic);
+            console.log(`Deleting topic with ID: ${topic.topicId}`);
+            await axios.delete(`http://localhost:3001/api/topics/delete/${topic.topicId}`);
+        }
+
+        // Delete the topic domain itself
+        await axios.delete(`http://localhost:3001/api/topicDomains/${deleteTargetId}`);
+
+        // Update the state to remove the deleted topic domain from the UI
+        setData(data.filter(item => item.topicDomainId !== deleteTargetId));
+        setShowDeleteConfirmation(false);
     } catch (error) {
-      console.error("Error deleting data:", error);
+        console.error("Error deleting data:", error);
     }
-  };
-  
-  
+};
 
   if (isLoading) {
     return <div>Loading...</div>;
