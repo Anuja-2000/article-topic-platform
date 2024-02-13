@@ -1,20 +1,25 @@
 // components/article/Header.js
 import React from 'react';
-import { Avatar, Typography, Box } from '@mui/material';
+import { Avatar, Typography, Box, Divider } from '@mui/material';
 
 const Header = ({ writer, date, time, title, profilePic }) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="flex-start">
       <Box display="flex" alignItems="center">
         <Avatar src={profilePic} alt="Author Avatar" sx={{ marginRight: 1 }} />
-        <Typography variant="subtitle2">{writer}</Typography>
+        <Box>
+          <Typography variant="subtitle2">{writer}</Typography>
+          <Typography variant="caption" color="textSecondary" >
+            {date} | {time}
+          </Typography>
+        </Box>
       </Box>
-      <Typography variant="caption" color="textSecondary">
-        {date} | {time}
-      </Typography>
-      <Typography variant="h4" mt={1} mb={2}>
+      <Box >
+      <Divider style={{ margin: '16px 0' }} />
+      <Typography variant="h4" mt={2} mb={1}>
         {title}
       </Typography>
+      </Box>
     </Box>
   );
 };

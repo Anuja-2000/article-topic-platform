@@ -16,8 +16,7 @@ const ArticlePage = ({ article }) => {
   }
 
   return (
-    <Container component="main" maxWidth="lg" className={styles.root}>
-      {/* Use a plain div instead of Paper for a simpler look */}
+    <Container component="main" maxWidth="lg" className={styles.root} >
       <div className={styles.articleContainer}>
         <Header
           writer={article.writer}
@@ -26,13 +25,8 @@ const ArticlePage = ({ article }) => {
           title={article.title}
           profilePic={article.profilePic}
         />
-        <div className={styles.imageContainer}>
+        <div className={styles.imageContainer} >
           <img src={article.image} alt="Article Image" className={styles.image} />
-          <div className={styles.overlay}>
-            <Typography variant="h5" className={styles.title}>
-              {article.title}
-            </Typography>
-          </div>
         </div>
         <ArticleBody content={article.content} className={styles.content} />
         <LikeShareDownload />
@@ -69,10 +63,10 @@ async function fetchArticleBySlug(slug) {
     writer: 'Author Name',
     date: '2023-01-01',
     time: '12:00',
-    title: 'Sample Article',
+    title: 'I had ChatGPT guess what the Super Bowl Ads would look like',
     profilePic: '/path/to/profile.jpg',
-    image: '/path/to/image.jpg',
-    content: 'Article content goes here.',
+    image: '/blogpic.jpg',
+    content: 'I have come across many nervous LinkedIn posts from fellow advertising professionals about the job stealing capabilities of AI. Even though AdWeek promises that ChatGPT Is Not Going to Replace Your Creative Team, for giggles, I wanted to see, hehe, what if it did? And what if it did for the biggest ad event of the year? The audacity.I told ChatGPT it was a Creative Director making a :60 for the Super Bowl — which meant the spot had to be big, high-production value, iconic, something people would talk about. Then I asked it to come up with a spot for five different brands, using what it knew of past Super Bowl ads these guys had ran (specifically tone, tropes, storylines). I provided my ChatECD direction alluded to in early press releases, and did this exercise the first week of January to prevent accidentally tipping it off. This is the result.I didn’t make any creative choices for the AI, but I redirected if it was off-brand, and probed if it did not address the prompt. I have summarized and edited its for clarity, but it took many tries to get here.'
   };
 }
 
