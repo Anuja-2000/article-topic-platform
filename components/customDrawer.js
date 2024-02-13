@@ -1,5 +1,9 @@
-import * as React from 'react';
+//Permanent drawer
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+
+import * as React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -19,13 +23,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import AvatarIcon from '../components/avatar';
-import CustomNotificationIcon from "../components/customNotificationIcon";
-
-
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CreateIcon from '@mui/icons-material/Create';
 import TopicIcon from '@mui/icons-material/Topic';
@@ -36,6 +33,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 const drawerWidth = 240;
+
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -102,14 +100,34 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function Navbar({children}) {
 
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
+    }),
+  }),
+);
+
+
+export default function MIniDrawer({children}) {
     const iconMap = {
         'Dashboard': < DashboardIcon sx={{ color: 'white' }} />,
-        'Topic Domains': <CreateIcon sx={{ color: 'white' }} />,
-        'Keywords': <TopicIcon sx={{ color: 'white' }} />,
-        'Topics': < ArticleIcon sx={{ color: 'white' }} />,
-        'Deactivate Writers': <FlagIcon sx={{ color: 'white' }} />,
+        'Templates': <CreateIcon sx={{ color: 'white' }} />,
+        'Topic Domains': <TopicIcon sx={{ color: 'white' }} />,
+        'Article Types': < ArticleIcon sx={{ color: 'white' }} />,
+        'Flagged Topics': <FlagIcon sx={{ color: 'white' }} />,
         'User Roles': <GroupIcon sx={{ color: 'white' }} />,
         'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
       };
@@ -119,7 +137,7 @@ const [selectedIndex, setSelectedIndex] = useState(0);
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'Topic Domains', 'Keywords','Topics',  'Deactivate Writers', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
@@ -127,7 +145,6 @@ useEffect(() => {
 const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };
-
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -143,8 +160,8 @@ const handleListItemClick = (event, index) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar sx={{display:'flex'}}>
+      <AppBar position="fixed" open={open} elevation={0} sx={{width:400, left:0}}>
+        <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -178,28 +195,17 @@ const handleListItemClick = (event, index) => {
             }}>
             GATE
           </Typography>
-          <div style={{ flexGrow: 1 }}></div>
-          <IconButton
-            size="large"
-            color="inherit"
-            aria-label="search"
-            onClick={() => router.push('/view-contact-us-messages')}
-          >
-            < MailIcon  />
-          </IconButton>
-            <CustomNotificationIcon/>
-            <AvatarIcon/>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open} PaperProps={{sx: {backgroundColor: "primary.main"}}}>  
+      <Drawer variant="permanent" open={open} PaperProps={{sx: {backgroundColor: "primary.main"}}} >
         <DrawerHeader sx={{backgroundColor:"primary.main"}}>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={handleDrawerClose} sx={{color:"white"}}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Topic Domains', 'Keywords','Topics',  'Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles', 'Reports'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
@@ -237,10 +243,10 @@ const handleListItemClick = (event, index) => {
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
+      <Main open = {open}>
         {children}
-      </Box>
+        </Main>
     </Box>
+    
   );
 }
