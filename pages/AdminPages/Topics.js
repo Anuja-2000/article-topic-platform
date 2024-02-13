@@ -1,446 +1,392 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar';
+/*import React from 'react';
+
+
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box } from '@mui/material';
+*/
+
+import React, { useState, useEffect } from 'react';
+import Grid from '@mui/material/Grid';
 import axios from 'axios';
-
-
-import TablePaginationActions from '../../components/TablePaginationActions';
-
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import Modal from '@mui/material/Modal';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Navbar from '../../components/Navbar';
 import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableHead from '@mui/material/TableHead';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Select from '@mui/material/Select';
+import TextField from "@mui/material/TextField";
+import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog';
+import EditConfirmationDialog from '../../components/EditConfirmationDialog';
+import AddConfirmationDialog from '../../components/AddConfirmationDialog';
+import AlertDialog from '../../components/AlertDialog';
+import FormControl from '@mui/material/FormControl';
+import Select from "@mui/material/Select"
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from "@mui/material/InputLabel"
 
-import { FormControl, InputLabel, Grid } from '@mui/material';
-import AWS from 'aws-sdk';
-
-AWS.config.update({
-  region: 'us-east-1',
-  accessKeyId: 'AKIAWXE5Y3RWOMG75RHO',
-  secretAccessKey: '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'
-
+const api = axios.create({
+  baseURL: `http://localhost:3001/api/topics`
 });
 
-export const getStaticProps = async () => {
-  try {
-    const response = await fetch('https://vmm8vve6hg.execute-api.us-east-1.amazonaws.com/topicTemplates/templates');
-    const data = await response.json();
-    console.log('Fetched data:', data);
-    const templates = data.templates.map(item => ({
-      templateId: item.templateId,
-      templateContent: item.templateContent,
-      topicDomain: item.topicDomain,
-      articleType: item.articleType,
-      editable: false,
-    }));
-    console.log('Transformed templates:', templates);
-    const uniqueArticleTypes = [...new Set(templates.map(item => item.articleType))];
-    const uniqueTopicDomains = [...new Set(templates.map(item => item.topicDomain))];
-    console.log('Unique Topic Domains:', uniqueTopicDomains);
-    return {
-      props: {
-        templates,
-        articleTypes: uniqueArticleTypes,
-        topicDomains: uniqueTopicDomains,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      props: {
-        templates: [],
-        articleTypes: [],
-        topicDomains: [],
-      },
-    };
-  }
-};
-
-
-const dynamodb = new AWS.DynamoDB.DocumentClient();
-
-export default function Topics({ templates, articleTypes, topicDomains }) {
+function Topics() {
   const [data, setData] = useState([]);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newTemplate, setNewTemplate] = useState({
-    templateId: '',
-    templateContent: '',
-    topicDomain: '',
-    articleType: '',
-  });
+  const [topicDomains, setTopicDomains] = useState([]);
+  const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
+  const [keywords, setKeywords] = useState([]);
+  const [selectedKeyword, setSelectedKeyword] = useState('');
 
-  // Sort the templates based on templateId
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  const [editingRowId, setEditingRowId] = useState(null);
+  const [topicName, setTopicName] = useState('');
+  const [description, setDescription] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State to control the visibility of the delete confirmation dialog
+  const [deleteTargetId, setDeleteTargetId] = useState(null); // State to store the id of the topic domain to be deleted
+
+  const [showEditConfirmation, setShowEditConfirmation] = useState(false);
+  // Define a new state variable to store the currently edited row
+  const [editingRow, setEditingRow] = useState(null);
+
+  const [showAddConfirmation, setShowAddConfirmation] = useState(false);
+  const [newItem, setNewItem] = useState({ topicDomainName: '', description: '' });
+
+  // State variables to track whether the fields are empty
+  const [topicNameError, setTopicNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+
+  const [showAlert, setShowAlert] = useState(false);
+
   useEffect(() => {
-    if (templates) {
-      const sortedTemplates = [...templates].sort((a, b) => a.templateId.localeCompare(b.templateId));
-      setData(sortedTemplates);
-    }
-  }, [templates]);
-
-  //handle Event functions
-  const handleOpenAddModal = () => {
-    setShowAddModal(true);
-  };
-
-  const handleCloseAddModal = () => {
-    setShowAddModal(false);
-    setNewTemplate({
-      templateId: '',
-      templateContent: '',
-      topicDomain: '',
-      articleType: '',
-    });
-  };
-
-  const handleAddTemplate = async () => {
-    // Perform validation on the newTemplate object
-    if (
-      newTemplate.templateId === '' ||
-      newTemplate.templateContent === '' ||
-      newTemplate.topicDomain === '' ||
-      newTemplate.articleType === ''
-    ) {
-      alert('All fields are required.');
-      return;
-    }
-
-    // Create a new template object using newTemplate object
-    const template = {
-      templateId: newTemplate.templateId,
-      articleType: newTemplate.articleType,
-      placeholders: ['PLACEHOLDER_1', 'PLACEHOLDER_2', 'PLACEHOLDER_3'],
-      topicDomain: newTemplate.topicDomain,
-      templateContent: newTemplate.templateContent,
+    const fetchData = async () => {
+      try {
+        const responseData = await api.get("/get");
+        setData(responseData.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsError(true);
+        setIsLoading(false);
+      }
     };
 
-    try {
-      const params = {
-        TableName: 'topicDom-type-template-pro',
-        Item: template,
-      };
-
-      await dynamodb.put(params).promise();
-      console.log('Data saved successfully:', template);
-      alert('Data saved successfully');
-
-    } catch (error) {
-      console.error('Failed to save data:', error);
-    }
-
-    // Close the modal and reset the newTemplate object
-    handleCloseAddModal();
-  };
-
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [editableRowIndex, setEditableRowIndex] = useState(null); // Track the editable row index
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleEditClick = (index) => {
-    if (editableRowIndex === null) {
-      setEditableRowIndex(index); // Set the editable row index
-    }
-  };
-
-  const handleSaveClick = async (index) => {
-    setEditableRowIndex(null); // Reset the editable row index
-
-    const updatedRow = data[index];
-
-    try {
-      console.log(updatedRow);
-      const response = await fetch('https://vmm8vve6hg.execute-api.us-east-1.amazonaws.com/topicTemplates/template', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedRow),
-      });
-
-      const responseData = await response.json();
-      if (response.ok) {
-        // Update successful
-        console.log('Data updated successfully:', responseData);
-        alert('Data updated successfully');
-      } else {
-        // Handle update failure
-        console.log('Failed to update data:', responseData);
+    const fetchTopicDomains = async () => {
+      try {
+        const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
+        setTopicDomains(topicDomainsResponse.data);
+      } catch (error) {
+        console.error('Error fetching topic domains:', error);
       }
+    };
+
+    const fetchKeywords = async () => {
+      try {
+        const keywordResponse = await axios.get('http://localhost:3001/api/keywords/get');
+        setKeywords(keywordResponse.data);
+      } catch (error) {
+        console.error('Error fetching keywords:', error);
+      }
+    };
+
+    fetchData();
+    fetchTopicDomains();
+    fetchKeywords();
+  }, []);
+
+
+
+  const handleAddClick = () => {
+    if (topicName.trim() === "") {
+      setTopicNameError(true);
+      setShowAlert(true);
+      return;
+    } else {
+      setTopicNameError(false);
+    }
+
+    if (description.trim() === "") {
+      setDescriptionError(true);
+      setShowAlert(true);
+      return;
+    } else {
+      setDescriptionError(false);
+    }
+
+    // Update newItem state with latest values
+    setNewItem({ topicName, description });
+
+    // Show the confirmation dialog
+    setShowAddConfirmation(true);
+  };
+
+
+  const handleConfirmAdd = async () => {
+    console.log("handleConfirmAdd function called"); // Add this line for debugging
+    console.log(newItem);
+    try {
+      // Ensure that selectedTopicDomain and selectedKeyword are not empty
+      if (!selectedTopicDomain || !selectedKeyword) {
+        console.error("No topic domain or keyword selected");
+        return;
+      }
+
+      const newItemWithIds = { ...newItem, topicDomainId: selectedTopicDomain, keywordId: selectedKeyword };
+      console.log(newItemWithIds);
+      //console.log(selectedTopicDomain);
+
+      const response = await api.post("/addTopic", newItemWithIds);
+
+      setData([...data, response.data]); // Update data array with the new item
+      setNewItem({ keywordName: '', description: '' }); // Clear newItem state
+      setShowAddConfirmation(false); // Hide the confirmation dialog
+      setShowAddForm(false); // Close the add form
+      setSelectedTopicDomain(''); // Clear selectedTopicDomain state
+      setSelectedKeyword('');
+      setTopicName('');
+      setDescription('');
     } catch (error) {
-      console.error('Error updating data:', error);
+      console.error("Error adding data:", error);
     }
   };
 
 
+  const handleCancelAdd = () => {
+    setShowAddConfirmation(false);
+    setNewItem({ topicName: '', description: '' });
+    setShowAddForm(false); // Close the form after adding data
+    //Remove if typed data shown
+    setTopicName('');
+    setDescription('');
+    setSelectedTopicDomain(''); 
+    setSelectedKeyword('');
+  };
 
-  const handleFieldChange = (index, field, value) => {
-    setData((prevData) => {
-      const updatedData = [...prevData];
-      updatedData[index] = {
-        ...updatedData[index],
-        [field]: value,
-      };
-      return updatedData;
+
+
+
+  // Update the handleEditClick function to set the editingRow state
+  const handleEditClick = (row) => {
+    setEditingRow(row);
+    setEditingRowId(row.topicId);
+  };
+
+  const handleSaveClick = async (row) => {
+    try {
+      setShowEditConfirmation(true); // Show confirmation dialog before making the API call
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
+
+  const handleConfirmSave = async () => {
+    try {
+      const updatedRow = data.find(item => item.topicId === editingRowId);
+      await api.patch(`/edit/${editingRowId}`, updatedRow);
+      setEditingRowId(null); // Reset editing row ID
+      setShowEditConfirmation(false);
+      const response = await api.get("/get");
+      setData(response.data);
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
+
+  const handleCancelSave = () => {
+    setShowEditConfirmation(false);
+    setEditingRowId(null); // Reset editing row ID
+    // Revert the changes made to the edited row using the editingRow state
+    const updatedData = data.map(item => {
+      if (item.topicId === editingRow.topicId) {
+        return editingRow;
+      }
+      return item;
     });
-  };
-  const handleAddClick = () => {
-    handleOpenAddModal();
+    setData(updatedData);
+  }
+
+  const handleDeleteClick = (topicId) => {
+    setDeleteTargetId(topicId);
+    setShowDeleteConfirmation(true);
   };
 
-  const isRowEditable = (index) => index === editableRowIndex;
+  const handleConfirmDelete = async () => {
+    try {
+
+      // Delete the topic
+      await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
+
+      // Update the state to remove the deleted keyword from the UI
+      setData(data.filter(item => item.topicId !== deleteTargetId));
+      setShowDeleteConfirmation(false);
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <Alert severity="error">Error fetching data. Please try again later.</Alert>;
+  }
 
   return (
-    <>
+    <div>
       <Navbar>
+        <div className="App" style={{ marginTop: "60px" }}>
+          <h2 style={{ textAlign: "center" }}>Keywords</h2>
 
-        <TablePaginationActions />
-        <Box
-          sx={{
-            padding: '20px',
-            marginTop: '2px',
-            marginLeft: '300px',
-            marginRight: '260px',
-            backgroundColor: 'white',
-            color: 'white',
-          }}
-        >
-          <div style={{ marginBottom: '20px' }}>
-            <Button variant="contained" color="secondary" onClick={handleAddClick}>
-              Add a Template
+          {/* Add Form */}
+          {showAddForm && (
+            <div style={{ marginBottom: "20px", textAlign: "center" }}>
+              <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
+                <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
+                <Select
+                  labelId="topic-domain-label"
+                  id="topic-domain-select"
+                  value={selectedTopicDomain}
+                  onChange={(e) => setSelectedTopicDomain(e.target.value)}
+                  label="Topic Domain"
+                >
+                  {topicDomains.map((topicDomain) => (
+                    <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
+                      {topicDomain.topicDomainName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
+                <InputLabel id="keyword-label">Keyword</InputLabel>
+                <Select
+                  labelId="keyword-label"
+                  id="keyword-select"
+                  value={selectedKeyword}
+                  onChange={(e) => setSelectedKeyword(e.target.value)}
+                  label="Keyword"
+                >
+                  {keywords.map((keyword) => (
+                    <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
+                      {keyword.keywordName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <TextField
+                label="Topic Name"
+                variant="outlined"
+                value={topicName}
+                onChange={(e) => setTopicName(e.target.value)}
+                error={topicNameError}
+                style={{ marginRight: "10px" }}
+              />
+              <TextField
+                label="Description"
+                variant="outlined"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                error={descriptionError}
+                style={{ marginRight: "10px" }}
+              />
+              <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
+            </div>
+          )}
+
+          {/* Toggle Add Form Button */}
+          <div style={{ textAlign: "Right", marginBottom: "30px", marginRight: "150px" }}>
+            <Button variant="contained" color="primary" onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
+              {showAddForm ? "Hide Form" : "Show Add Form"}
             </Button>
           </div>
-          <div>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 700 }} aria-label="custom pagination table">
-                <TableHead>
-                  <TableRow sx={{ backgroundColor: '#0e0e42', fontWeight: 700 }}>
-                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Template Id</TableCell>
-                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Template Content</TableCell>
-                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Topic Domain</TableCell>
-                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Article Type</TableCell>
-                    <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Edit</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.templateId}</TableCell>
-                      <TableCell>
-                        {isRowEditable(index) ? (
-                          <TextField
-                            value={item.templateContent}
-                            onChange={(e) => handleFieldChange(index, 'templateContent', e.target.value)}
+
+
+          <Grid container spacing={1}>
+            <Grid item xs={1}></Grid>
+            <Grid item xs={10}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Topic</th>
+                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Description</th>
+                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row) => (
+                    <tr key={row.topicId}>
+                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                        {editingRowId === row.topicId ? (
+                          <input
+                            type="text"
+                            value={row.topicName}
+                            onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, topicName: e.target.value } : item)))}
                           />
                         ) : (
-                          item.templateContent
+                          row.topicName
                         )}
-                      </TableCell>
+                      </td>
+                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                        {editingRowId === row.topicId ? (
+                          <input
+                            type="text"
+                            value={row.description}
+                            onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, description: e.target.value } : item)))}
+                          />
+                        ) : (
+                          row.description
+                        )}
+                      </td>
+                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                        {editingRowId === row.topicId ? (
+                          <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
 
-
-                      <TableCell>
-                        {isRowEditable(index) ? (
-                          <Select
-                            value={item.topicDomain}
-                            onChange={(e) => handleFieldChange(index, 'topicDomain', e.target.value)}
-                          >
-                            {topicDomains.map((option, index) => (
-                              <MenuItem key={index} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
                         ) : (
-                          item.topicDomain
+                          <Box sx={{ display: 'flex', gap: '8px' }}>
+                            <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                          </Box>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        {isRowEditable(index) ? (
-                          <Select
-                            value={item.articleType}
-                            onChange={(e) => handleFieldChange(index, 'articleType', e.target.value)}
-                          >
-                            {articleTypes.map((option, index) => (
-                              <MenuItem key={index} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        ) : (
-                          item.articleType
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {isRowEditable(index) ? (
-                          <Button variant="contained" onClick={() => handleSaveClick(index)}>Save</Button>
-                        ) : (
-                          <Button variant="contained" onClick={() => handleEditClick(index)}>Edit</Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-
-                </TableBody>
-
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                      rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                      colSpan={3}
-                      count={data.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      SelectProps={{
-                        inputProps: {
-                          'aria-label': 'rows per page',
-                        },
-                        native: true,
-                      }}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                      ActionsComponent={TablePaginationActions}
-                    />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </TableContainer>
-          </div>
-        </Box>
-
-        {/* Add Template Modal */}
-        <Modal
-          open={showAddModal}
-          onClose={handleCloseAddModal}
-          aria-labelledby="add-template-modal-title"
-          aria-describedby="add-template-modal-description"
-        >
-
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 400,
-              bgcolor: 'background.paper',
-              border: '2px solid #000',
-              boxShadow: 24,
-              p: 4,
-            }}
-          >
-            <h2 id="add-template-modal-title">Add a Template</h2>
-            <div id="add-template-modal-description">
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    label="Template Id"
-                    value={newTemplate.templateId}
-                    onChange={(e) =>
-                      setNewTemplate((prevTemplate) => ({
-                        ...prevTemplate,
-                        templateId: e.target.value,
-                      }))
-                    }
-
-                    helperText={
-                      !/^temp\d+$/.test(newTemplate.templateId) &&
-                      'Template Id  contains numbers but allow strings also'
-                    }
-
-                  />
-                </Grid>
+                </tbody>
+              </table>
+            </Grid>
+            <Grid item xs={1}></Grid>
+          </Grid>
 
 
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    label="Template Content"
-                    value={newTemplate.templateContent}
-                    onChange={(e) =>
-                      setNewTemplate((prevTemplate) => ({
-                        ...prevTemplate,
-                        templateContent: e.target.value,
-                      }))
-                    }
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl required fullWidth>
-                    <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
-                    <Select
-                      labelId="topic-domain-label"
-                      value={newTemplate.topicDomain}
-                      onChange={(e) =>
-                        setNewTemplate((prevTemplate) => ({
-                          ...prevTemplate,
-                          topicDomain: e.target.value,
-                        }))
-                      }
-                    >
-                      {topicDomains.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl required fullWidth>
-                    <InputLabel id="article-type-label">Article Type</InputLabel>
-                    <Select
-                      labelId="article-type-label"
-                      value={newTemplate.articleType}
-                      onChange={(e) =>
-                        setNewTemplate((prevTemplate) => ({
-                          ...prevTemplate,
-                          articleType: e.target.value,
-                        }))
-                      }
-                    >
-                      {articleTypes.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button variant="contained" color="primary" fullWidth onClick={handleAddTemplate}>
-                    Add
-                  </Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button variant="contained" color="primary" fullWidth onClick={handleCloseAddModal}>
-                    Cancel
-                  </Button>
-                </Grid>
-              </Grid>
-            </div>
-          </Box>
-        </Modal >
+          <DeleteConfirmationDialog
+            open={showDeleteConfirmation}
+            onClose={() => setShowDeleteConfirmation(false)}
+            onConfirm={handleConfirmDelete}
+          />
+
+          <EditConfirmationDialog
+            open={showEditConfirmation}
+            onClose={handleCancelSave}
+            onConfirm={handleConfirmSave}
+          />
+
+          <AddConfirmationDialog
+            open={showAddConfirmation}
+            onClose={handleCancelAdd}
+            onConfirm={handleConfirmAdd}
+            newItem={newItem}
+            setNewItem={setNewItem}
+          />
+
+          <AlertDialog
+            open={showAlert}
+            message="Please fill in all required fields."
+            onClose={() => setShowAlert(false)}
+          />
+
+        </div>
       </Navbar>
-
-    </>
+    </div>
   );
 }
+
+export default Topics;
