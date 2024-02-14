@@ -100,13 +100,34 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function MiniDrawer() {
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
+    }),
+  }),
+);
+
+
+export default function MIniDrawer({children}) {
     const iconMap = {
         'Dashboard': < DashboardIcon sx={{ color: 'white' }} />,
-        'Templates': <CreateIcon sx={{ color: 'white' }} />,
-        'Topic Domains': <TopicIcon sx={{ color: 'white' }} />,
-        'Article Types': < ArticleIcon sx={{ color: 'white' }} />,
-        'Flagged Topics': <FlagIcon sx={{ color: 'white' }} />,
+        'Topic Domains': <CreateIcon sx={{ color: 'white' }} />,
+        'Keywords': <TopicIcon sx={{ color: 'white' }} />,
+        'Topics': < ArticleIcon sx={{ color: 'white' }} />,
+        'Deactivate Writers': <FlagIcon sx={{ color: 'white' }} />,
         'User Roles': <GroupIcon sx={{ color: 'white' }} />,
         'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
       };
@@ -116,7 +137,7 @@ const [selectedIndex, setSelectedIndex] = useState(0);
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'Topic Domains', 'Topic Domains','Keywords',  'Deactivate Writers', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
@@ -176,7 +197,7 @@ const handleListItemClick = (event, index) => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open} PaperProps={{sx: {backgroundColor: "primary.main"}}}>
+      <Drawer variant="permanent" open={open} PaperProps={{sx: {backgroundColor: "primary.main"}}} >
         <DrawerHeader sx={{backgroundColor:"primary.main"}}>
           <IconButton onClick={handleDrawerClose} sx={{color:"white"}}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -184,7 +205,7 @@ const handleListItemClick = (event, index) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Topic Domains', 'Topic Domains','Keywords',  'Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
@@ -222,7 +243,9 @@ const handleListItemClick = (event, index) => {
           ))}
         </List>
       </Drawer>
-      
+      <Main open = {open}>
+        {children}
+        </Main>
     </Box>
     
   );

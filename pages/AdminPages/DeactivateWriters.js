@@ -24,7 +24,7 @@ function createData(id, name) {
 }
 
 //Flagged Topics
-export default function FlaggedTopics() {
+export default function DeactivateWriters() {
   const [rows, setRows] = useState([
     
     createData(1, '1st flagged topic'),
@@ -94,7 +94,7 @@ export default function FlaggedTopics() {
   return (
     
     <div>
-      <Navbar />
+      <Navbar>
      
       <TablePaginationActions/>
       <Box
@@ -189,6 +189,7 @@ export default function FlaggedTopics() {
           </Table>
         </TableContainer>
       </Box>
+      </Navbar>
     </div>
   );
 }

@@ -14,7 +14,7 @@ function Home() {
       <Head>
         <title>Admin Page</title>
       </Head>
-      <Navbar />
+      <Navbar>
 
       <Box sx={{ backgroundColor: "#736fec", minHeight: "100vh", marginLeft: "64px" }}>
         <Card sx={{ maxWidth: "600px", margin: "auto" }}>
@@ -42,6 +42,7 @@ function Home() {
           </CardContent>
         </Card>
       </Box>
+      </Navbar>
     </>
   );
 }

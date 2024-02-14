@@ -1,55 +1,183 @@
-
-//Permanent drawer
-import { useState, useEffect } from "react";
-import { useRouter } from 'next/router';
-import Link from 'next/link';
 import * as React from 'react';
-
-//MUI components
+import { useState, useEffect } from "react";
+import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
+import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import IconButton from '@mui/material/IconButton';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AvatarIcon from '../components/avatar';
 import CustomNotificationIcon from "../components/customNotificationIcon";
-import MenuIcon from '@mui/icons-material/Menu';
-import {handleDrawerOpen,open} from '../components/customDrawer';
-import MiniDrawer from "../components/customDrawer";
 
 
-const drawerWidth = 220;  //width for the drawer we can change this
-const AppBarWidth = 64;
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CreateIcon from '@mui/icons-material/Create';
+import TopicIcon from '@mui/icons-material/Topic';
+import ArticleIcon from '@mui/icons-material/Article';
+import FlagIcon from '@mui/icons-material/Flag';
+import GroupIcon from '@mui/icons-material/Group';
+import CheckIcon from '@mui/icons-material/Check';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+
+const drawerWidth = 240;
+
+const openedMixin = (theme) => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(open && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  }),
+);
+
+export default function Navbar({children}) {
+
+    const iconMap = {
+        'Dashboard': < DashboardIcon sx={{ color: 'white' }} />,
+        'Topic Domains': <CreateIcon sx={{ color: 'white' }} />,
+        'Keywords': <TopicIcon sx={{ color: 'white' }} />,
+        'Topics': < ArticleIcon sx={{ color: 'white' }} />,
+        'Deactivate Writers': <FlagIcon sx={{ color: 'white' }} />,
+        'User Roles': <GroupIcon sx={{ color: 'white' }} />,
+        'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
+      };
+    const router = useRouter();
+const [selectedIndex, setSelectedIndex] = useState(0);
+
+useEffect(() => {
+  // Update the selected index whenever the route changes
+  const path = router.pathname;
+  const index = ['Dashboard', 'Topic Domains', 'Keywords','Topics',  'Deactivate Writers', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  setSelectedIndex(index);
+}, [router.pathname]); //only be executed if router.pathname changes between renders.
 
 
-export default function NavBar() {
-  const router = useRouter();
+const handleListItemClick = (event, index) => {
+    setSelectedIndex(index);
+  };
 
+
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
-      
-      <AppBar
-        position="fixed"
-        sx={{
-          backgroundColor: "primary.main"
-          //width:`calc(100% - ${drawerWidth}px)`,
-          // ml: `${drawerWidth}px`,
-        }}
-      >
-        <Toolbar>
-        
-          
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar sx={{display:'flex'}}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: 'none' }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div"
+            sx={{
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'primary.light',
+              textDecoration: 'none',
+            }}>
+            Writer
+          </Typography>
+          <Typography variant="h6" noWrap component="div"
+            sx={{
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+              paddingLeft: '10px'
+            }}>
+            GATE
+          </Typography>
           <div style={{ flexGrow: 1 }}></div>
           <IconButton
             size="large"
@@ -63,52 +191,44 @@ export default function NavBar() {
             <AvatarIcon/>
         </Toolbar>
       </AppBar>
-
-      <Toolbar />
-            <MiniDrawer/>
-{/* 
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            marginTop: `calc(${AppBarWidth}px)`, //marginTop:'64px',
-            backgroundColor: '#060552'
-          },
-        }}
-        variant="permanent"  // making drawer permanent
-        anchor="left"   //drawer to left
-      >
-
-
-
-
-<List sx={{ overflow: 'hidden' }}>
-          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles'].map((text, index) => (
-            <ListItem key={text}>
+      <Drawer variant="permanent" open={open} PaperProps={{sx: {backgroundColor: "primary.main"}}}>  
+        <DrawerHeader sx={{backgroundColor:"primary.main"}}>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {['Dashboard', 'Topic Domains', 'Keywords','Topics',  'Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
+            <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
                   selected={selectedIndex === index}
                   onClick={(event) => handleListItemClick(event, index)}
                   sx={{
-                    color: 'white',
-                    padding: '8px 1px',
-                    width: drawerWidth,
+                    color: 'primary.main',
+                    minHeight: 48,
+                    justifyContent: open ? 'initial' : 'center',
+                    px: 2.5,
                     ':hover': {
-                      color: 'inherit',
-                      backgroundColor: '#5f71f3',
+                      color: 'white',
+                      backgroundColor: 'primary.dark',
                       '& .MuiSvgIcon-root': {
-                        color: 'black',
+                        color: 'white',
                       },
                     },
-                  }}
+                }}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}
+                  >
                     {iconMap[text]}
                   </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemText primary={text} sx={{color:"primary.contrastText", opacity: open ? 1 : 0 }}/>
 
                 </ListItemButton>
 
@@ -116,10 +236,38 @@ export default function NavBar() {
             </ListItem>
           ))}
         </List>
-      </Drawer> */}
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <DrawerHeader />
+        {/* <Typography paragraph>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
+          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
+          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
+          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
+          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
+          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
+          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
+          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
+          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
+          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
+          sapien faucibus et molestie ac.
+        </Typography>
+        <Typography paragraph>
+          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
+          eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
+          neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
+          tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
+          sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
+          tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
+          gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
+          et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
+          tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
+          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
+          posuere sollicitudin aliquam ultrices sagittis orci a.
+        </Typography> */}
+        {children}
+      </Box>
     </Box>
   );
 }
-
-
-
