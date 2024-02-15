@@ -20,4 +20,4 @@ const EditConfirmationDialog = ({ open, onClose, onConfirm }) => {
   );
 };
 
-export default EditConfirmationDialog;
+export default  EditConfirmationDialog;
