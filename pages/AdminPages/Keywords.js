@@ -14,12 +14,16 @@ import Box from '@mui/material/Box';
 import TextField from "@mui/material/TextField";
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog';
 import EditConfirmationDialog from '../../components/EditConfirmationDialog';
-import AddConfirmationDialog from '../../components/AddConfirmationDialog';
+import AddKeywordConfirmationDialog from '../../components/AddKeywordConfirmationDialog';
 import AlertDialog from '../../components/AlertDialog';
 import FormControl from '@mui/material/FormControl';
 import Select from "@mui/material/Select"
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from "@mui/material/InputLabel"
+
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/keywords`
@@ -52,6 +56,10 @@ function Keywords() {
   const [descriptionError, setDescriptionError] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
+
+  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = React.useState(false);
+  const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
+  const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,9 +134,18 @@ function Keywords() {
       setNewItem({ keywordName: '', description: '' }); // Clear newItem state
       setShowAddConfirmation(false); // Hide the confirmation dialog
       setShowAddForm(false); // Close the add form
+
       setSelectedTopicDomain(''); // Clear selectedTopicDomain state
       setKeywordName('');
       setDescription('');
+
+      setAddSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setAddSuccessfulAlertOpen(false);
+      }, 20000);
+
     } catch (error) {
       console.error("Error adding data:", error);
     }
@@ -168,6 +185,14 @@ function Keywords() {
       setShowEditConfirmation(false);
       const response = await api.get("/get");
       setData(response.data);
+
+      // Show success message
+      setEditSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setEditSuccessfulAlertOpen(false);
+      }, 20000);
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -213,9 +238,28 @@ function Keywords() {
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.keywordId !== deleteTargetId));
       setShowDeleteConfirmation(false);
+      // Show success message
+      setDeleteSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setDeleteSuccessfulAlertOpen(false);
+      }, 20000);
     } catch (error) {
       console.error("Error deleting data:", error);
     }
+  };
+
+  const handleCloseDeleteSuccessfulAlertOpen = () => {
+    setDeleteSuccessfulAlertOpen(false);
+  };
+
+  const handleCloseAddSuccessfulAlertOpen = () => {
+    setAddSuccessfulAlertOpen(false);
+  };
+
+  const handleCloseEditSuccessfulAlertOpen = () => {
+    setEditSuccessfulAlertOpen(false);
   };
 
   if (isLoading) {
@@ -268,7 +312,7 @@ function Keywords() {
                 error={descriptionError}
                 style={{ marginRight: "10px" }}
               />
-              <Button variant="contained" color="primary" onClick={handleAddClick}>Add</Button>
+              <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
             </div>
           )}
 
@@ -348,7 +392,7 @@ function Keywords() {
             onConfirm={handleConfirmSave}
           />
 
-          <AddConfirmationDialog
+          <AddKeywordConfirmationDialog
             open={showAddConfirmation}
             onClose={handleCancelAdd}
             onConfirm={handleConfirmAdd}
@@ -361,6 +405,25 @@ function Keywords() {
             message="Please fill in all required fields."
             onClose={() => setShowAlert(false)}
           />
+
+          <Snackbar open={deleteSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseDeleteSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseDeleteSuccessfulAlertOpen} severity="success">
+              Keyword and related topics deleted successfully!
+            </MuiAlert>
+          </Snackbar>
+
+          <Snackbar open={addSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseAddSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseAddSuccessfulAlertOpen} severity="success">
+              Keyword added successfully!
+            </MuiAlert>
+          </Snackbar>
+
+          <Snackbar open={editSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseEditSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseEditSuccessfulAlertOpen} severity="success">
+              Keyword edited successfully!
+            </MuiAlert>
+          </Snackbar>
+
 
         </div>
       </Navbar>

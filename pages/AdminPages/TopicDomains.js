@@ -14,8 +14,11 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog';
 import EditConfirmationDialog from '../../components/EditConfirmationDialog';
-import AddConfirmationDialog from '../../components/AddConfirmationDialog';
+import AddTopicDomainConfirmationDialog from '../../components/AddTopicDomainConfirmationDialog';
 import AlertDialog from '../../components/AlertDialog';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topicDomains`
@@ -48,6 +51,9 @@ function TopicDomains() {
 
   const [showAlert, setShowAlert] = useState(false);
 
+  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = React.useState(false);
+  const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
+  const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,7 +91,7 @@ function TopicDomains() {
     }
 
     // Update newItem state with latest values
-    setNewItem({topicDomainName, description });
+    setNewItem({ topicDomainName, description });
 
     // Show the confirmation dialog
     setShowAddConfirmation(true);
@@ -97,18 +103,27 @@ function TopicDomains() {
     console.log(newItem);
     try {
       const response = await api.post("/add", newItem);
-     
+
       setData([...data, response.data]); // Update data array with the new item
       setNewItem({ topicDomainName: '', description: '' }); // Clear newItem state
       setShowAddConfirmation(false); // Hide the confirmation dialog
       setShowAddForm(false); // Close the add form
+
+      // Show success message
+      setAddSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setAddSuccessfulAlertOpen(false);
+      }, 20000);
+
       setTopicDomainName(''); // Clear topicDomainName state
       setDescription(''); // Clear description state
     } catch (error) {
       console.error("Error adding data:", error);
     }
   };
-  
+
 
   const handleCancelAdd = () => {
     setShowAddConfirmation(false);
@@ -141,8 +156,17 @@ function TopicDomains() {
       await api.patch(`/edit/${editingRowId}`, updatedRow);
       setEditingRowId(null); // Reset editing row ID
       setShowEditConfirmation(false);
+      //get data
       const response = await api.get("/get");
       setData(response.data);
+
+      // Show success message
+      setEditSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setEditSuccessfulAlertOpen(false);
+      }, 20000);
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -165,44 +189,64 @@ function TopicDomains() {
     setDeleteTargetId(topicDomainId);
     setShowDeleteConfirmation(true);
   };
-  
+
   const handleConfirmDelete = async () => {
     try {
-        // Fetch keywords associated with the topic domain
-        const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/${deleteTargetId}`);
-        const keywordsToDelete = keywordsResponse.data;
-        console.log("Keywords to delete:", keywordsToDelete);
+      // Fetch keywords associated with the topic domain
+      const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/${deleteTargetId}`);
+      const keywordsToDelete = keywordsResponse.data;
+      console.log("Keywords to delete:", keywordsToDelete);
 
-        // Delete each keyword sequentially
-        await Promise.all(keywordsToDelete.map(async keyword => {
-          console.log("Deleting keyword:", keyword); // Log the keyword being deleted
-          console.log(`Deleting keyword with ID: ${keyword.keywordId}`);
-          await axios.delete(`http://localhost:3001/api/keywords/delete/${keyword.keywordId}`);
+      // Delete each keyword sequentially
+      await Promise.all(keywordsToDelete.map(async keyword => {
+        console.log("Deleting keyword:", keyword); // Log the keyword being deleted
+        console.log(`Deleting keyword with ID: ${keyword.keywordId}`);
+        await axios.delete(`http://localhost:3001/api/keywords/delete/${keyword.keywordId}`);
       }));
-      
 
-        // Fetch topics associated with the topic domain
-        const topicsResponse = await axios.get(`http://localhost:3001/api/topics/${deleteTargetId}`);
-        const topicsToDelete = topicsResponse.data;
-        console.log("Topics to delete:", topicsToDelete);
 
-        // Delete each topic sequentially
-        for (const topic of topicsToDelete) {
-            console.log("Deleting topic:", topic);
-            console.log(`Deleting topic with ID: ${topic.topicId}`);
-            await axios.delete(`http://localhost:3001/api/topics/delete/${topic.topicId}`);
-        }
+      // Fetch topics associated with the topic domain
+      const topicsResponse = await axios.get(`http://localhost:3001/api/topics/${deleteTargetId}`);
+      const topicsToDelete = topicsResponse.data;
+      console.log("Topics to delete:", topicsToDelete);
 
-        // Delete the topic domain itself
-        await axios.delete(`http://localhost:3001/api/topicDomains/${deleteTargetId}`);
+      // Delete each topic sequentially
+      for (const topic of topicsToDelete) {
+        console.log("Deleting topic:", topic);
+        console.log(`Deleting topic with ID: ${topic.topicId}`);
+        await axios.delete(`http://localhost:3001/api/topics/delete/${topic.topicId}`);
+      }
 
-        // Update the state to remove the deleted topic domain from the UI
-        setData(data.filter(item => item.topicDomainId !== deleteTargetId));
-        setShowDeleteConfirmation(false);
+      // Delete the topic domain itself
+      await axios.delete(`http://localhost:3001/api/topicDomains/${deleteTargetId}`);
+
+      // Update the state to remove the deleted topic domain from the UI
+      setData(data.filter(item => item.topicDomainId !== deleteTargetId));
+      setShowDeleteConfirmation(false);
+      // Show success message
+      setDeleteSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setDeleteSuccessfulAlertOpen(false);
+      }, 20000);
     } catch (error) {
-        console.error("Error deleting data:", error);
+      console.error("Error deleting data:", error);
     }
-};
+  };
+
+  const handleCloseDeleteSuccessfulAlertOpen = () => {
+    setDeleteSuccessfulAlertOpen(false);
+  };
+
+  const handleCloseAddSuccessfulAlertOpen = () => {
+    setAddSuccessfulAlertOpen(false);
+  };
+
+  const handleCloseEditSuccessfulAlertOpen = () => {
+    setEditSuccessfulAlertOpen(false);
+  };
+
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -237,7 +281,7 @@ function TopicDomains() {
                 error={descriptionError}
                 style={{ marginRight: "10px" }}
               />
-              <Button variant="contained" color="primary" onClick={handleAddClick}>Add</Button>
+              <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
             </div>
           )}
 
@@ -317,7 +361,7 @@ function TopicDomains() {
             onConfirm={handleConfirmSave}
           />
 
-          <AddConfirmationDialog
+          <AddTopicDomainConfirmationDialog
             open={showAddConfirmation}
             onClose={handleCancelAdd}
             onConfirm={handleConfirmAdd}
@@ -330,6 +374,25 @@ function TopicDomains() {
             message="Please fill in all required fields."
             onClose={() => setShowAlert(false)}
           />
+          <Snackbar open={deleteSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseDeleteSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseDeleteSuccessfulAlertOpen} severity="success">
+              Topic Domain and related keywords and topics deleted successfully!
+            </MuiAlert>
+          </Snackbar>
+
+          <Snackbar open={addSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseAddSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseAddSuccessfulAlertOpen} severity="success">
+              Topic Domain added successfully!
+            </MuiAlert>
+          </Snackbar>
+
+          <Snackbar open={editSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseEditSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseEditSuccessfulAlertOpen} severity="success">
+              Topic Domain edited successfully!
+            </MuiAlert>
+          </Snackbar>
+
+
 
         </div>
       </Navbar>
