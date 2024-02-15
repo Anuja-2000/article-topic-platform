@@ -1,6 +1,6 @@
 import React,{ useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
-import ArticleCard from '../../components/articleCard';
+import ArticleCard from '../../components/article/articleCard';
 import Link from 'next/link';
 
 
