@@ -38,7 +38,7 @@ function SearchArticleBox(props) {
         date: '2024-02-16',
         writer: `Author ${index + 1}`,
         writerImage: `https://via.placeholder.com/30x30?text=${(index + 1).toString()}`,
-        articleImage: `https://via.placeholder.com/300x140?text=Image${index + 1}`,
+        articleImage: '/articlePic.jpg',
         category: 'Web Development',
         tags: ['React', 'JavaScript', 'CSS'],
       }));
