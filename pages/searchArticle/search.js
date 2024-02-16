@@ -9,6 +9,7 @@ import NavBar from '../../components/Navbar';
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Navbar from '../../components/navbarReader/Navbar';
 
 
 const SearchTextField = styled(TextField)({
@@ -42,52 +43,7 @@ function Search(){
                 <link rel="icon" href="/favicon.ico"/> 
             </Head>
             <div className={style.navbar}>
-              {<AppBar bposition="fixed"sx={{backgroundColor: '#0082e6'}}>
-                <Toolbar>
-                    <Typography variant="h6" noWrap component="div"
-                          sx={{
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: '#9399f7',
-                            textDecoration: 'none',
-                          }}>
-                          Writer
-                      </Typography>
-                      <Typography variant="h6" noWrap component="div"
-                          sx={{
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                            paddingLeft: '10px'
-                          }}>
-                          GATE
-                      </Typography>
-                      <div style={{ flexGrow: 1 }}></div>
-                      <IconButton
-                      size="large"
-                      color="white"
-                      aria-label="search"
-                      >
-                      </IconButton>
-                      <IconButton
-                      size="large"
-                      color="white" // this don't work
-                      aria-label="notifications"
-                      >
-                      <NotificationsIcon />
-                      </IconButton>
-                      <IconButton
-                      size="large"
-                      color="white" // this don't work
-                      aria-label="account"
-                      >
-                      <AccountCircleIcon />
-                      </IconButton>
-                  </Toolbar>
-              </AppBar> }
+            <Navbar />
             </div>
             { <div className={style.searchBox}>
                 <Box sx={{ width: 1350, maxWidth: '100%'}}>
@@ -103,7 +59,7 @@ function Search(){
             </div> 
           }
             <div className={style.articleBoxOuter}>
-                {/* < SearchArticleBox keyword={searchKey}/> */}
+                { < SearchArticleBox/> }
             </div>
         </div>
     );
