@@ -1,4 +1,4 @@
-import styles from '../styles/forgotPassword.module.css';
+import styles from '../../styles/forgotPassword.module.css';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';

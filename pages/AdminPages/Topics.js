@@ -14,12 +14,15 @@ import Box from '@mui/material/Box';
 import TextField from "@mui/material/TextField";
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog';
 import EditConfirmationDialog from '../../components/EditConfirmationDialog';
-import AddConfirmationDialog from '../../components/AddConfirmationDialog';
+import AddTopicConfirmationDialog from '../../components/AddTopicConfirmationDialog';
 import AlertDialog from '../../components/AlertDialog';
 import FormControl from '@mui/material/FormControl';
 import Select from "@mui/material/Select"
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from "@mui/material/InputLabel"
+
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topics`
@@ -56,6 +59,9 @@ function Topics() {
 
   const [showAlert, setShowAlert] = useState(false);
 
+  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = React.useState(false);
+  const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
+  const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -143,6 +149,13 @@ function Topics() {
       setSelectedKeyword('');
       setTopicName('');
       setDescription('');
+
+      setAddSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setAddSuccessfulAlertOpen(false);
+      }, 20000);
     } catch (error) {
       console.error("Error adding data:", error);
     }
@@ -156,7 +169,7 @@ function Topics() {
     //Remove if typed data shown
     setTopicName('');
     setDescription('');
-    setSelectedTopicDomain(''); 
+    setSelectedTopicDomain('');
     setSelectedKeyword('');
   };
 
@@ -185,6 +198,14 @@ function Topics() {
       setShowEditConfirmation(false);
       const response = await api.get("/get");
       setData(response.data);
+
+      // Show success message
+      setEditSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setEditSuccessfulAlertOpen(false);
+      }, 20000);
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -217,9 +238,28 @@ function Topics() {
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.topicId !== deleteTargetId));
       setShowDeleteConfirmation(false);
+      // Show success message
+      setDeleteSuccessfulAlertOpen(true);
+
+      // Hide the message after 30 seconds
+      setTimeout(() => {
+        setDeleteSuccessfulAlertOpen(false);
+      }, 20000);
     } catch (error) {
       console.error("Error deleting data:", error);
     }
+  };
+
+  const handleCloseDeleteSuccessfulAlertOpen = () => {
+    setDeleteSuccessfulAlertOpen(false);
+  };
+
+  const handleCloseAddSuccessfulAlertOpen = () => {
+    setAddSuccessfulAlertOpen(false);
+  };
+
+  const handleCloseEditSuccessfulAlertOpen = () => {
+    setEditSuccessfulAlertOpen(false);
   };
 
   if (isLoading) {
@@ -234,7 +274,7 @@ function Topics() {
     <div>
       <Navbar>
         <div className="App" style={{ marginTop: "60px" }}>
-          <h2 style={{ textAlign: "center" }}>Keywords</h2>
+          <h2 style={{ textAlign: "center" }}>Topics</h2>
 
           {/* Add Form */}
           {showAddForm && (
@@ -369,7 +409,7 @@ function Topics() {
             onConfirm={handleConfirmSave}
           />
 
-          <AddConfirmationDialog
+          <AddTopicConfirmationDialog
             open={showAddConfirmation}
             onClose={handleCancelAdd}
             onConfirm={handleConfirmAdd}
@@ -382,6 +422,24 @@ function Topics() {
             message="Please fill in all required fields."
             onClose={() => setShowAlert(false)}
           />
+
+          <Snackbar open={deleteSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseDeleteSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseDeleteSuccessfulAlertOpen} severity="success">
+              Topic deleted successfully!
+            </MuiAlert>
+          </Snackbar>
+
+          <Snackbar open={addSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseAddSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseAddSuccessfulAlertOpen} severity="success">
+              Topic added successfully!
+            </MuiAlert>
+          </Snackbar>
+
+          <Snackbar open={editSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseEditSuccessfulAlertOpen}>
+            <MuiAlert onClose={handleCloseEditSuccessfulAlertOpen} severity="success">
+              Topic edited successfully!
+            </MuiAlert>
+          </Snackbar>
 
         </div>
       </Navbar>

@@ -6,16 +6,16 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 
-function AddConfirmationDialog({ open, onClose, onConfirm, newItem }) {
+function AddKeywordConfirmationDialog({ open, onClose, onConfirm, newItem }) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Add Confirmation</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to add this item?
+          Are you sure you want to add this Keyword?
         </DialogContentText>
         <DialogContentText>
-          <strong>Topic Domain Name:</strong> {newItem.topicDomainName}
+          <strong>Keyword Name:</strong> {newItem.keywordName}
         </DialogContentText>
         <DialogContentText>
           <strong>Description:</strong> {newItem.description}
@@ -33,4 +33,4 @@ function AddConfirmationDialog({ open, onClose, onConfirm, newItem }) {
   );
 }
 
-export default AddConfirmationDialog;
+export default AddKeywordConfirmationDialog;

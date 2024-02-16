@@ -12,7 +12,7 @@ function DeleteConfirmationDialog({ open, onClose, onConfirm }) {
       <DialogTitle>Confirmation</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete this topic domain ?
+          Are you sure you want to delete this ?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
