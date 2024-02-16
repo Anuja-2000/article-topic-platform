@@ -62,6 +62,8 @@ function Topics() {
   const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = React.useState(false);
   const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
+
+  const[topicDomainKeywords, setTopicDomainKeywords] = React.useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -97,7 +99,26 @@ function Topics() {
     fetchTopicDomains();
     fetchKeywords();
   }, []);
+// Fetch keywords associated with the selected topic domain
+useEffect(() => {
+  const fetchKeywordsByTopicDomain = async () => {
+    try {
+      if (selectedTopicDomain) {
+        const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedTopicDomain}`);
+        setTopicDomainKeywords(response.data);
+        console.log(response.data);
+      } else {
+        // If no topic domain is selected, clear the keywords
+        setTopicDomainKeywords([]);
+       
+      }
+    } catch (error) {
+      console.error('Error fetching keywords by topic domain:', error);
+    }
+  };
 
+  fetchKeywordsByTopicDomain();
+}, [selectedTopicDomain]);
 
 
   const handleAddClick = () => {
@@ -305,11 +326,11 @@ function Topics() {
                   onChange={(e) => setSelectedKeyword(e.target.value)}
                   label="Keyword"
                 >
-                  {keywords.map((keyword) => (
-                    <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
-                      {keyword.keywordName}
-                    </MenuItem>
-                  ))}
+                {topicDomainKeywords.map((keyword) => (
+                  <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
+                    {keyword.keywordName}
+                  </MenuItem>
+                ))}
                 </Select>
               </FormControl>
 
