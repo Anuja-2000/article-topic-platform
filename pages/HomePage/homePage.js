@@ -1,4 +1,6 @@
-import TrendingArticleBox from "../Trending/trendingArticleBox";
+//import TrendingArticleBox from "../Trending/trendingArticleBox";
+import SearchArticleBox from '../searchArticle/searchArticleBox';
+import style from "../../styles/search.module.css";
 import Styles from '../../styles/homePage.module.css'
 import React from 'react';
 import { Button } from "@mui/material";
@@ -22,7 +24,10 @@ function HomePage(){
                 <Button sx={{borderRadius:6,marginLeft:13,marginTop:4,height:52,fontSize:20,textTransform: 'none', fontFamily:'Ubuntu'}} variant="contained">Get Started</Button>
             </div>
             <h3 className={Styles.trending}>#Trendings</h3>
-            {/* <div className={Styles.trends}>< TrendingArticleBox keyword=" " /> </div> */}
+            <div className={style.articleBoxOuter}>
+                { < SearchArticleBox/> }
+            </div>
+            
         </div>
     );
 

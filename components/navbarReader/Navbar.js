@@ -50,9 +50,31 @@ const Navbar = () => {
   return (
     <AppBar position="fixed" style={{ width: '100%' }} sx={{ backgroundColor: '#f5f5f5', color: 'black' }}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontFamily: 'Montserrat', fontWeight: 'bold' }}>
-          Writer Gate
+        
+        <Typography variant="h6" noWrap component="div"
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: '#9399f7',
+                            textDecoration: 'none',
+                          }}>
+                          Writer
         </Typography>
+        <Typography variant="h6" noWrap component="div"
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
+                            paddingLeft: '10px',
+                            flexGrow: 1
+                          }}>
+                          GATE
+        </Typography>
+                   
+       
 
         {/* Notifications Icon with Badge */}
         <Button color="inherit" onClick={handleNotificationClick}>
