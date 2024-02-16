@@ -1,4 +1,4 @@
-
+/*
 import * as React from 'react';
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
@@ -134,7 +134,7 @@ export default function DeactivateWriters() {
             </TableHead>
             <TableBody>
               {(rowsPerPage > 0
-                ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+               // ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 : rows
               ).map((row) => (
                 <TableRow key={row.id}>
@@ -193,3 +193,4 @@ export default function DeactivateWriters() {
     </div>
   );
 }
+*/
