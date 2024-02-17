@@ -1,5 +1,5 @@
 // pages/article/[article].js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Container, Button, Typography, Divider } from '@mui/material';  // Updated import
 import Header from '../../components/article/Header';
@@ -8,9 +8,33 @@ import CommentSection from '../../components/article/CommentSection';
 import LikeShareDownload from '../../components/article/LikeShareDownload';
 import styles from '../../styles/article.module.css';
 import Navbar from '../../components/navbarReader/Navbar';
+import Image from 'next/image';
 
-const ArticlePage = ({ article }) => {
+const ArticlePage = () => {
   const router = useRouter();
+  const [articleData, setData] = useState([]);
+  const backendApiUrl = process.env.NEXT_PUBLIC_BACKEND_API;
+  const customId = "art1";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/readerArticle/get`, {
+          headers: {
+            'Content-Type': 'application/json', // Adjust the content type if needed
+            'id': customId, // Add your custom data in headers
+          },
+      });
+        const jsonData = await response.json();
+        setData(jsonData);
+        console.log(backendApiUrl);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -23,16 +47,16 @@ const ArticlePage = ({ article }) => {
       </div>
       <div className={styles.articleContainer}>
         <Header
-          writer={article.writer}
-          date={article.date}
-          time={article.time}
-          title={article.title}
-          profilePic={article.profilePic}
+          writer={articleData.writer}
+          date={articleData.date}
+          time={articleData.time}
+          title={articleData.title}
+          profilePic={articleData.profilePic}
         />
         <div className={styles.imageContainer} >
-          <img src={article.image} alt="Article Image" className={styles.image} />
+          <img  src={articleData.image} alt="Article Image" className={articleData.image} />
         </div>
-        <ArticleBody content={article.content} className={styles.content} />
+        <ArticleBody content={articleData.content} className={styles.content} />
         <LikeShareDownload />
         <Divider sx={{ marginY: 2 }}/>
         <CommentSection />
@@ -41,7 +65,7 @@ const ArticlePage = ({ article }) => {
   );
 };
 
-export async function getStaticProps({ params }) {
+/*export async function getStaticProps({ params }) {
   const { article } = params;
 
   const articleData = await fetchArticleBySlug(article);
@@ -94,6 +118,6 @@ async function fetchArticleBySlug(slug) {
 async function fetchArticleSlugs() {
   // Your data fetching logic here
   return ['article1', 'article2'];
-}
+}*/
 
 export default ArticlePage;

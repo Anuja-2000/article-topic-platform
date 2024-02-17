@@ -33,23 +33,32 @@ function SearchArticleBox(props) {
         }, [props.keyword]) 
 
        console.log(data);
-
-  
+       const articles = Array.from({ length: 10 }, (_, index) => ({
+        title: `Exploring the World of Web Development`,
+        date: '2024-02-16',
+        writer: `Author ${index + 1}`,
+        writerImage: `https://via.placeholder.com/30x30?text=${(index + 1).toString()}`,
+        articleImage: '/articlePic.jpg',
+        category: 'Web Development',
+        tags: ['React', 'JavaScript', 'CSS'],
+      }));
 
         return (
             <div style={{marginTop:'20px', width:'100%'}}>
                 <Grid sx={{ flexGrow: 1 }}>
                     <Grid item xs={12}>
                         <Grid container justifyContent="center" spacing={3}>
-                        {data.map((item) => (
+                        {/*data.map((item) => (
                             <Grid key={item.articleId} item>
-                                 <Link href={`/article?id=${item.articleId}`} passHref>
+                                 {/*<Link href={`/article?id=${item.articleId}`} passHref>
                                     <ArticleCard name={item.title}  />
-                                </Link>
-                               
-                            
+                        </Link>}
+                                <ArticleCard name={item.title}  />
                             </Grid>
-                        ))}
+                        ))*/}
+                            {articles.map((article, index) => (
+                                 <ArticleCard key={index} {...article} />
+                             ))}
                         </Grid>
                     </Grid>
                         </Grid>
