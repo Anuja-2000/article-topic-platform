@@ -3,7 +3,7 @@ import SearchArticleBox from '../searchArticle/searchArticleBox';
 import style from "../../styles/search.module.css";
 import Styles from '../../styles/homePage.module.css'
 import React from 'react';
-import { Button } from "@mui/material";
+import { Button,Typography } from "@mui/material";
 import Link from 'next/link';
 
 function HomePage(){
@@ -11,8 +11,29 @@ function HomePage(){
     return(
         <div className={Styles.outer}>
             <div className={Styles.navBar} >
-                <div style={{ flexGrow: 0.2 }} ></div>
-                <div>Logo</div>
+                <div style={{ flexGrow: 0.1 }} ></div>
+                    <Typography variant="h6" noWrap component="div"
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: '#9399f7',
+                            textDecoration: 'none',
+                          }}>
+                          Writer
+                     </Typography>
+                    <Typography variant="h6" noWrap component="div"
+                          sx={{
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
+                            paddingLeft: '10px',
+                          }}>
+                          GATE
+                </Typography>
+        
                 <div style={{ flexGrow: 1 }} ></div>
                 <Link href="/contactUs"> <Button  sx={{marginRight:4, textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Contact Us</Button></Link>
                 <Link href="/login"> <Button  sx={{marginRight:4 , textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Sign In</Button></Link>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography, CardActions, Button, CardMedia, Avatar, Box, Chip } from '@mui/material';
 
-const ArticleCard = ({ title, content, date, writer, writerImage, articleImage, tags }) => {
+const ArticleCard = ({ title, date, writer, writerImage, articleImage, tags }) => {
   return (
     <Card style={{ border: '1px solid #ddd', borderRadius: '8px', width: 300, height: '100%', backgroundColor: '#f5f5f5', margin: '10px' }}>
       <CardContent>
@@ -29,7 +29,7 @@ const ArticleCard = ({ title, content, date, writer, writerImage, articleImage, 
           ))}
         </Box>
       </CardContent>
-      <CardMedia component="img" height="140" image={articleImage} alt={title} style={{marginBottom: '15px',borderRadius: '4px' }} />
+      <CardMedia component="img" height="140" src={articleImage} alt={title} style={{marginBottom: '15px',borderRadius: '4px' }} />
     </Card>
   );
 };
