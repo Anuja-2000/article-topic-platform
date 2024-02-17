@@ -68,7 +68,7 @@ export default function AvatarIcon() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>{username.charAt(0).toUpperCase()}</Avatar>
+            <Avatar sx={{ width: 32, height: 32, bgcolor:'darkblue' }}>{username.charAt(0).toUpperCase()}</Avatar>
           </IconButton>
         </Tooltip>
       </Box>

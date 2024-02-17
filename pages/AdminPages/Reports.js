@@ -3,8 +3,8 @@ import Navbar from '../../components/Navbar';
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
+import axios from 'axios';
 
-const uData = [2400, 1398];
 const domData = [300, 100, 240, 400, 150, 250, 300];
 
 const xLabelsUser = [
@@ -26,6 +26,16 @@ const xLabelsDomain = [
 
 function Reports() {
 
+    const [usersCount, setUsersCount] = React.useState([0,0]);
+
+    React.useEffect(() => {
+        const result = axios.get('http://localhost:3001/api/user/count').then((res) => {
+            setUsersCount(res.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, []);
+
     return (
         <>
             <Navbar>
@@ -37,7 +47,7 @@ function Reports() {
                             height={300}
                             series={[
                                 {
-                                    data: uData,
+                                    data: usersCount,
                                     label: 'No of users',
                                     id: 'pvId',
                                     yAxisKey: 'leftAxisId',

@@ -52,9 +52,10 @@ export default function Login() {
         if(type == "Admin"){
           window.location.href = "/AdminPages/Dashboard";
         }else if (type == "Reader"){
-          window.location.href = "/search";
+          window.location.href = "/searchArticle/search";
+        }else if (type == "Writer"){
+          window.location.href = "/WriterDashboard";
         }
-        
       }
     }).catch((error) => {
       console.log(error);
@@ -95,7 +96,7 @@ export default function Login() {
             type="text"
             variant="outlined"
             required
-            margin="normal"
+            margin="dense"
           />
           <TextField
             onChange={handleChange}
@@ -104,7 +105,7 @@ export default function Login() {
             type="email"
             variant="outlined"
             required
-            margin="normal"
+            margin="dense"
           />
 
           {/* <div className={styles.input2}>
@@ -122,6 +123,7 @@ export default function Login() {
               type="password"
               label="Password"
               required
+              margin="dense"
             />
 
           <div className={styles.raw}>

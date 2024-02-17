@@ -242,6 +242,10 @@ export default WriterDashboard;
 */
 export default function WriterDashboard(){
     return(
-    <></>
+    <>
+    <div>
+      <p>Writer dashboard</p>
+    </div>
+    </>
     )
 }

@@ -6,7 +6,10 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
 
 
 export default function Register() {
@@ -14,6 +17,7 @@ export default function Register() {
   const [values, setValues] = useState({
     username: "",
     email: "",
+    usertype: "",
     password: "",
     confirmPassword: ""
   });
@@ -25,17 +29,17 @@ export default function Register() {
     });
   };
 
-  const validateForm =  () => {
-    if (values.username == "" || values.email == "" || values.password == "" || values.confirmPassword == "") {
+  const validateForm = () => {
+    if (values.username == "" || values.email == "" || values.usertype == "" || values.password == "" || values.confirmPassword == "") {
       alert("All fields must be filled out");
       return false;
     } else if (values.password != values.confirmPassword) {
       alert("Passwords do not match");
       return false;
-    }else{
+    } else {
       return true;
     }
-    
+
   };
 
   const resetFields = (event) => {
@@ -49,10 +53,10 @@ export default function Register() {
 
 
 
-  const submit =  (event) => {
+  const submit = (event) => {
     event.preventDefault();
     //console.log(values);
-    if(validateForm()){
+    if (validateForm()) {
       //console.log("Form is valid");
       saveUser();
     }
@@ -60,13 +64,13 @@ export default function Register() {
 
   const saveUser = async () => {
 
-    const userId = values.username+"-"+uuidv4();
+    const userId = values.username + "-" + uuidv4();
 
     const response = axios.post("http://localhost:3001/api/user/signup", {
       userId: userId,
       email: values.email,
       name: values.username,
-      type: "Reader",
+      type: values.usertype,
       password: values.password,
     }).then((response) => {
       if (response.status == 201) {
@@ -75,13 +79,13 @@ export default function Register() {
       }
     }).catch((error) => {
       console.log(error.response.status);
-      if(error.response.status == 409){
+      if (error.response.status == 409) {
         alert("User already exists");
-      }else{
+      } else {
         alert("Error creating user. Please try again.");
       }
-      
-    
+
+
     })
   };
 
@@ -99,7 +103,7 @@ export default function Register() {
         </div>
         {/*form*/}
         <form id="regForm" className={styles.form} onSubmit={submit}>
-        <TextField
+          <TextField
             onChange={handleChange}
             name="username"
             value={values.username}
@@ -107,7 +111,7 @@ export default function Register() {
             type="text"
             variant="outlined"
             required
-            margin="normal"
+            margin="dense"
           />
           <TextField
             onChange={handleChange}
@@ -117,8 +121,23 @@ export default function Register() {
             type="email"
             variant="outlined"
             required
-            margin="normal"
+            margin="dense"
           />
+
+          <FormControl variant="outlined" margin="dense" required sx={{minWidth:"120px"}}>
+          <InputLabel id="demo-simple-select-label">User Type</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="usertype"
+            name="usertype"
+            value={values.usertype}
+            label="User Type"
+            onChange={handleChange}
+          >
+            <MenuItem value={"Reader"}>Reader</MenuItem>
+            <MenuItem value={"Writer"}>Writer</MenuItem>
+          </Select>
+          </FormControl>
           <TextField
             onChange={handleChange}
             name="password"
@@ -127,7 +146,7 @@ export default function Register() {
             type="password"
             variant="outlined"
             required
-            margin="normal"
+            margin="dense"
           />
           <TextField
             onChange={handleChange}
@@ -137,7 +156,7 @@ export default function Register() {
             type="password"
             variant="outlined"
             required
-            margin="normal"
+            margin="dense"
           />
           {/*login buttons */}
           <div className={styles.raw2}>
