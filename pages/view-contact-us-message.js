@@ -1,3 +1,5 @@
+"use client";
+
 import { Send } from "@mui/icons-material";
 import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
@@ -108,9 +110,9 @@ export default function ViewContactUsMessage() {
   };
   return (
     <>
-      <NavBar />
+      <NavBar>
       <ThemeProvider theme={theme}>
-        <Container maxWidth="lg" sx={{ marginTop: 10, ml:30 }}>
+        <Container maxWidth="lg">
           <Paper elevation={4}>
             <Grid Container spacing={2}>
               <Grid item xs={12}>
@@ -172,6 +174,7 @@ export default function ViewContactUsMessage() {
           </div>
         </Container>
       </ThemeProvider>
+      </NavBar>
     </>
   );
 }

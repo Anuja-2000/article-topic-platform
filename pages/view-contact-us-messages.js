@@ -154,8 +154,8 @@ export default function ViewContactUsMessages() {
 
   return (
     <div>
-      <NavBar />
-      <Container maxWidth="lg" sx={{ marginTop: 5, ml:30}}>
+      <NavBar>
+      <Container maxWidth="lg" >
         <TableContainer component={Paper} elevation={4}>
           <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
             <TableHead>
@@ -167,7 +167,7 @@ export default function ViewContactUsMessages() {
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableHead>
+            <TableHead sx={{backgroundColor:'primary.main'}}>
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
@@ -232,6 +232,7 @@ export default function ViewContactUsMessages() {
           </Table>
         </TableContainer>
       </Container>
+      </NavBar>
     </div>
   );
 }

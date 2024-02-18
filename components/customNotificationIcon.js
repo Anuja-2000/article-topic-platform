@@ -34,7 +34,7 @@ export default function CustomNotificationIcon() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <NotificationsIcon sx={{ color: 'primary.light' }} />
+            <NotificationsIcon sx={{ color: 'white' }} />
           </IconButton>
         </Tooltip>
       </Box>
