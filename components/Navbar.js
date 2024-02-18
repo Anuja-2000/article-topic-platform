@@ -130,7 +130,7 @@ const handleListItemClick = (event, index) => {
 
 
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);

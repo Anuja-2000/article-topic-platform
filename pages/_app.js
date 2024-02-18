@@ -8,9 +8,6 @@ import setAuthToken from "./api/auth/axios-set-token";
 import { useEffect, useState } from "react";
 
 
-
-
-
 export default function App({ Component, pageProps }) {
 
 const [isloading, setLoading] = useState(true);

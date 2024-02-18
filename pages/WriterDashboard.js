@@ -1,5 +1,5 @@
-/*import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
+import { styled, useTheme } from '@mui/material/styles';
 
 import TextEditor from './TextEditor';
 
@@ -9,12 +9,12 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import PendingIcon from '@mui/icons-material/Pending';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import TableRow from "@material-ui/core/TableRow";
+import TableRow from "@mui/material/TableRow";
 import {
   Drawer,
   List,
@@ -23,12 +23,12 @@ import {
   ListItemText,
   Grid,
   Paper,
-} from "@material-ui/core";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
+} from "@mui/material";
+
 
 const drawerWidth = 350;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = styled(("div"),(theme) => ({
   root: {
     display: "flex",
     height: "100vh",
@@ -239,13 +239,13 @@ const WriterDashboard = () => {
 };
 
 export default WriterDashboard;
-*/
-export default function WriterDashboard(){
-    return(
-    <>
-    <div>
-      <p>Writer dashboard</p>
-    </div>
-    </>
-    )
-}
+
+// export default function WriterDashboard(){
+//     return(
+//     <>
+//     <div>
+//       <p>Writer dashboard</p>
+//     </div>
+//     </>
+//     )
+// }
