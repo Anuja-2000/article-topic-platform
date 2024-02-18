@@ -61,6 +61,8 @@ function Keywords() {
   const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
 
+  const [selectedTopicDomainAddForm, setSelectedTopicDomainAddForm] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,7 +75,7 @@ function Keywords() {
         setIsLoading(false);
       }
     };
-
+  
     const fetchTopicDomains = async () => {
       try {
         const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
@@ -82,10 +84,32 @@ function Keywords() {
         console.error('Error fetching topic domains:', error);
       }
     };
-
+  
     fetchData();
     fetchTopicDomains();
+  
+    // Set 'all' as the default selected topic domain
+    setSelectedTopicDomain('all');
   }, []);
+  
+
+  const handleFilterChange = async (event) => {
+    const selectedValue = event.target.value;
+    setSelectedTopicDomain(selectedValue);
+
+    try {
+      if (selectedValue === 'all') {
+        const responseData = await api.get("/get");
+        setData(responseData.data); // Show all data
+      } else {
+        const response = await api.get(`/get/${selectedValue}`);
+        setData(response.data); // Show data filtered by the selected topic domain
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
 
 
 
@@ -119,23 +143,26 @@ function Keywords() {
     console.log(newItem);
     try {
       // Ensure that selectedTopicDomain is not empty
-      if (!selectedTopicDomain) {
+      if (!selectedTopicDomainAddForm) {
         console.error("No topic domain selected");
         return;
       }
 
-      const newItemWithTopicDomainId = { ...newItem, topicDomainId: selectedTopicDomain };
+      const newItemWithTopicDomainId = { ...newItem, topicDomainId: selectedTopicDomainAddForm };
       console.log(newItemWithTopicDomainId);
       //console.log(selectedTopicDomain);
 
       const response = await api.post("/add", newItemWithTopicDomainId);
+
+
+
 
       setData([...data, response.data]); // Update data array with the new item
       setNewItem({ keywordName: '', description: '' }); // Clear newItem state
       setShowAddConfirmation(false); // Hide the confirmation dialog
       setShowAddForm(false); // Close the add form
 
-      setSelectedTopicDomain(''); // Clear selectedTopicDomain state
+      setSelectedTopicDomainAddForm(''); // Clear selectedTopicDomain state
       setKeywordName('');
       setDescription('');
 
@@ -183,7 +210,7 @@ function Keywords() {
       await api.patch(`/edit/${editingRowId}`, updatedRow);
       setEditingRowId(null); // Reset editing row ID
       setShowEditConfirmation(false);
-      const response = await api.get("/get");
+      const response = selectedTopicDomain === 'all' ? await api.get("/get") : await api.get(`/get/${selectedTopicDomain}`);
       setData(response.data);
 
       // Show success message
@@ -284,8 +311,8 @@ function Keywords() {
                 <Select
                   labelId="topic-domain-label"
                   id="topic-domain-select"
-                  value={selectedTopicDomain}
-                  onChange={(e) => setSelectedTopicDomain(e.target.value)}
+                  value={selectedTopicDomainAddForm}
+                  onChange={(e) => setSelectedTopicDomainAddForm(e.target.value)}
                   label="Topic Domain"
                 >
                   {topicDomains.map((topicDomain) => (
@@ -322,8 +349,30 @@ function Keywords() {
               {showAddForm ? "Hide Form" : "Show Add Form"}
             </Button>
           </div>
+          
 
 
+
+          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+          <h4 style={{ textAlign: "center", marginBottom: "10px" }}>Select a Topic Domain to Display Keywords</h4>
+            <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
+              <InputLabel id="topic-domain-label">Filter by Topic Domain</InputLabel>
+              <Select
+                labelId="topic-domain-label"
+                id="topic-domain-select"
+                value={selectedTopicDomain}
+                onChange={handleFilterChange}
+                label="Filter by Topic Domain"
+              >
+                <MenuItem value="all">All</MenuItem>
+                {topicDomains.map((topicDomain) => (
+                  <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
+                    {topicDomain.topicDomainName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
           <Grid container spacing={1}>
             <Grid item xs={1}></Grid>
             <Grid item xs={10}>
@@ -336,43 +385,45 @@ function Keywords() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((row) => (
-                    <tr key={row.keywordId}>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.keywordId ? (
-                          <input
-                            type="text"
-                            value={row.keywordName}
-                            onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, keywordName: e.target.value } : item)))}
-                          />
-                        ) : (
-                          row.keywordName
-                        )}
-                      </td>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.keywordId ? (
-                          <input
-                            type="text"
-                            value={row.description}
-                            onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, description: e.target.value } : item)))}
-                          />
-                        ) : (
-                          row.description
-                        )}
-                      </td>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.keywordId ? (
-                          <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
+                  {data
+                    .filter(row => selectedTopicDomain === 'all' || row.topicDomainId === selectedTopicDomain)
+                    .map((row) => (
+                      <tr key={row.keywordId}>
+                        <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                          {editingRowId === row.keywordId ? (
+                            <input
+                              type="text"
+                              value={row.keywordName}
+                              onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, keywordName: e.target.value } : item)))}
+                            />
+                          ) : (
+                            row.keywordName
+                          )}
+                        </td>
+                        <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                          {editingRowId === row.keywordId ? (
+                            <input
+                              type="text"
+                              value={row.description}
+                              onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, description: e.target.value } : item)))}
+                            />
+                          ) : (
+                            row.description
+                          )}
+                        </td>
+                        <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
+                          {editingRowId === row.keywordId ? (
+                            <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
 
-                        ) : (
-                          <Box sx={{ display: 'flex', gap: '8px' }}>
-                            <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
-                          </Box>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                          ) : (
+                            <Box sx={{ display: 'flex', gap: '8px' }}>
+                              <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                            </Box>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </Grid>
