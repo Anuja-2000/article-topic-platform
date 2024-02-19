@@ -19,6 +19,9 @@ const UserTopicSuggestion = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchClicked, setSearchClicked] = useState(false);
 
+ 
+  const [selectedSearchResult, setSelectedSearchResult] = useState(null);
+
   useEffect(() => {
     const fetchTopicDomains = async () => {
       try {
@@ -63,10 +66,23 @@ const UserTopicSuggestion = () => {
       console.error('Error fetching search results:', error);
     }
   };
+  const handleSelectSearchResult = (resultId) => {
+    setSelectedSearchResult(resultId);
+  };
 
+  const handleCopySelectedTopicNames = () => {
+    const selectedTopic = searchResults.find((result) => result.topicId === selectedSearchResult);
+    if (selectedTopic) {
+      navigator.clipboard.writeText(selectedTopic.topicName)
+        .then(() => console.log('Selected topic name copied:', selectedTopic.topicName))
+        .catch((error) => console.error('Error copying selected topic name:', error));
+    }
+  };
+  
   return (
     <Navbar>
-      <div className="App" style={{ marginTop: '60px' }}>
+      <div className="App" style={{ marginTop: '60px', backgroundColor: '#669999', minHeight: '100vh', padding: '20px' }}>
+        
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <div style={{ marginRight: '20px' }}>
@@ -121,15 +137,21 @@ const UserTopicSuggestion = () => {
                   <CardContent>
                     <Typography variant="h4" gutterBottom style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', color: '#1e90ff' }}> Search Results</Typography>
                     {searchResults.map((result) => (
-                      <div key={result.topicId}>
-                        <ul>
-                          <li key={result.topicId}>
+                    <div key={result.topicId}>
+                      <FormControlLabel
+                        control={<Checkbox checked={selectedSearchResult === result.topicId} onChange={() => handleSelectSearchResult(result.topicId)} />}
+                        label={
+                          <>
                             <Typography variant="h6" style={{ marginBottom: '8px' }}>{result.topicName}</Typography>
                             <Typography variant="body1">{result.description}</Typography>
-                          </li>
-                        </ul>
-                      </div>
-                    ))}
+                          </>
+                        }
+                      />
+                      <Button variant="contained" disabled={selectedSearchResult !== result.topicId} onClick={handleCopySelectedTopicNames}>Copy Topic Name</Button>
+                    </div>
+                  ))}
+                  
+
 
                   </CardContent>
                 </Card>
