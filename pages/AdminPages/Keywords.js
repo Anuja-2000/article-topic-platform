@@ -17,12 +17,27 @@ import EditConfirmationDialog from '../../components/EditConfirmationDialog';
 import AddKeywordConfirmationDialog from '../../components/AddKeywordConfirmationDialog';
 import AlertDialog from '../../components/AlertDialog';
 import FormControl from '@mui/material/FormControl';
-import Select from "@mui/material/Select"
+import Select from "@mui/material/Select";
 import MenuItem from '@mui/material/MenuItem';
-import InputLabel from "@mui/material/InputLabel"
+import InputLabel from "@mui/material/InputLabel";
+import Paper from '@mui/material/Paper';
+
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePaginationActions from '../../components/TablePaginationActions';
+
+
+
 
 
 const api = axios.create({
@@ -35,6 +50,11 @@ function Keywords() {
   const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+
 
   const [editingRowId, setEditingRowId] = useState(null);
   const [keywordName, setKeywordName] = useState('');
@@ -75,7 +95,7 @@ function Keywords() {
         setIsLoading(false);
       }
     };
-  
+
     const fetchTopicDomains = async () => {
       try {
         const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
@@ -84,14 +104,14 @@ function Keywords() {
         console.error('Error fetching topic domains:', error);
       }
     };
-  
+
     fetchData();
     fetchTopicDomains();
-  
+
     // Set 'all' as the default selected topic domain
     setSelectedTopicDomain('all');
   }, []);
-  
+
 
   const handleFilterChange = async (event) => {
     const selectedValue = event.target.value;
@@ -111,6 +131,14 @@ function Keywords() {
   };
 
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
 
   const handleAddClick = () => {
@@ -349,12 +377,12 @@ function Keywords() {
               {showAddForm ? "Hide Form" : "Show Add Form"}
             </Button>
           </div>
-          
+
 
 
 
           <div style={{ marginBottom: "20px", textAlign: "center" }}>
-          <h4 style={{ textAlign: "center", marginBottom: "10px" }}>Select a Topic Domain to Display Keywords</h4>
+            <h4 style={{ textAlign: "center", marginBottom: "10px" }}>Select a Topic Domain to Display Keywords</h4>
             <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
               <InputLabel id="topic-domain-label">Filter by Topic Domain</InputLabel>
               <Select
@@ -373,24 +401,32 @@ function Keywords() {
               </Select>
             </FormControl>
           </div>
+          {/* Table */}
           <Grid container spacing={1}>
             <Grid item xs={1}></Grid>
             <Grid item xs={10}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Keyword</th>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Description</th>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data
-                    .filter(row => selectedTopicDomain === 'all' || row.topicDomainId === selectedTopicDomain)
-                    .map((row) => (
-                      <tr key={row.keywordId}>
-                        <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                          {editingRowId === row.keywordId ? (
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Keyword</h4>
+                      </TableCell>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Description</h4>
+                      </TableCell>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Actions</h4>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {data
+                      .filter(row => selectedTopicDomain === 'all' || row.topicDomainId === selectedTopicDomain)
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => (
+                        <TableRow key={row.keywordId}>
+                          <TableCell>{editingRowId === row.keywordId ? (
                             <input
                               type="text"
                               value={row.keywordName}
@@ -398,10 +434,8 @@ function Keywords() {
                             />
                           ) : (
                             row.keywordName
-                          )}
-                        </td>
-                        <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                          {editingRowId === row.keywordId ? (
+                          )}</TableCell>
+                          <TableCell>{editingRowId === row.keywordId ? (
                             <input
                               type="text"
                               value={row.description}
@@ -409,23 +443,41 @@ function Keywords() {
                             />
                           ) : (
                             row.description
-                          )}
-                        </td>
-                        <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                          {editingRowId === row.keywordId ? (
+                          )}</TableCell>
+                          <TableCell>{editingRowId === row.keywordId ? (
                             <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
-
                           ) : (
                             <Box sx={{ display: 'flex', gap: '8px' }}>
                               <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
                               <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
                             </Box>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+                          )}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        style={{ marginLeft: "auto" }}
+                        rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                        colSpan={3}
+                        count={data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        SelectProps={{
+                          inputProps: {
+                            "aria-label": "rows per page",
+                          },
+                          native: true,
+                        }}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActions}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
             </Grid>
             <Grid item xs={1}></Grid>
           </Grid>
@@ -476,9 +528,11 @@ function Keywords() {
           </Snackbar>
 
 
+
+
         </div>
-      </Navbar>
-    </div>
+      </Navbar >
+    </div >
   );
 }
 
