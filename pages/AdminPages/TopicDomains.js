@@ -19,6 +19,20 @@ import AlertDialog from '../../components/AlertDialog';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePaginationActions from '../../components/TablePaginationActions';
+import Paper from '@mui/material/Paper';
+
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+
+
+
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topicDomains`
@@ -29,6 +43,9 @@ function TopicDomains() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [editingRowId, setEditingRowId] = useState(null);
   const [topicDomainName, setTopicDomainName] = useState('');
@@ -72,6 +89,19 @@ function TopicDomains() {
   }, []);
 
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    console.log('New rows per page:', newRowsPerPage);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    console.log('New page:', 0);
+  };
+  
+  
 
   const handleAddClick = () => {
     if (topicDomainName.trim() === "") {
@@ -96,7 +126,7 @@ function TopicDomains() {
     // Show the confirmation dialog
     setShowAddConfirmation(true);
   };
-
+ 
 
   const handleConfirmAdd = async () => {
     console.log("handleConfirmAdd function called"); // Add this line for debugging
@@ -292,58 +322,87 @@ function TopicDomains() {
             </Button>
           </div>
 
-
           <Grid container spacing={1}>
             <Grid item xs={1}></Grid>
             <Grid item xs={10}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Topic Domain</th>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Description</th>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((row) => (
-                    <tr key={row.topicDomainId}>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.topicDomainId ? (
-                          <input
-                            type="text"
-                            value={row.topicDomainName}
-                            onChange={(e) => setData(data.map((item) => (item.topicDomainId === row.topicDomainId ? { ...item, topicDomainName: e.target.value } : item)))}
-                          />
-                        ) : (
-                          row.topicDomainName
-                        )}
-                      </td>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.topicDomainId ? (
-                          <input
-                            type="text"
-                            value={row.description}
-                            onChange={(e) => setData(data.map((item) => (item.topicDomainId === row.topicDomainId ? { ...item, description: e.target.value } : item)))}
-                          />
-                        ) : (
-                          row.description
-                        )}
-                      </td>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.topicDomainId ? (
-                          <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Topic Domain</h4>
+                      </TableCell>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Description</h4>
+                      </TableCell>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Actions</h4>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) =>(
+                    
 
-                        ) : (
-                          <Box sx={{ display: 'flex', gap: '8px' }}>
-                            <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
-                          </Box>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      <TableRow key={row.topicDomainId}>
+                        <TableCell> 
+                          {editingRowId === row.topicDomainId ? (
+                            <input
+                              type="text"
+                              value={row.topicDomainName}
+                              onChange={(e) => setData(data.map((item) => (item.topicDomainId === row.topicDomainId ? { ...item, topicDomainName: e.target.value } : item)))}
+                            />
+                          ) : (
+                            row.topicDomainName
+                          )} </TableCell>
+                       <TableCell>
+                          {editingRowId === row.topicDomainId ? (
+                            <input
+                              type="text"
+                              value={row.description}
+                              onChange={(e) => setData(data.map((item) => (item.topicDomainId === row.topicDomainId ? { ...item, description: e.target.value } : item)))}
+                            />
+                          ) : (
+                            row.description
+                          )}
+                        </TableCell>
+                        <TableCell> 
+                          {editingRowId === row.topicDomainId ? (
+                            <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
+
+                          ) : (
+                            <Box sx={{ display: 'flex', gap: '8px' }}>
+                              <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                            </Box>
+                          )}
+                        </TableCell>
+                        </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        style={{ marginLeft: "auto" }}
+                        rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                        colSpan={3}
+                        count={data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        SelectProps={{
+                          inputProps: {
+                            "aria-label": "rows per page",
+                          },
+                          native: true,
+                        }}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActions}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
             </Grid>
             <Grid item xs={1}></Grid>
           </Grid>
