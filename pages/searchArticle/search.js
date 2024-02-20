@@ -29,10 +29,9 @@ const SearchTextField = styled(TextField)({
 
 function Search(){
     const [searchKey, setSearchKey] = useState('');
-
-    /*const handleInputChange = (event) => {
+    const handleInputChange = (event) => {
       setSearchKey(event.target.value);
-     };*/
+     };
     return(
         
         <div className={style.outer}>
@@ -47,7 +46,7 @@ function Search(){
             </div>
             <div className={style.searchBox}>
                 <Box sx={{ width: 1350, maxWidth: '100%'}}>
-                    <SearchTextField fullWidth  placeholder="Search Article" id="fullWidth" type="search" 
+                    <SearchTextField onChange={handleInputChange} fullWidth  placeholder="Search Article" id="fullWidth" type="search" 
                     InputProps={{style: {borderRadius: '20px'} ,  startAdornment: (
                         <InputAdornment position="start">
                           <IconButton>
@@ -58,7 +57,7 @@ function Search(){
                 </Box>
             </div> 
             <div className={style.articleBoxOuter}>
-                < SearchArticleBox/> 
+                < SearchArticleBox keyword={searchKey}/> 
             </div>
         </div>
     );

@@ -5,35 +5,32 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 
-function SearchArticleBox(props) {
-        const url = `/api/searchApi?keyword=${props.keyword}`;
-        const method = 'GET';
-        const [data, setData] = useState([]);
-        const option = {
-            method: method,
-            
-        }
+function SearchArticleBox({keyword}) {
+
+        const [articleData, setData] = useState([]);
+        const backendApiUrl = process.env.NEXT_PUBLIC_BACKEND_API;
+    
         useEffect(() => {
-            const fetchData = async () => {
-            console.log("response1");
-            try{
-                    const response  = await fetch(url, option);
-                    const finalData = await response.json();
-                    setData(finalData);
-                    console.log("response");
-            }catch(error){
-
-                    console.error(error);
-                    console.log("responseee");
+          const fetchData = async () => {
+            try {
+              const response = await fetch(`http://localhost:3001/api/readerArticle/search`, {
+                headers: {
+                  'Content-Type': 'application/json', // Adjust the content type if needed
+                  'text':keyword, // Add your custom data in headers
+                },
+            });
+              const jsonData = await response.json();
+              setData(jsonData);
+              console.log(articleData);
+            } catch (error) {
+              console.error('Error fetching data:', error);
             }
-           
-          }
-          fetchData()
-          
-        }, [props.keyword]) 
-
-       console.log(data);
-       const articles = Array.from({ length: 10 }, (_, index) => ({
+          };
+      
+          fetchData();
+        }, [keyword]);
+        
+      /* const articles = Array.from({ length: 10 }, (_, index) => ({
         title: `Exploring the World of Web Development`,
         date: '2024-02-16',
         writer: `Author ${index + 1}`,
@@ -41,23 +38,22 @@ function SearchArticleBox(props) {
         articleImage: '/articlePic.jpg',
         category: 'Web Development',
         tags: ['React', 'JavaScript', 'CSS'],
-      }));
+      }));*/
 
         return (
             <div style={{marginTop:'20px', width:'100%'}}>
                 <Grid sx={{ flexGrow: 1 }}>
                     <Grid item xs={12}>
                         <Grid container justifyContent="center" spacing={3}>
-                        {/*data.map((item) => (
-                            <Grid key={item.articleId} item>
-                                 {/*<Link href={`/article?id=${item.articleId}`} passHref>
-                                    <ArticleCard name={item.title}  />
+                        {/*articleData.map((article) => (
+                            <Grid key={item.articleId} article>
+                                 {<Link href={`/article?id=${item.id}`} passHref>
+                                    <ArticleCard {...article}  />
                         </Link>}
-                                <ArticleCard name={item.title}  />
-                            </Grid>
+                    </Grid>
                         ))*/}
-                            {articles.map((article, index) => (
-                                 <ArticleCard key={index} {...article} />
+                            {articleData.map((article) => (
+                                 <ArticleCard {...article} />
                              ))}
                         </Grid>
                     </Grid>
