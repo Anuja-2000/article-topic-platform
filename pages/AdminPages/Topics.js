@@ -24,6 +24,18 @@ import InputLabel from "@mui/material/InputLabel"
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePaginationActions from '../../components/TablePaginationActions';
+import Paper from '@mui/material/Paper';
+
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topics`
 });
@@ -35,8 +47,14 @@ function Topics() {
   const [keywords, setKeywords] = useState([]);
   const [selectedKeyword, setSelectedKeyword] = useState('');
 
+  const [filterSelectedTopicDomain, setFilterSelectedTopicDomain] = useState('');
+  const [filterSelectedKeyword, setFilterSelectedKeyword] = useState('');
+  const [filteredTopicDomainKeywords, setFilteredTopicDomainKeywords] = React.useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [editingRowId, setEditingRowId] = useState(null);
   const [topicName, setTopicName] = useState('');
@@ -63,7 +81,7 @@ function Topics() {
   const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
 
-  const[topicDomainKeywords, setTopicDomainKeywords] = React.useState(false);
+  const [topicDomainKeywords, setTopicDomainKeywords] = React.useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -81,6 +99,7 @@ function Topics() {
       try {
         const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
         setTopicDomains(topicDomainsResponse.data);
+        setFilterSelectedTopicDomain('all');
       } catch (error) {
         console.error('Error fetching topic domains:', error);
       }
@@ -98,29 +117,117 @@ function Topics() {
     fetchData();
     fetchTopicDomains();
     fetchKeywords();
+    setFilterSelectedTopicDomain('all');
+    setFilterSelectedKeyword('all');
+
   }, []);
-// Fetch keywords associated with the selected topic domain
-useEffect(() => {
-  const fetchKeywordsByTopicDomain = async () => {
-    try {
-      if (selectedTopicDomain) {
-        const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedTopicDomain}`);
-        setTopicDomainKeywords(response.data);
-        console.log(response.data);
-      } else {
-        // If no topic domain is selected, clear the keywords
-        setTopicDomainKeywords([]);
-       
+  // Fetch keywords associated with the selected topic domain
+  useEffect(() => {
+    const fetchKeywordsByTopicDomain = async () => {
+      try {
+        if (selectedTopicDomain) {
+          const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedTopicDomain}`);
+          setTopicDomainKeywords(response.data);
+          console.log(response.data);
+        } else {
+          // If no topic domain is selected, clear the keywords
+          setTopicDomainKeywords([]);
+
+        }
+      } catch (error) {
+        console.error('Error fetching keywords by topic domain:', error);
       }
-    } catch (error) {
-      console.error('Error fetching keywords by topic domain:', error);
-    }
+    };
+
+    fetchKeywordsByTopicDomain();
+
+  }, [selectedTopicDomain]);
+
+  useEffect(() => {
+    const fetchKeywordsByFilteredTopicDomain = async () => {
+      try {
+        if (filterSelectedTopicDomain) {
+          const response = await axios.get(`http://localhost:3001/api/keywords/get/${filterSelectedTopicDomain}`);
+          setFilteredTopicDomainKeywords(response.data);
+          console.log(response.data);
+        } else {
+          // If no topic domain is selected, clear the keywords
+          setFilteredTopicDomainKeywords([]);
+
+        }
+      } catch (error) {
+        console.error('Error fetching keywords by topic domain:', error);
+      }
+    };
+
+    fetchKeywordsByFilteredTopicDomain();
+
+  }, [filterSelectedTopicDomain]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
 
-  fetchKeywordsByTopicDomain();
-}, [selectedTopicDomain]);
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    console.log('New rows per page:', newRowsPerPage);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    console.log('New page:', 0);
+  };
 
 
+  const handleFilterChange = async (event) => {
+    const selectedValue = event.target.value;
+    setFilterSelectedTopicDomain(selectedValue);
+  
+    try {
+      if (selectedValue === 'all') {
+        const responseData = await api.get("/get");
+        setData(responseData.data); // Show all data
+  
+        // Fetch all keywords when selecting 'all' as the topic domain
+        const keywordResponse = await axios.get('http://localhost:3001/api/keywords/get');
+        setFilteredTopicDomainKeywords(keywordResponse.data);
+      } else {
+        const response = await api.get(`http://localhost:3001/api/topics/${selectedValue}`);
+        setData(response.data); // Show data filtered by the selected topic domain
+  
+        // Fetch keywords based on the selected topic domain
+        const keywordResponse = await axios.get(`http://localhost:3001/api/keywords/get/${selectedValue}`);
+        setFilteredTopicDomainKeywords(keywordResponse.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
+  const handleKeywordFilterChange = async (event) => {
+    const selectedKeywordValue = event.target.value;
+    setFilterSelectedKeyword(selectedKeywordValue);
+  
+    try {
+      let responseData;
+      if (filterSelectedTopicDomain === 'all' && selectedKeywordValue === 'all') {
+        // Fetch all data when both topic domain and keyword are 'all'
+        responseData = await api.get("http://localhost:3001/api/topics/get");
+      } else if (filterSelectedTopicDomain === 'all') {
+        // Fetch data filtered by keyword when only topic domain is 'all'
+        responseData = await api.get(`/getByKeyword/${selectedKeywordValue}`);
+      } else if (selectedKeywordValue === 'all') {
+        // Fetch data filtered by topic domain when only keyword is 'all'
+        responseData = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
+      } else {
+        // Fetch data filtered by both topic domain and keyword
+        responseData = await api.get(`http://localhost:3001/api/topics/get/${filterSelectedTopicDomain}/${selectedKeywordValue}`);
+      }
+  
+      setData(responseData.data); // Update the data
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
   const handleAddClick = () => {
     if (topicName.trim() === "") {
       setTopicNameError(true);
@@ -217,7 +324,7 @@ useEffect(() => {
       await api.patch(`/edit/${editingRowId}`, updatedRow);
       setEditingRowId(null); // Reset editing row ID
       setShowEditConfirmation(false);
-      const response = await api.get("/get");
+      const response = filterSelectedTopicDomain === 'all' ? await api.get("/get") : await api.get(`/get/${filterSelectedTopicDomain}`);
       setData(response.data);
 
       // Show success message
@@ -242,6 +349,7 @@ useEffect(() => {
       }
       return item;
     });
+
     setData(updatedData);
   }
 
@@ -326,11 +434,11 @@ useEffect(() => {
                   onChange={(e) => setSelectedKeyword(e.target.value)}
                   label="Keyword"
                 >
-                {topicDomainKeywords.map((keyword) => (
-                  <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
-                    {keyword.keywordName}
-                  </MenuItem>
-                ))}
+                  {topicDomainKeywords.map((keyword) => (
+                    <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
+                      {keyword.keywordName}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
@@ -361,58 +469,130 @@ useEffect(() => {
             </Button>
           </div>
 
+          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+            <h4 style={{ textAlign: "center", marginBottom: "10px" }}>Select a Topic Domain & a Keyword</h4>
+            <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
+              <InputLabel id="topic-domain-label">Filter by Topic Domain</InputLabel>
+              <Select
+                labelId="topic-domain-label"
+                id="topic-domain-select"
+                value={filterSelectedTopicDomain}
+                onChange={handleFilterChange}
+                label="Filter by Topic Domain"
+              >
+                <MenuItem value="all">All</MenuItem>
+                {topicDomains.map((topicDomain) => (
+                  <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
+                    {topicDomain.topicDomainName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
+              <InputLabel id="keyword-label">Filter by Keyword</InputLabel>
+              <Select
+                labelId="keyword-label"
+                id="keyword-select"
+                name="keyword"
+                value={filterSelectedKeyword}
+                onChange={handleKeywordFilterChange}
+                label="Filter by Keyword"
+              >
+                <MenuItem value="all">All</MenuItem>
+             
+                {filteredTopicDomainKeywords.map((keyword) => (
+                    <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
+                      {keyword.keywordName}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </div>
+
 
           <Grid container spacing={1}>
             <Grid item xs={1}></Grid>
             <Grid item xs={10}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Topic</th>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Description</th>
-                    <th style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((row) => (
-                    <tr key={row.topicId}>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.topicId ? (
-                          <input
-                            type="text"
-                            value={row.topicName}
-                            onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, topicName: e.target.value } : item)))}
-                          />
-                        ) : (
-                          row.topicName
-                        )}
-                      </td>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.topicId ? (
-                          <input
-                            type="text"
-                            value={row.description}
-                            onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, description: e.target.value } : item)))}
-                          />
-                        ) : (
-                          row.description
-                        )}
-                      </td>
-                      <td style={{ border: "1px solid #ddd", padding: "8px", textAlign: "left" }}>
-                        {editingRowId === row.topicId ? (
-                          <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Topic</h4>
+                      </TableCell>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Description</h4>
+                      </TableCell>
+                      <TableCell>
+                        <h4 style={{ color: 'white' }}>Actions</h4>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {data
+                      .filter(row => filterSelectedTopicDomain === 'all' || row.topicDomainId === filterSelectedTopicDomain)
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                        <TableRow key={row.topicId}>
+                          <TableCell>
+                            {editingRowId === row.topicId ? (
+                              <input
+                                type="text"
+                                value={row.topicName}
+                                onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, topicName: e.target.value } : item)))}
+                              />
+                            ) : (
+                              row.topicName
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {editingRowId === row.topicId ? (
+                              <input
+                                type="text"
+                                value={row.description}
+                                onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, description: e.target.value } : item)))}
+                              />
+                            ) : (
+                              row.description
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {editingRowId === row.topicId ? (
+                              <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
 
-                        ) : (
-                          <Box sx={{ display: 'flex', gap: '8px' }}>
-                            <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
-                          </Box>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                            ) : (
+                              <Box sx={{ display: 'flex', gap: '8px' }}>
+                                <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                                <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+
+                              </Box>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        style={{ marginLeft: "auto" }}
+                        rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                        colSpan={3}
+                        count={data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        SelectProps={{
+                          inputProps: {
+                            "aria-label": "rows per page",
+                          },
+                          native: true,
+                        }}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActions}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
             </Grid>
             <Grid item xs={1}></Grid>
           </Grid>
