@@ -49,7 +49,9 @@ function Topics() {
 
   const [filterSelectedTopicDomain, setFilterSelectedTopicDomain] = useState('');
   const [filterSelectedKeyword, setFilterSelectedKeyword] = useState('');
-  const [filteredTopicDomainKeywords, setFilteredTopicDomainKeywords] = React.useState(false);
+  const [filteredTopicDomainKeywords, setFilteredTopicDomainKeywords] = useState([]);
+
+
 
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -99,7 +101,7 @@ function Topics() {
       try {
         const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
         setTopicDomains(topicDomainsResponse.data);
-        setFilterSelectedTopicDomain('all');
+
       } catch (error) {
         console.error('Error fetching topic domains:', error);
       }
@@ -117,8 +119,7 @@ function Topics() {
     fetchData();
     fetchTopicDomains();
     fetchKeywords();
-    setFilterSelectedTopicDomain('all');
-    setFilterSelectedKeyword('all');
+
 
   }, []);
   // Fetch keywords associated with the selected topic domain
@@ -143,26 +144,32 @@ function Topics() {
 
   }, [selectedTopicDomain]);
 
+
   useEffect(() => {
-    const fetchKeywordsByFilteredTopicDomain = async () => {
+    const fetchFilteredTopicDomainKeywords = async () => {
       try {
         if (filterSelectedTopicDomain) {
           const response = await axios.get(`http://localhost:3001/api/keywords/get/${filterSelectedTopicDomain}`);
-          setFilteredTopicDomainKeywords(response.data);
+          setFilteredTopicDomainKeywords(response.data); // Assuming response.data.keywords contains the array of keywords
           console.log(response.data);
-        } else {
-          // If no topic domain is selected, clear the keywords
-          setFilteredTopicDomainKeywords([]);
 
+        } else {
+          // If no topic domain is selected
+          const response = await axios.get(`http://localhost:3001/api/keywords/get`);
+          setFilteredTopicDomainKeywords(response.data); // Assuming response.data is the array of keywords
         }
       } catch (error) {
         console.error('Error fetching keywords by topic domain:', error);
       }
     };
 
-    fetchKeywordsByFilteredTopicDomain();
+    fetchFilteredTopicDomainKeywords();
 
   }, [filterSelectedTopicDomain]);
+
+
+
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -176,58 +183,42 @@ function Topics() {
     console.log('New page:', 0);
   };
 
+  const bothDropdownsSelected = filterSelectedTopicDomain !== '' && filterSelectedKeyword !== '';
+
 
   const handleFilterChange = async (event) => {
     const selectedValue = event.target.value;
     setFilterSelectedTopicDomain(selectedValue);
-  
+    if (selectedValue !== filterSelectedTopicDomain) {
+      setFilterSelectedKeyword('allKeywords');
+     
+    }
+
     try {
-      if (selectedValue === 'all') {
-        const responseData = await api.get("/get");
+      if (selectedValue === 'allTopicDomains') {
+        const responseData = await api.get(`http://localhost:3001/api/topics/get`);
         setData(responseData.data); // Show all data
-  
-        // Fetch all keywords when selecting 'all' as the topic domain
-        const keywordResponse = await axios.get('http://localhost:3001/api/keywords/get');
-        setFilteredTopicDomainKeywords(keywordResponse.data);
+
+        setFilteredTopicDomainKeywords((await api.get(`http://localhost:3001/api/keywords/get`)).data);
+
       } else {
-        const response = await api.get(`http://localhost:3001/api/topics/${selectedValue}`);
+        const response = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
         setData(response.data); // Show data filtered by the selected topic domain
-  
-        // Fetch keywords based on the selected topic domain
-        const keywordResponse = await axios.get(`http://localhost:3001/api/keywords/get/${selectedValue}`);
-        setFilteredTopicDomainKeywords(keywordResponse.data);
+
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
+
+
   const handleKeywordFilterChange = async (event) => {
     const selectedKeywordValue = event.target.value;
     setFilterSelectedKeyword(selectedKeywordValue);
-  
-    try {
-      let responseData;
-      if (filterSelectedTopicDomain === 'all' && selectedKeywordValue === 'all') {
-        // Fetch all data when both topic domain and keyword are 'all'
-        responseData = await api.get("http://localhost:3001/api/topics/get");
-      } else if (filterSelectedTopicDomain === 'all') {
-        // Fetch data filtered by keyword when only topic domain is 'all'
-        responseData = await api.get(`/getByKeyword/${selectedKeywordValue}`);
-      } else if (selectedKeywordValue === 'all') {
-        // Fetch data filtered by topic domain when only keyword is 'all'
-        responseData = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
-      } else {
-        // Fetch data filtered by both topic domain and keyword
-        responseData = await api.get(`http://localhost:3001/api/topics/get/${filterSelectedTopicDomain}/${selectedKeywordValue}`);
-      }
-  
-      setData(responseData.data); // Update the data
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+
+   
   };
-  
+
   const handleAddClick = () => {
     if (topicName.trim() === "") {
       setTopicNameError(true);
@@ -391,6 +382,30 @@ function Topics() {
     setEditSuccessfulAlertOpen(false);
   };
 
+  const handleFilterClick = async () => {
+    try {
+      let responseData;
+      if (filterSelectedTopicDomain === 'allTopicDomains' && filterSelectedKeyword === 'allKeywords') {
+        // Fetch all data when both topic domain and keyword are 'all'
+        responseData = await api.get("http://localhost:3001/api/topics/get");
+      } else if (filterSelectedTopicDomain === 'allTopicDomains') {
+        // Fetch data filtered by keyword when only topic domain is 'all'
+        responseData = await api.get(`http://localhost:3001/api/topics/getByKeyword/${filterSelectedKeyword}`);
+      } else if (filterSelectedKeyword === 'allKeywords') {
+        // Fetch data filtered by topic domain when only keyword is 'all'
+        responseData = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
+      } else {
+        // Fetch data filtered by both topic domain and keyword
+        responseData = await api.get(`http://localhost:3001/api/topics/get/${filterSelectedTopicDomain}/${filterSelectedKeyword}`);
+      }
+  
+      setData(responseData.data); // Update the data
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -480,7 +495,7 @@ function Topics() {
                 onChange={handleFilterChange}
                 label="Filter by Topic Domain"
               >
-                <MenuItem value="all">All</MenuItem>
+                <MenuItem key="allTopicDomains" value="allTopicDomains">All</MenuItem>
                 {topicDomains.map((topicDomain) => (
                   <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
                     {topicDomain.topicDomainName}
@@ -493,20 +508,23 @@ function Topics() {
               <Select
                 labelId="keyword-label"
                 id="keyword-select"
-                name="keyword"
                 value={filterSelectedKeyword}
                 onChange={handleKeywordFilterChange}
                 label="Filter by Keyword"
               >
-                <MenuItem value="all">All</MenuItem>
-             
+                <MenuItem key="allKeywords" value="allKeywords">All</MenuItem>
                 {filteredTopicDomainKeywords.map((keyword) => (
-                    <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
-                      {keyword.keywordName}
-                    </MenuItem>
-                  ))}
+                  <MenuItem key={keyword.keywordId} value={keyword.keywordId}>
+                    {keyword.keywordName}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
+            <Button variant="contained" color="primary" onClick={handleFilterClick} disabled={!bothDropdownsSelected}>
+              Filter
+            </Button>
+
+
           </div>
 
 
@@ -530,7 +548,6 @@ function Topics() {
                   </TableHead>
                   <TableBody>
                     {data
-                      .filter(row => filterSelectedTopicDomain === 'all' || row.topicDomainId === filterSelectedTopicDomain)
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                         <TableRow key={row.topicId}>
                           <TableCell>
