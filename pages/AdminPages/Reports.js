@@ -104,6 +104,9 @@ function Reports() {
     const [usersCount, setUsersCount] = React.useState([0, 0]);
     const [writers, setWriters] = React.useState([]);
     const [readers, setReaders] = React.useState([]);
+    const [writerSearchTerm, setWriterSearchTerm] = React.useState('');
+    const [readerSearchTerm, setReaderSearchTerm] = React.useState('');
+    const [type, setType] = React.useState('Writer');
 
     React.useEffect(() => {
         //get users count
@@ -128,7 +131,32 @@ function Reports() {
         });
     }, []);
 
-         
+    const handleWriterSearch =  (event) => {
+            setWriterSearchTerm(event.target.value);
+            let type = 'Writer';
+            const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${writerSearchTerm}`).then((res) => {
+                setWriters(res.data);
+            }).catch((error) => {
+                console.log(error);
+            });
+        // setSearchTerm(event.target.value);
+        // console.log(searchTerm);
+        // const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${searchTerm}`).then((res) => {
+        //     setWriters(res.data);
+        // }).catch((error) => {
+        //     console.log(error);
+        // });
+    };
+
+    const handleReaderSearch =  (event) => {
+        setReaderSearchTerm(event.target.value);
+        let type = 'Reader';
+        const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${readerSearchTerm}`).then((res) => {
+            setReaders(res.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+};
         
 
     return (
@@ -224,6 +252,8 @@ function Reports() {
                                         </InputAdornment>
                                     }
                                     label="Search"
+                                    onChange={handleWriterSearch}
+                                    value={writerSearchTerm}
                                 />
                             </FormControl>
                         </Box>
@@ -291,6 +321,8 @@ function Reports() {
                                         </InputAdornment>
                                     }
                                     label="Search"
+                                    onChange={handleReaderSearch}
+                                    value={readerSearchTerm}
                                 />
                             </FormControl>
                         </Box>
