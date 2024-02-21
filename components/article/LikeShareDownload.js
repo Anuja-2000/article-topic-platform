@@ -2,6 +2,7 @@
 import React from 'react';
 import { IconButton, Typography, Box } from '@mui/material';
 import { ThumbUp, Share, GetApp } from '@mui/icons-material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const LikeShareDownload = () => {
   return (
@@ -19,6 +20,9 @@ const LikeShareDownload = () => {
       </IconButton>
       <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft:'10px' }}>
         <GetApp />
+      </IconButton>
+      <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft:'10px' }}>
+        <MoreVertIcon/>
       </IconButton>
     </Box>
   );
