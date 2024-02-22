@@ -7,9 +7,14 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/navbarReader/Navbar';
 import Image from 'next/image';
 import searchTopicImage from '../public/asset/searchTopicImage.jpg';
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 const UserTopicSuggestion = () => {
   const [topicDomains, setTopicDomains] = useState([]);
@@ -19,8 +24,12 @@ const UserTopicSuggestion = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchClicked, setSearchClicked] = useState(false);
 
- 
+
   const [selectedSearchResult, setSelectedSearchResult] = useState(null);
+
+  const [copiedTopic, setCopiedTopic] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+
 
   useEffect(() => {
     const fetchTopicDomains = async () => {
@@ -70,19 +79,33 @@ const UserTopicSuggestion = () => {
     setSelectedSearchResult(resultId);
   };
 
-  const handleCopySelectedTopicNames = () => {
-    const selectedTopic = searchResults.find((result) => result.topicId === selectedSearchResult);
-    if (selectedTopic) {
-      navigator.clipboard.writeText(selectedTopic.topicName)
-        .then(() => console.log('Selected topic name copied:', selectedTopic.topicName))
-        .catch((error) => console.error('Error copying selected topic name:', error));
-    }
+  const handleCopySelectedTopicNames = (topicName) => {
+    navigator.clipboard.writeText(topicName)
+      .then(() => {
+        console.log('Selected topic name copied:', topicName);
+        setCopiedTopic(topicName);
+        setShowAlert(true);
+
+        // Automatically hide the alert after 3 seconds
+        setTimeout(() => {
+          setShowAlert(false);
+          setCopiedTopic('');
+        }, 3000);
+      })
+      .catch((error) => console.error('Error copying selected topic name:', error));
   };
-  
+
+
+
+
+
   return (
-    <Navbar>
+    <>
+      <Navbar />
+
       <div className="App" style={{ marginTop: '60px', backgroundColor: '#669999', minHeight: '100vh', padding: '20px' }}>
-        
+
+
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <div style={{ marginRight: '20px' }}>
@@ -137,20 +160,39 @@ const UserTopicSuggestion = () => {
                   <CardContent>
                     <Typography variant="h4" gutterBottom style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', color: '#1e90ff' }}> Search Results</Typography>
                     {searchResults.map((result) => (
-                    <div key={result.topicId}>
-                      <FormControlLabel
-                        control={<Checkbox checked={selectedSearchResult === result.topicId} onChange={() => handleSelectSearchResult(result.topicId)} />}
-                        label={
-                          <>
-                            <Typography variant="h6" style={{ marginBottom: '8px' }}>{result.topicName}</Typography>
-                            <Typography variant="body1">{result.description}</Typography>
-                          </>
-                        }
-                      />
-                      <Button variant="contained" disabled={selectedSearchResult !== result.topicId} onClick={handleCopySelectedTopicNames}>Copy Topic Name</Button>
-                    </div>
-                  ))}
-                  
+                      <div key={result.topicId}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                            {result.topicName}
+                          </Typography>
+
+                          <IconButton onClick={() => handleCopySelectedTopicNames(result.topicName)}>
+                            <ContentCopy />
+                          </IconButton>
+                        </div>
+                        <Typography variant="body1">{result.description}</Typography>
+                        {copiedTopic === result.topicName && (
+                          <Alert severity="success" action={
+                            <IconButton
+                              aria-label="close"
+                              color="inherit"
+                              size="small"
+                              onClick={() => {
+                                setShowAlert(false);
+                                setCopiedTopic('');
+                              }}
+                            >
+                              <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                          } style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999' }}>
+                            <AlertTitle>Successfully copied</AlertTitle>
+                            {copiedTopic}
+                          </Alert>
+                        )}
+                      </div>
+                    ))}
+
+
 
 
                   </CardContent>
@@ -160,7 +202,8 @@ const UserTopicSuggestion = () => {
           </Grid>
         </Grid>
       </div>
-    </Navbar>
+    </>
+
   );
 };
 
