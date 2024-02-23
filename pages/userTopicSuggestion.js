@@ -16,6 +16,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Link from "next/link"
+import { useRouter } from 'next/router';
 
 
 const UserTopicSuggestion = () => {
@@ -32,7 +33,7 @@ const UserTopicSuggestion = () => {
   const [copiedTopic, setCopiedTopic] = useState('');
   const [showAlert, setShowAlert] = useState(false);
 
-
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -103,16 +104,23 @@ const UserTopicSuggestion = () => {
 
 
 
-
+  const handleFeedback = () => {
+    
+    // Pass searchResults to feedback page
+    router.push({
+      pathname: '/UserTopicSuggestionFeedback',
+      query: { searchResults: JSON.stringify(searchResults) },
+    });
+  };
 
   return (
-    
-       <><div>
+
+    <><div>
       <WriterNavbar />
     </div>
-    
-    <div className="App" style={{ marginTop: '120px', backgroundColor: '#669999', minHeight: '100vh', padding: '20px' }}>
-    
+
+      <div className="App" style={{ marginTop: '120px', backgroundColor: '#669999', minHeight: '100vh', padding: '20px' }}>
+
 
 
         <Grid container spacing={3}>
@@ -196,7 +204,7 @@ const UserTopicSuggestion = () => {
                               onClick={() => {
                                 setShowAlert(false);
                                 setCopiedTopic('');
-                              } }
+                              }}
                             >
                               <CloseIcon fontSize="inherit" />
                             </IconButton>} style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999' }}>
@@ -213,11 +221,9 @@ const UserTopicSuggestion = () => {
 
                   {/* Feedback button */}
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                    <Link href="http://localhost:3000">
-                      <Button variant="contained" color="secondary">
-                        Feedback
-                      </Button>
-                    </Link>
+                    <Button variant="contained" color="secondary" onClick={handleFeedback}>
+                      Feedback
+                    </Button>
                   </div>
                   {/* Redirect link to writer dashboard */}
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
@@ -235,7 +241,7 @@ const UserTopicSuggestion = () => {
           </Grid>
         </Grid>
       </div></>
-    
+
 
   );
 };
