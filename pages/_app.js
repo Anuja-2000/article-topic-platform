@@ -6,7 +6,8 @@ import { ThemeProvider } from "@mui/material/styles"
 import { theme } from "../components/theme"
 import setAuthToken from "./api/auth/axios-set-token";
 import { useEffect, useState } from "react";
-import { UserIdProvider } from ".//UserIdContext"; // Update the path
+import { UserIdProvider } from "./UserIdContext"; // Update the path
+
 
 
 export default function App({ Component, pageProps }) {

@@ -49,7 +49,7 @@ const UserTopicSuggestionFeedback = () => {
           const flaggedTopic = {
             topicId,
             topicName,
-            flaggedBy: userId,  // You can specify the user who flagged the topic here
+            flaggedBy: "sampleUser",  // You can specify the user who flagged the topic here
             reason: 'Irrelevant', // You can specify the reason for flagging here
           };
           console.log('Flagged Topic:', flaggedTopic); // Log flagged topic before fetch
