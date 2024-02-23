@@ -58,7 +58,7 @@ const ArticlePage = () => {
           <img  src={articleData.image} alt="Article Image" className={articleData.image} />
         </div>
         <ArticleBody content={articleData.content} className={styles.content} />
-        <LikeShareDownload />
+        <LikeShareDownload articleTitle={articleData.title}/>
         <Divider sx={{ marginY: 2 }}/>
         <CommentSection />
       </div>
