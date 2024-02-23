@@ -54,9 +54,7 @@ function HomePage(){
                 <h1 className={Styles.h1}>Start Today</h1>
                 <p className={Styles.paragraph}>Discover stories, thinking, and expertise from writers on any topic</p>
                 <Button sx={{borderRadius:6,marginLeft:13,marginTop:4,height:52,fontSize:20,textTransform: 'none', fontFamily:'Ubuntu'}} variant="contained">Get Started</Button>
-                <Link href="/userTopicSuggestion" passHref>
-                    <Button sx={{ borderRadius: 6, marginLeft: 13, marginTop: 4, height: 52, fontSize: 20, textTransform: 'none', fontFamily: 'Ubuntu' }} variant="contained">Topic Recommendation</Button>
-                </Link>
+                
                 <Button sx={{ borderRadius: 6, marginLeft: 13, marginTop: 4, height: 52, fontSize: 20, textTransform: 'none', fontFamily: 'Ubuntu' }} variant="contained" onClick={handleReportClick}>Report</Button>
                 <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} />
             </div>
