@@ -22,6 +22,9 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import SearchIcon from '@mui/icons-material/Search';
 import Iconbutton from '@mui/material/IconButton';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import { set } from 'react-hook-form';
 
 const columns = [
     { id: 'name', label: 'User Name', minWidth: 135 },
@@ -64,7 +67,7 @@ function a11yProps(index) {
 }
 
 
-const domData = [300, 100, 240, 400, 150, 250];
+let domData = [0, 0];
 
 const xLabelsUser = [
     'Readers',
@@ -109,7 +112,7 @@ function Reports() {
     const [type, setType] = React.useState('Writer');
     const [writerCountForMonth, setWriterCountForMonth] = React.useState(0);
     const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
-
+    const [writerNames, setWriterNames] = React.useState([]);
     React.useEffect(() => {
         //get users count
         const userRes = axios.get('http://localhost:3001/api/user/count').then((res) => {
@@ -121,6 +124,7 @@ function Reports() {
         //get all writers details
         const writerRes = axios.get('http://localhost:3001/api/user/get-writers').then((res) => {
             setWriters(res.data);
+            setWriterNames(writers.map((writer) => writer.name));
         }).catch((error) => {
             console.log(error);
         });
@@ -133,34 +137,52 @@ function Reports() {
         });
 
         //get all topic domains
-        const domains = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {        
+        const domains = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {
             let temp = [];
+            let dummyData = [];
             res.data.forEach((domain) => {
                 temp.push(domain.topicDomainName);
             });
             xLabelsDomain = temp;
+            let x = temp.length;
+            while (x > 0) {
+                dummyData.push(Math.floor(Math.random() * 100) + 1);
+                x--;
+            }
+            domData = dummyData;
         }).catch((error) => {
             console.log(error);
         });
 
+        //get writer count for the month
         const writersCountForMonth = axios.get("http://localhost:3001/api/user/get-user-count-by-month/Writer").then((res) => {
-            console.log(res.data);
-        }).catch((error) => {   
+            let count = res.data;
+            if (count < 10) {
+                count = "0" + count;
+            }
+            setWriterCountForMonth(count);
+        }).catch((error) => {
             console.log(error);
         });
 
+        //get reader count for the month
         const readersCountForMonth = axios.get("http://localhost:3001/api/user/get-user-count-by-month/Reader").then((res) => {
-            console.log(res.data);
-        }).catch((error) => {   
+            let count = res.data;
+            if (count < 10) {
+                count = "0" + count;
+            }
+            setReaderCountForMonth(count);
+        }).catch((error) => {
             console.log(error);
         });
     }, []);
 
 
-
+    //console.log(writers);
 
     const handleWriterSearch = (event) => {
         setWriterSearchTerm(event.target.value);
+        console.log(writerSearchTerm);
         let type = 'Writer';
         const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${writerSearchTerm}`).then((res) => {
             setWriters(res.data);
@@ -234,7 +256,19 @@ function Reports() {
                                             color: '#3f51b5'
                                         }
                                     ]}
-                                    xAxis={[{ data: xLabelsDomain, scaleType: 'band' }]}
+                                    xAxis={[
+                                        {
+                                            data: xLabelsDomain,
+                                            scaleType: 'band',
+                                            tickLabelStyle: {
+                                                angle: 20,
+                                                textAnchor: 'start',
+                                                fontSize: 12,
+                                                fontWeight: 400,
+                                            },
+
+                                        }
+                                    ]}
                                     yAxis={[{ id: 'leftAxisId' }]}
                                 />
                             </Paper>
@@ -262,16 +296,16 @@ function Reports() {
 
                             <Paper elevation={3} style={{ height: 350, width: 450, padding: '20px', marginLeft: '40px' }}>
                                 <Typography variant="h5" gutterBottom>New Users for {month[new Date().getMonth()]}</Typography>
-                                <Box display={'flex'} sx={{justifyContent:'space-evenly', marginTop:'50px'}}>
-                                    <Paper elevation={3} sx={{borderRadius:'10px'}}>
-                                        <Box  padding={2} color={'primary.main'}>
-                                            <Typography variant="h2" >06</Typography>
+                                <Box display={'flex'} sx={{ justifyContent: 'space-evenly', marginTop: '50px' }}>
+                                    <Paper elevation={3} sx={{ borderRadius: '10px' }}>
+                                        <Box padding={2} color={'primary.main'}>
+                                            <Typography variant="h2" >{writerCountForMonth}</Typography>
                                             <Typography variant="h4" >Writers</Typography>
                                         </Box>
                                     </Paper>
-                                    <Paper elevation={3} sx={{borderRadius:'10px'}}>
-                                        <Box  padding={2} color={'primary.dark'}>
-                                            <Typography variant="h2">06</Typography>
+                                    <Paper elevation={3} sx={{ borderRadius: '10px' }}>
+                                        <Box padding={2} color={'primary.dark'}>
+                                            <Typography variant="h2">{readerCountForMonth}</Typography>
                                             <Typography variant="h4" >Readers</Typography>
                                         </Box>
                                     </Paper>
@@ -285,7 +319,7 @@ function Reports() {
                             <Typography marginBottom={1}>User Details</Typography>
                             <Box display="flex" justifyContent="space-between" marginY={2}>
                                 <Typography >Writer Details</Typography>
-                                <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
+                                {/* <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
                                     <InputLabel htmlFor="outlined-adornment-search">Search</InputLabel>
                                     <OutlinedInput
                                         id="writer-search"
@@ -297,11 +331,20 @@ function Reports() {
                                                 </Iconbutton>
                                             </InputAdornment>
                                         }
-                                        label="Search"
-                                        onChange={handleWriterSearch}
+                                        label="Search"                                        
                                         value={writerSearchTerm}
+                                        onInputCapture={handleWriterSearch}
                                     />
-                                </FormControl>
+                                </FormControl> */}
+                                <Autocomplete
+                                    freeSolo
+                                    id="free-solo-2-demo"
+                                    disableClearable
+                                    options={writerNames}
+                                    onInputChange={handleWriterSearch}                                    
+                                    sx={{ width: 300 }}
+                                    renderInput={(params) => <TextField {...params} label="Search User Names" /> }
+                                />
                             </Box>
                             <Paper sx={{ width: '100%', overflow: 'hidden' }} elevation={3}>
                                 <TableContainer sx={{ maxHeight: 440 }}>
