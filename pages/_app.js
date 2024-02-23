@@ -6,28 +6,30 @@ import { ThemeProvider } from "@mui/material/styles"
 import { theme } from "../components/theme"
 import setAuthToken from "./api/auth/axios-set-token";
 import { useEffect, useState } from "react";
+import { UserIdProvider } from ".//UserIdContext"; // Update the path
 
 
 export default function App({ Component, pageProps }) {
 
-const [isloading, setLoading] = useState(true);
+  const [isloading, setLoading] = useState(true);
 
-useEffect(() => {
+  useEffect(() => {
     // Perform localStorage action
-    if(isloading){
+    if (isloading) {
       const token = localStorage.getItem("token");
       if (token) {
-          setAuthToken(token);
-          setLoading(false);
+        setAuthToken(token);
+        setLoading(false);
       }
     }
   }, [isloading])
   return (
 
-<ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <UserIdProvider>
 
-   <Component {...pageProps} />
-  
-  </ThemeProvider>
+        <Component {...pageProps} />
+      </UserIdProvider>
+    </ThemeProvider>
   )
 }
