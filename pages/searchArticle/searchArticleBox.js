@@ -30,15 +30,7 @@ function SearchArticleBox({keyword}) {
           fetchData();
         }, [keyword]);
         
-      /* const articles = Array.from({ length: 10 }, (_, index) => ({
-        title: `Exploring the World of Web Development`,
-        date: '2024-02-16',
-        writer: `Author ${index + 1}`,
-        writerImage: `https://via.placeholder.com/30x30?text=${(index + 1).toString()}`,
-        articleImage: '/articlePic.jpg',
-        category: 'Web Development',
-        tags: ['React', 'JavaScript', 'CSS'],
-      }));*/
+  
 
         return (
             <div style={{marginTop:'20px', width:'100%'}}>
@@ -53,7 +45,9 @@ function SearchArticleBox({keyword}) {
                     </Grid>
                         ))*/}
                             {articleData.map((article) => (
-                                 <ArticleCard {...article} />
+                                <Link href={`/article/${article.id}`} passHref>
+                                      <ArticleCard {...article}  />
+                                </Link>
                              ))}
                         </Grid>
                     </Grid>
