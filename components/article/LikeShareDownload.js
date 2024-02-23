@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { IconButton, Typography, Box } from '@mui/material';
 import { ThumbUp, Share, GetApp } from '@mui/icons-material';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 
-const LikeShareDownload = ({ articleTitle }) => {
-  const [isShareClicked, setIsShareClicked] = useState(false);
-  const [likes, setLikes] = useState(123); // Initial number of likes
+const LikeShareDownload = ({ articleTitle, initialLikes}) => {
+  //const initalLikes = Number(like);
+  const router = useRouter();
+  const { article } = router.query;
+  const [likes, setLikes] = useState(0); // Initial number of likes
   const [isLiked, setIsLiked] = useState(false);
 
+  useEffect(() => {
+    setLikes(initialLikes);
+  }, [initialLikes]);
   const handleShareClick = async () => {
     try {
       setIsShareClicked(true);
@@ -29,6 +35,28 @@ const LikeShareDownload = ({ articleTitle }) => {
       setIsShareClicked(false);
     }
   };
+  useEffect(() => {
+  
+    const updateData = async () => {
+      try {
+        await fetch(`http://localhost:3001/api/readerArticle/update`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json', // Adjust the content type if needed
+          },
+          body: JSON.stringify({ 
+            id: article,
+            likes: likes 
+          }),
+          
+      });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    updateData();
+  }, [likes]);
+   
 
   
   const handleLikeClick = () => {
@@ -37,7 +65,11 @@ const LikeShareDownload = ({ articleTitle }) => {
 
     // Update the number of likes based on the current state
     setLikes((prevLikes) => (isLiked ? prevLikes - 1 : prevLikes + 1));
+    
   };
+
+  console.log('initalLikes prop:', initialLikes);
+  console.log('useState value (likes):', likes);
 
   return (
     <>
