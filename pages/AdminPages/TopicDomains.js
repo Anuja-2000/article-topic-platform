@@ -223,7 +223,7 @@ function TopicDomains() {
   const handleConfirmDelete = async () => {
     try {
       // Fetch keywords associated with the topic domain
-      const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/${deleteTargetId}`);
+      const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/get/${deleteTargetId}`);
       const keywordsToDelete = keywordsResponse.data;
       console.log("Keywords to delete:", keywordsToDelete);
 
