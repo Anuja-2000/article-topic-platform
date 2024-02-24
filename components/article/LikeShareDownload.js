@@ -1,13 +1,15 @@
 import React, { useState, useEffect} from 'react';
 import { IconButton, Typography, Box } from '@mui/material';
 import { ThumbUp, Share, GetApp } from '@mui/icons-material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
+
 
 const LikeShareDownload = ({ articleTitle, initialLikes}) => {
-  //const initalLikes = Number(like);
+ 
   const router = useRouter();
   const { article } = router.query;
+  const [isShareClicked, setIsShareClicked] = useState(false);
   const [likes, setLikes] = useState(0); // Initial number of likes
   const [isLiked, setIsLiked] = useState(false);
 
@@ -68,8 +70,6 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
     
   };
 
-  console.log('initalLikes prop:', initialLikes);
-  console.log('useState value (likes):', likes);
 
   return (
     <>
@@ -88,6 +88,9 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
         <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft: '10px' }}>
           <GetApp />
         </IconButton>
+        <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft:'10px' }}>
+        <MoreVertIcon/>
+      </IconButton>
       </Box>
       {/*isShareClicked && (
         <Head>
