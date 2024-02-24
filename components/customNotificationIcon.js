@@ -25,7 +25,7 @@ export default function CustomNotificationIcon() {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title="Notifications">
+        <Tooltip title="Notifications" arrow>
           <IconButton
             onClick={handleClick}
             size="small"
