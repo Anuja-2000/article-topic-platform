@@ -1,56 +1,80 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Button, TextField } from '@mui/material';
 import { useUserId } from './UserIdContext'; // Import useUserId hook
+
 const UserTopicSuggestionFeedback = () => {
   const router = useRouter();
   const [searchResults, setSearchResults] = useState([]);
-  const { userId } = useUserId(); // Get userId from context
+  //const { userId } = useUserId(); // Get userId from context
+  const [showFeedbackSuccessfulAlert, setShowFeedbackSuccessfulAlert] = useState(false);
 
   useEffect(() => {
-    // Retrieve search results from query parameters
     const { searchResults } = router.query;
     if (searchResults) {
-      setSearchResults(JSON.parse(searchResults));
+      setSearchResults(
+        JSON.parse(searchResults).map((result) => ({
+          ...result,
+          relevant: false, // Initialize relevant property
+          irrelevant: false, // Initialize irrelevant property
+          reason: '' // Initialize reason property
+         
+        }))
+      );
       
-      // Remove searchResults from URL after component mounts
       router.replace(router.pathname, undefined, { shallow: true });
     }
   }, [router]);
-  
-  const handleRelevanceChange = (index) => {
+
+  const handleRelevanceChange = (topicId) => {
     setSearchResults((prevResults) =>
-      prevResults.map((result, i) =>
-        i === index
-          ? { ...result, relevant: true, irrelevant: false }
-          : { ...result, relevant: false, irrelevant: false }
-      )
+      prevResults.map((result) => ({
+        ...result,
+        relevant: result.topicId === topicId ? !result.relevant : result.relevant,
+        irrelevant: result.topicId === topicId ? false : result.irrelevant,
+      }))
     );
   };
 
-  const handleIrrelevanceChange = (index) => {
+  const handleIrrelevanceChange = (topicId) => {
     setSearchResults((prevResults) =>
-      prevResults.map((result, i) =>
-        i === index
-          ? { ...result, relevant: false, irrelevant: true }
-          : { ...result, relevant: false, irrelevant: false }
-      )
+      prevResults.map((result) => ({
+        ...result,
+        irrelevant: result.topicId === topicId ? !result.irrelevant : result.irrelevant,
+        relevant: result.topicId === topicId ? false : result.relevant,
+      }))
     );
   };
 
+  const handleReasonChange = (topicId, reason) => {
+    setSearchResults((prevResults) =>
+      prevResults.map((result) =>
+        result.topicId === topicId ? { ...result, reason } : result
+      )
+    );
+  };
   const handleSubmit = async () => {
     try {
       const irrelevantTopics = searchResults.filter((result) => result.irrelevant);
+
+      // Check if reason is provided for irrelevant topics
+      const invalidTopics = irrelevantTopics.filter((topic) => topic.irrelevant && !topic.reason);
+      if (invalidTopics.length > 0) {
+        // Alert the user to fill in the reason for all irrelevant topics
+        alert('Please provide a reason for all irrelevant topics.');
+        return;
+      }
       
       // Save irrelevant topics as flagged topics
       await Promise.all(
         irrelevantTopics.map(async (topic) => {
-          const { topicId, topicName } = topic;
+          const { topicId, topicName, reason } = topic;
           const flaggedTopic = {
             topicId,
             topicName,
             flaggedBy: "sampleUser",  // You can specify the user who flagged the topic here
-            reason: 'Irrelevant', // You can specify the reason for flagging here
+            reason, // You can specify the reason for flagging here
+           
           };
           console.log('Flagged Topic:', flaggedTopic); // Log flagged topic before fetch
   
@@ -72,7 +96,13 @@ const UserTopicSuggestionFeedback = () => {
           });
         })
       );
-      router.push('/AdminPages/flaggedTopics'); // Redirect after successful submission
+      setShowFeedbackSuccessfulAlert(true);
+
+      // Set a timeout to hide the happy alert and redirect after 3 seconds
+      setTimeout(() => {
+        setShowFeedbackSuccessfulAlert(false);
+        router.push('/WriterDashboard');
+      }, 3000);
     } catch (error) {
       console.error('Error submitting flagged topics:', error);
       // Handle error
@@ -91,26 +121,34 @@ const UserTopicSuggestionFeedback = () => {
               <TableCell></TableCell>
               <TableCell>Relevant</TableCell>
               <TableCell>Irrelevant</TableCell>
+              <TableCell>Reason</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {searchResults.map((result, index) => (
+            {searchResults.map((result) => (
               <TableRow key={result.topicId}>
                 <TableCell>{result.topicName}</TableCell>
                 <TableCell>
                   <Checkbox 
                     color="success" 
                     checked={result.relevant} 
-                    onChange={() => handleRelevanceChange(index)}
-                    disabled={result.irrelevant}
+                    onChange={() => handleRelevanceChange(result.topicId)}
                   />
                 </TableCell>
                 <TableCell>
                   <Checkbox 
                     color="error" 
                     checked={result.irrelevant} 
-                    onChange={() => handleIrrelevanceChange(index)}
-                    disabled={result.relevant}
+                    onChange={() => handleIrrelevanceChange(result.topicId)}
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    disabled={!result.irrelevant}
+                    value={result.reason || ''}
+                    onChange={(e) => handleReasonChange(result.topicId, e.target.value)}
                   />
                 </TableCell>
               </TableRow>
@@ -121,6 +159,11 @@ const UserTopicSuggestionFeedback = () => {
       <Button variant="contained" color="primary" onClick={handleSubmit} style={{ marginTop: '20px' }}>
         Submit
       </Button>
+      {showFeedbackSuccessfulAlert && (
+        <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+          Thank you for your feedback!. We will redirect You to Dashboard.
+        </div>
+      )}
     </div>
   );
 };
