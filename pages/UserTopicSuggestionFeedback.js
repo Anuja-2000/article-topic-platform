@@ -9,6 +9,7 @@ const UserTopicSuggestionFeedback = () => {
   //const { userId } = useUserId(); // Get userId from context
   const [showFeedbackSuccessfulAlert, setShowFeedbackSuccessfulAlert] = useState(false);
 
+  /*ENable this if dont use session storage
   useEffect(() => {
     const { searchResults } = router.query;
     if (searchResults) {
@@ -23,6 +24,29 @@ const UserTopicSuggestionFeedback = () => {
       );
       
       router.replace(router.pathname, undefined, { shallow: true });
+    }
+  }, [router]);
+  */
+  useEffect(() => {
+    const storedResults = sessionStorage.getItem('searchResults');
+    if (storedResults) {
+      setSearchResults(JSON.parse(storedResults));
+    } else {
+      const { searchResults } = router.query;
+      if (searchResults) {
+        setSearchResults(
+          JSON.parse(searchResults).map((result) => ({
+            ...result,
+            relevant: false,
+            irrelevant: false,
+            reason: ''
+          }))
+        );
+        sessionStorage.setItem('searchResults', searchResults);
+        router.replace(router.pathname, undefined, { shallow: true });
+      } else {
+        router.push('/userTopicSuggestion'); // Redirect to userTopicSuggestion if searchResults are not available
+      }
     }
   }, [router]);
 
