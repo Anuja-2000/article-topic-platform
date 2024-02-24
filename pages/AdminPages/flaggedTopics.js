@@ -3,8 +3,9 @@ import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material'
 import TableContainer from "@mui/material/TableContainer";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Navbar from '../../components/Navbar';
 import axios from 'axios';
-import Navbar from '../../components/Navbar'; // Import the Navbar component
 
 const FlaggedTopics = () => {
     const [uniqueTopics, setUniqueTopics] = useState([]);
@@ -13,7 +14,38 @@ const FlaggedTopics = () => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/api/flaggedTopics/get');
-                setUniqueTopics(response.data);
+                console.log(response.data);
+
+                // Iterate over flagged topics and fetch details
+                const topicsWithDetails = await Promise.all(response.data.map(async (topic) => {
+                    console.log(topic.topicId ,topic.topicName ); // Access topicId, topicName directly from flagged topics
+
+                    // Fetch topic details by topicId
+                    const topicResponse = await axios.get(`http://localhost:3001/api/topics/getByTopic/${topic.topicId}`);
+                    const { keywordId, topicDomainId } = topicResponse.data; // Destructure response.data
+                    console.log(topicResponse);
+
+                    // Fetch keyword name
+                    const keywordResponse = await axios.get(`http://localhost:3001/api/keywords/get/GetByKeyword/${keywordId}`);
+                    const keywordName = keywordResponse.data.keywordName;
+
+                    // Fetch topic domain name
+                    const topicDomainResponse = await axios.get(`http://localhost:3001/api/topicDomains/get/${topicDomainId}`);
+                    const topicDomainName = topicDomainResponse.data.topicDomainName;
+
+                    // Return topic details with additional data
+                    return {
+                        topicId: topic.topicId, // Include topicId in the returned object
+                        topicName:topic.topicName,
+                        keywordName,
+                        topicDomainName,
+                        reasons:topic.reasons,
+                        count:topic.count
+                    };
+                }));
+
+                // Update state with topics including additional details
+                setUniqueTopics(topicsWithDetails);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -21,13 +53,14 @@ const FlaggedTopics = () => {
         fetchData();
     }, []);
 
+
+
     return (
         <>
             <div>
                 <Navbar>
                     <div className="App" style={{ marginTop: "60px" }}>
                         <h2 style={{ textAlign: "center" }}>Flagged Topics</h2>
-                        {/* Render the Navbar component */}
 
                         <Grid container spacing={1}>
                             <Grid item xs={1}></Grid>
@@ -38,6 +71,12 @@ const FlaggedTopics = () => {
                                             <TableRow>
                                                 <TableCell>
                                                     <h4 style={{ color: 'white' }}>Topic Name</h4>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <h4 style={{ color: 'white' }}>Keyword</h4>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <h4 style={{ color: 'white' }}>Topic Domain</h4>
                                                 </TableCell>
                                                 <TableCell>
                                                     <h4 style={{ color: 'white' }}>Reasons</h4>
@@ -55,12 +94,19 @@ const FlaggedTopics = () => {
                                             {uniqueTopics.map(topic => (
                                                 <TableRow key={topic.topicId}>
                                                     <TableCell>{topic.topicName}</TableCell>
-                                                    <TableCell><ul>
-                                                        {topic.reasons.map((reason, index) => (
-                                                            <li key={index}>{reason}</li>
-                                                        ))}
-                                                    </ul></TableCell>
+                                                    <TableCell>{topic.keywordName}</TableCell>
+                                                    <TableCell>{topic.topicDomainName}</TableCell>
+                                                    <TableCell>
+                                                        <ul>
+                                                            {topic.reasons?.map((reason, index) => (
+                                                                <li key={index}>{reason}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </TableCell>
                                                     <TableCell>{topic.count}</TableCell>
+                                                    <TableCell>
+                                                        <Button variant="contained" color="error">Delete</Button>
+                                                    </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -68,8 +114,6 @@ const FlaggedTopics = () => {
                                 </TableContainer>
                             </Grid>
                         </Grid>
-
-
                     </div>
                 </Navbar>
             </div>
@@ -77,4 +121,4 @@ const FlaggedTopics = () => {
     );
 };
 
-export default FlaggedTopics; // Changed component name to PascalCase
+export default FlaggedTopics;

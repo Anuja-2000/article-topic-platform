@@ -30,45 +30,52 @@ const UserTopicSuggestionFeedback = () => {
   useEffect(() => {
     const storedResults = sessionStorage.getItem('searchResults');
     if (storedResults) {
-      setSearchResults(JSON.parse(storedResults));
+      setSearchResults(JSON.parse(storedResults).map((result) => ({
+        ...result,
+        relevant: result.relevant || false,
+        irrelevant: result.irrelevant || false,
+        reason: result.reason || ''
+      })));
     } else {
       const { searchResults } = router.query;
       if (searchResults) {
-        setSearchResults(
-          JSON.parse(searchResults).map((result) => ({
-            ...result,
-            relevant: false,
-            irrelevant: false,
-            reason: ''
-          }))
-        );
+        setSearchResults(JSON.parse(searchResults).map((result) => ({
+          ...result,
+          relevant: result.relevant || false,
+          irrelevant: result.irrelevant || false,
+          reason: result.reason || ''
+        })));
         sessionStorage.setItem('searchResults', searchResults);
         router.replace(router.pathname, undefined, { shallow: true });
       } else {
-        router.push('/userTopicSuggestion'); // Redirect to userTopicSuggestion if searchResults are not available
+        router.push('/userTopicSuggestion');
       }
     }
   }, [router]);
+  
 
   const handleRelevanceChange = (topicId) => {
     setSearchResults((prevResults) =>
       prevResults.map((result) => ({
         ...result,
-        relevant: result.topicId === topicId ? !result.relevant : result.relevant,
-        irrelevant: result.topicId === topicId ? false : result.irrelevant,
+        relevant: result.topicId === topicId,
+        irrelevant: result.irrelevant && result.topicId !== topicId,
       }))
     );
   };
-
+  
   const handleIrrelevanceChange = (topicId) => {
     setSearchResults((prevResults) =>
       prevResults.map((result) => ({
         ...result,
-        irrelevant: result.topicId === topicId ? !result.irrelevant : result.irrelevant,
-        relevant: result.topicId === topicId ? false : result.relevant,
+        irrelevant: result.topicId === topicId,
+        relevant: result.relevant && result.topicId !== topicId,
       }))
     );
   };
+  
+
+
 
   const handleReasonChange = (topicId, reason) => {
     setSearchResults((prevResults) =>
@@ -88,7 +95,7 @@ const UserTopicSuggestionFeedback = () => {
         alert('Please provide a reason for all irrelevant topics.');
         return;
       }
-      
+
       // Save irrelevant topics as flagged topics
       await Promise.all(
         irrelevantTopics.map(async (topic) => {
@@ -98,10 +105,10 @@ const UserTopicSuggestionFeedback = () => {
             topicName,
             flaggedBy: "sampleUser",  // You can specify the user who flagged the topic here
             reason, // You can specify the reason for flagging here
-           
+
           };
           console.log('Flagged Topic:', flaggedTopic); // Log flagged topic before fetch
-  
+
           await fetch('http://localhost:3001/api/flaggedTopics/add', {
             method: 'POST',
             headers: {
@@ -109,15 +116,15 @@ const UserTopicSuggestionFeedback = () => {
             },
             body: JSON.stringify(flaggedTopic),
           })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json();
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
         })
       );
       setShowFeedbackSuccessfulAlert(true);
@@ -132,7 +139,7 @@ const UserTopicSuggestionFeedback = () => {
       // Handle error
     }
   };
-  
+
 
   return (
     <div>
@@ -153,27 +160,30 @@ const UserTopicSuggestionFeedback = () => {
               <TableRow key={result.topicId}>
                 <TableCell>{result.topicName}</TableCell>
                 <TableCell>
-                  <Checkbox 
-                    color="success" 
-                    checked={result.relevant} 
+                  <Checkbox
+                    color="success"
+                    checked={result.relevant}
                     onChange={() => handleRelevanceChange(result.topicId)}
                   />
+
                 </TableCell>
                 <TableCell>
-                  <Checkbox 
-                    color="error" 
-                    checked={result.irrelevant} 
+                  <Checkbox
+                    color="error"
+                    checked={result.irrelevant}
                     onChange={() => handleIrrelevanceChange(result.topicId)}
                   />
+
                 </TableCell>
                 <TableCell>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    disabled={!result.irrelevant}
-                    value={result.reason || ''}
-                    onChange={(e) => handleReasonChange(result.topicId, e.target.value)}
-                  />
+                <TextField
+  variant="outlined"
+  size="small"
+  disabled={!result.irrelevant}
+  value={result.reason || ''}
+  onChange={(e) => handleReasonChange(result.topicId, e.target.value)}
+/>
+
                 </TableCell>
               </TableRow>
             ))}
