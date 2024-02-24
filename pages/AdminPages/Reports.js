@@ -181,14 +181,24 @@ function Reports() {
     //console.log(writers);
 
     const handleWriterSearch = (event) => {
-        setWriterSearchTerm(event.target.value);
-        console.log(writerSearchTerm);
-        let type = 'Writer';
-        const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${writerSearchTerm}`).then((res) => {
-            setWriters(res.data);
-        }).catch((error) => {
-            console.log(error);
-        });
+        if (event.target.value === '') {
+            setWriterSearchTerm(event.target.value);
+            const writerRes = axios.get('http://localhost:3001/api/user/get-writers').then((res) => {
+                setWriters(res.data);
+                return;
+            }).catch((error) => {
+                console.log(error);
+            });
+        }else{
+            setWriterSearchTerm(event.target.value);
+            console.log(writerSearchTerm);
+            let type = 'Writer';
+            const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${writerSearchTerm}`).then((res) => {
+                setWriters(res.data);
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
         // setSearchTerm(event.target.value);
         // console.log(searchTerm);
         // const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${searchTerm}`).then((res) => {
@@ -199,6 +209,15 @@ function Reports() {
     };
 
     const handleReaderSearch = (event) => {
+        if (event.target.value === '') {
+            setReaderSearchTerm(event.target.value);
+            const result = axios.get('http://localhost:3001/api/user/get-writers').then((res) => {
+                setWriters(res.data);
+                return;
+            }).catch((error) => {
+                console.log(error);
+            });
+        }else{
         setReaderSearchTerm(event.target.value);
         let type = 'Reader';
         const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${readerSearchTerm}`).then((res) => {
@@ -206,6 +225,7 @@ function Reports() {
         }).catch((error) => {
             console.log(error);
         });
+    }
     };
 
 
@@ -223,7 +243,7 @@ function Reports() {
                     <CustomTabPanel value={value} index={0}>
                         <Container maxWidth="xl" sx={{ display: "flex" }}>
                             <Paper elevation={3} style={{ width: 300, padding: '20px', marginTop: '20px', marginRight: "40px" }}>
-                                <Typography variant="h5" gutterBottom>User Details</Typography>
+                                <Typography variant="h5" gutterBottom fontStyle={'bold'}>User Details</Typography>
                                 <BarChart
                                     width={250}
                                     height={300}
@@ -319,8 +339,8 @@ function Reports() {
                             <Typography marginBottom={1}>User Details</Typography>
                             <Box display="flex" justifyContent="space-between" marginY={2}>
                                 <Typography >Writer Details</Typography>
-                                {/* <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
-                                    <InputLabel htmlFor="outlined-adornment-search">Search</InputLabel>
+                                <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
+                                    <InputLabel htmlFor="outlined-adornment-search">Search User Name</InputLabel>
                                     <OutlinedInput
                                         id="writer-search"
                                         type="text"
@@ -335,16 +355,7 @@ function Reports() {
                                         value={writerSearchTerm}
                                         onInputCapture={handleWriterSearch}
                                     />
-                                </FormControl> */}
-                                <Autocomplete
-                                    freeSolo
-                                    id="free-solo-2-demo"
-                                    disableClearable
-                                    options={writerNames}
-                                    onInputChange={handleWriterSearch}                                    
-                                    sx={{ width: 300 }}
-                                    renderInput={(params) => <TextField {...params} label="Search User Names" /> }
-                                />
+                                </FormControl>
                             </Box>
                             <Paper sx={{ width: '100%', overflow: 'hidden' }} elevation={3}>
                                 <TableContainer sx={{ maxHeight: 440 }}>
@@ -398,7 +409,7 @@ function Reports() {
                             <Box display="flex" justifyContent="space-between" marginY={2}>
                                 <Typography marginY={2}>Reader Details</Typography>
                                 <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
-                                    <InputLabel htmlFor="outlined-adornment-search">Search</InputLabel>
+                                    <InputLabel htmlFor="outlined-adornment-search">Search User Name</InputLabel>
                                     <OutlinedInput
                                         id="reader-search"
                                         type="text"
