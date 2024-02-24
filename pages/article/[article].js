@@ -60,7 +60,7 @@ const ArticlePage = () => {
         <ArticleBody content={articleData.content} className={styles.content} />
         <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} />
         <Divider sx={{ marginY: 2 }}/>
-        <CommentSection />
+        <CommentSection articleId={article.id}/>
       </div>
     </Container>
   );
