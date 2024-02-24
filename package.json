@@ -37,6 +37,8 @@
     "react-dom": "18.2.0",
     "react-dynamic-import": "^1.1.5",
     "react-hook-form": "^7.44.3",
+    "react-modal": "^3.16.1",
+    "react-share": "^5.1.0",
     "styled-components": "^5.3.6",
     "uuid": "^9.0.0"
   },
