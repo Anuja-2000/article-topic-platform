@@ -137,7 +137,7 @@ const [selectedIndex, setSelectedIndex] = useState(0);
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'Templates', 'Topic Domains','Article Types',  'Flagged Topics','Deactivate Writers', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
@@ -205,7 +205,7 @@ const handleListItemClick = (event, index) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics','Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
