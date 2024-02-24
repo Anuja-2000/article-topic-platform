@@ -105,7 +105,11 @@ const Navbar = () => {
                 >
                     <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
                     <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
-                    <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
+                    <MenuItem onClick={handleUserMenuClose}>
+                        <Link href="/login" passHref>
+                        Logout
+                        </Link>
+                        </MenuItem>
                 </Menu>
 
                 {/* Notifications Popover */}
