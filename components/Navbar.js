@@ -21,6 +21,7 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import AvatarIcon from '../components/avatar';
 import CustomNotificationIcon from "../components/customNotificationIcon";
+import Tooltip from '@mui/material/Tooltip';
 
 
 import { useRouter } from 'next/router';
@@ -186,7 +187,9 @@ const handleListItemClick = (event, index) => {
             aria-label="search"
             onClick={() => router.push('/view-contact-us-messages')}
           >
+            <Tooltip title="View Messages" arrow>
             < MailIcon  />
+            </Tooltip>
           </IconButton>
             <CustomNotificationIcon/>
             <AvatarIcon/>

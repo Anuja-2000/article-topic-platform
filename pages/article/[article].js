@@ -12,9 +12,10 @@ import Image from 'next/image';
 
 const ArticlePage = () => {
   const router = useRouter();
+  const { article } = router.query; 
   const [articleData, setData] = useState([]);
-  const backendApiUrl = process.env.NEXT_PUBLIC_BACKEND_API;
-  const customId = "art1";
+ 
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,19 +23,19 @@ const ArticlePage = () => {
         const response = await fetch(`http://localhost:3001/api/readerArticle/get`, {
           headers: {
             'Content-Type': 'application/json', // Adjust the content type if needed
-            'id': customId, // Add your custom data in headers
+            'id': article, // Add your custom data in headers
           },
       });
         const jsonData = await response.json();
         setData(jsonData);
-        console.log(backendApiUrl);
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [article]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -57,7 +58,7 @@ const ArticlePage = () => {
           <img  src={articleData.image} alt="Article Image" className={articleData.image} />
         </div>
         <ArticleBody content={articleData.content} className={styles.content} />
-        <LikeShareDownload />
+        <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} />
         <Divider sx={{ marginY: 2 }}/>
         <CommentSection />
       </div>

@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { use } from 'react';
 import { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Typography from '@mui/material/Typography';
@@ -7,11 +8,19 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
+import { PickersActionBar } from '@mui/x-date-pickers';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
   marginBottom: '20px',
+  display: 'flex',
+  justifyContent: 'center',
+  boxShadow: '0 0 15px rgba(0, 0, 0, 0.4)',
 
 }));
 
@@ -26,7 +35,13 @@ const StyledCount = styled(Typography)(({ theme }) => ({
   fontFamily: 'Montserrat, sans-serif',
   fontWeight: 700,
   color: theme.palette.primary.contrastText,
+  textAlign: 'center',
+  marginTop: '10px',
 }));
+
+const CustomActionBar = ( () => {
+  <div></div>
+});
 
 function Dashboard({ }) {
   function getCurrentDate() {
@@ -46,6 +61,8 @@ function Dashboard({ }) {
   const [keywordCount, setKeywordCount] = useState(0);
   const [topicCount, setTopicCount] = useState(0);
   const [isLoading, setLoading] = React.useState(true)
+  const [userName, setUserName] = React.useState('')
+
   useEffect(() => {
     if (isLoading) {
       axios.get('http://localhost:3001/api/contactMessage/get-count')
@@ -57,7 +74,7 @@ function Dashboard({ }) {
           console.log(error);
         });
 
-      
+
       axios.get('http://localhost:3001/api/topicDomains/count')
         .then((res) => {
           const data = res.data;
@@ -67,7 +84,7 @@ function Dashboard({ }) {
           console.log(error);
         });
 
-        axios.get('http://localhost:3001/api/keywords/count')
+      axios.get('http://localhost:3001/api/keywords/count')
         .then((res) => {
           const data = res.data;
           setKeywordCount(data);
@@ -76,8 +93,8 @@ function Dashboard({ }) {
           console.log(error);
         });
 
-        
-        axios.get('http://localhost:3001/api/topics/count')
+
+      axios.get('http://localhost:3001/api/topics/count')
         .then((res) => {
           const data = res.data;
           setTopicCount(data);
@@ -86,133 +103,171 @@ function Dashboard({ }) {
           console.log(error);
         });
 
-      
+      setUserName(localStorage.getItem('username'));
 
       setLoading(false);
     }
   }, [isLoading]);
 
+  const [date, setDate] = React.useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDate(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       <Navbar>
-      <Box
-        sx={{
-          padding: '20px',
-          marginTop: '2px',
-          marginLeft: '20px',
-          marginRight: '260px',
-          backgroundColor: 'white',
-          color: 'white',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Typography
-          variant="h4"
-          noWrap
-          component="div"
-          sx={{
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'black',
-            textDecoration: 'none',
-            paddingLeft: '10px',
-            marginTop: '20px',
-            marginBottom: '30px',
-          }}
-        >
-          Welcome to your Dashboard
-        </Typography>
-
         <Box
           sx={{
+            padding: '10px',
+            marginTop: '2px',
+            marginLeft: '20px',
+            marginRight: '20px',
+            backgroundColor: 'white',
+            color: 'white',
             display: 'flex',
-            justifyContent: 'center',
-            gap: '20px',
-            flexWrap: 'wrap',
-            width: '100%',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-         
+          <Typography
+            variant="h4"
+            noWrap
+            component="div"
+            sx={{
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'black',
+              textDecoration: 'none',
+              paddingLeft: '10px',
+              marginBottom: '30px',
+            }}
+          >
+            Welcome {userName} to your Dashboard
+          </Typography>
 
-          <StyledCard>
-            <CardContent>
-              <StyledTitle variant="h6" component="div">
-                Topic Domain Count
-              </StyledTitle>
-              <StyledCount variant="h4" component="div">
-                {topicDomainCount.count}
-              </StyledCount>
-            </CardContent>
-          </StyledCard>
-          <StyledCard>
-            <CardContent>
-              <StyledTitle variant="h6" component="div">
-              Keyword Count
-              </StyledTitle>
-              <StyledCount variant="h4" component="div">
-                {keywordCount.count}
-              </StyledCount>
-            </CardContent>
-          </StyledCard>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '20px',
+              flexWrap: 'wrap',
+              width: '100%',
+            }}
+          >
 
-          <StyledCard>
-            <CardContent>
-              <StyledTitle variant="h6" component="div">
-                Topics Count
-              </StyledTitle>
-              <StyledCount variant="h4" component="div">
-              {topicCount.count}
-              </StyledCount>
-            </CardContent>
-          </StyledCard>
 
-          <StyledCard>
-            <CardContent>
-              <StyledTitle variant="h6" component="div">
-                Unread messages Count
-              </StyledTitle>
-              <StyledCount variant="h4" component="div">
-                 {msgcount}
-              </StyledCount>
-            </CardContent>
-          </StyledCard>
+            <StyledCard>
+              <CardContent>
+                <StyledTitle variant="h6" component="div">
+                  Topic Domain Count
+                </StyledTitle>
+                <StyledCount variant="h3" component="div">
+                  {topicDomainCount.count}
+                </StyledCount>
+              </CardContent>
+            </StyledCard>
+            <StyledCard>
+              <CardContent>
+                <StyledTitle variant="h6" component="div">
+                  Keyword Count
+                </StyledTitle>
+                <StyledCount variant="h3" component="div">
+                  {keywordCount.count}
+                </StyledCount>
+              </CardContent>
+            </StyledCard>
+
+            <StyledCard>
+              <CardContent>
+                <StyledTitle variant="h6" component="div">
+                  Topics Count
+                </StyledTitle>
+                <StyledCount variant="h3" component="div">
+                  {topicCount.count}
+                </StyledCount>
+              </CardContent>
+            </StyledCard>
+
+            <StyledCard>
+              <CardContent>
+                <StyledTitle variant="h6" component="div">
+                  Unread Messages Count
+                </StyledTitle>
+                <StyledCount variant="h3" component="div">
+                  {msgcount}
+                </StyledCount>
+              </CardContent>
+            </StyledCard>
+          </Box>
+
+          {/* <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'black',
+              textDecoration: 'none',
+              marginTop: '20px',
+            }}
+          >
+            Current Date: {getCurrentDate()}
+          </Typography>
+
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'black',
+              textDecoration: 'none',
+              marginTop: '10px',
+            }}
+          >
+            Current Time: {getCurrentTime()}
+          </Typography> */}
+          <Box>
+            <StyledCard>
+              <CardContent>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <StaticDateTimePicker
+                orientation="landscape"
+                defaultValue={dayjs(date)}
+                readOnly
+                slots={{
+                  actionBar: CustomActionBar
+                }}
+                slotProps={{
+                  tabs:{
+                    hidden: true
+                  },
+                  toolbar:{
+                    
+                  },
+                  calendarHeader:{
+                    sx: {color: 'black'}
+                  }
+                }}
+                sx={{backgroundColor: 'primary.main', '& MuiPickersLayout-root': {color: 'white'}}}
+              />
+            </LocalizationProvider>
+              </CardContent>
+            </StyledCard>
+
+          </Box>
+
         </Box>
-
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'black',
-            textDecoration: 'none',
-            marginTop: '20px',
-          }}
-        >
-          Current Date: {getCurrentDate()}
-        </Typography>
-
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'black',
-            textDecoration: 'none',
-            marginTop: '10px',
-          }}
-        >
-          Current Time: {getCurrentTime()}
-        </Typography>
-      </Box>
       </Navbar>
     </div>
   );
 }
- export default Dashboard;
+export default Dashboard;

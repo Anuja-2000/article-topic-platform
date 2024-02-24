@@ -16,7 +16,7 @@ const Header = ({ writer, date, time, title, profilePic }) => {
         </Box>
       </Box>
       <Box >
-      <Divider style={{ margin: '10px 0' }} />
+      <Divider style={{ margin: '10px 0', width:1100 }} />
       <Typography variant="h4" mt={2} mb={1}>
         {title}
       </Typography>
