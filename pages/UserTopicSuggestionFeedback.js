@@ -30,21 +30,11 @@ const UserTopicSuggestionFeedback = () => {
   useEffect(() => {
     const storedResults = sessionStorage.getItem('searchResults');
     if (storedResults) {
-      setSearchResults(JSON.parse(storedResults).map((result) => ({
-        ...result,
-        relevant: result.relevant || false,
-        irrelevant: result.irrelevant || false,
-        reason: result.reason || ''
-      })));
+      setSearchResults(JSON.parse(storedResults));
     } else {
       const { searchResults } = router.query;
       if (searchResults) {
-        setSearchResults(JSON.parse(searchResults).map((result) => ({
-          ...result,
-          relevant: result.relevant || false,
-          irrelevant: result.irrelevant || false,
-          reason: result.reason || ''
-        })));
+        setSearchResults(JSON.parse(searchResults));
         sessionStorage.setItem('searchResults', searchResults);
         router.replace(router.pathname, undefined, { shallow: true });
       } else {
@@ -52,31 +42,39 @@ const UserTopicSuggestionFeedback = () => {
       }
     }
   }, [router]);
-  
 
   const handleRelevanceChange = (topicId) => {
     setSearchResults((prevResults) =>
-      prevResults.map((result) => ({
-        ...result,
-        relevant: result.topicId === topicId,
-        irrelevant: result.irrelevant && result.topicId !== topicId,
-      }))
+      prevResults.map((result) => {
+        if (result.topicId === topicId) {
+          return {
+            ...result,
+            relevant: !result.relevant,
+            irrelevant: false,
+            reason: '',
+          };
+        }
+        return result;
+      })
     );
   };
-  
+
   const handleIrrelevanceChange = (topicId) => {
     setSearchResults((prevResults) =>
-      prevResults.map((result) => ({
-        ...result,
-        irrelevant: result.topicId === topicId,
-        relevant: result.relevant && result.topicId !== topicId,
-      }))
+      prevResults.map((result) => {
+        if (result.topicId === topicId) {
+          return {
+            ...result,
+            irrelevant: !result.irrelevant,
+            relevant: false,
+          };
+        }
+        return result;
+      })
     );
   };
+
   
-
-
-
   const handleReasonChange = (topicId, reason) => {
     setSearchResults((prevResults) =>
       prevResults.map((result) =>
@@ -162,27 +160,28 @@ const UserTopicSuggestionFeedback = () => {
                 <TableCell>
                   <Checkbox
                     color="success"
-                    checked={result.relevant}
+                    checked={result.relevant || false} // Ensure consistent controlled state
                     onChange={() => handleRelevanceChange(result.topicId)}
                   />
 
                 </TableCell>
                 <TableCell>
-                  <Checkbox
+                  
+                <Checkbox
                     color="error"
-                    checked={result.irrelevant}
+                    checked={result.irrelevant || false} // Ensure consistent controlled state
                     onChange={() => handleIrrelevanceChange(result.topicId)}
                   />
 
                 </TableCell>
                 <TableCell>
                 <TextField
-  variant="outlined"
-  size="small"
-  disabled={!result.irrelevant}
-  value={result.reason || ''}
-  onChange={(e) => handleReasonChange(result.topicId, e.target.value)}
-/>
+                    variant="outlined"
+                    size="small"
+                    disabled={!result.irrelevant}
+                    value={result.reason || ''} // Ensure consistent controlled state
+                    onChange={(e) => handleReasonChange(result.topicId, e.target.value)}
+                  />
 
                 </TableCell>
               </TableRow>
