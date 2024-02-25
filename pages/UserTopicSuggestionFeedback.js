@@ -10,7 +10,8 @@ const UserTopicSuggestionFeedback = () => {
   const [showFeedbackSuccessfulAlert, setShowFeedbackSuccessfulAlert] = useState(false);
   
 
-  /*.........Enable this if don't use session storage..........
+  /*.........Enable this if don't use session storage..........*/
+  
   useEffect(() => {
     const { searchResults } = router.query;
     if (searchResults) {
@@ -27,23 +28,27 @@ const UserTopicSuggestionFeedback = () => {
       router.replace(router.pathname, undefined, { shallow: true });
     }
   }, [router]);
-  */
+ /*
   useEffect(() => {
     const storedResults = sessionStorage.getItem('searchResults');
     if (storedResults) {
-      setSearchResults(JSON.parse(storedResults));
+        setSearchResults(JSON.parse(storedResults));
     } else {
-      const { searchResults } = router.query;
-      if (searchResults) {
-        setSearchResults(JSON.parse(searchResults));
-        sessionStorage.setItem('searchResults', searchResults);
-        router.replace(router.pathname, undefined, { shallow: true });
-      } else {
-        router.push('/userTopicSuggestion');
-      }
+        const { searchResults } = router.query;
+        if (searchResults) {
+            setSearchResults(JSON.parse(searchResults));
+            sessionStorage.setItem('searchResults', searchResults);
+            router.replace(router.pathname, undefined, { shallow: true });
+        } else {
+            router.push('/userTopicSuggestion');
+        }
     }
-  }, [router]);
 
+    // Clear sessionStorage when unmounting or when new results are generated
+    return () => sessionStorage.removeItem('searchResults');
+}, [router]);
+
+*/
   const handleRelevanceChange = (topicId) => {
     setSearchResults((prevResults) =>
       prevResults.map((result) => {
