@@ -6,9 +6,20 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Navbar from '../../components/Navbar';
 import axios from 'axios';
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from '@mui/material/DialogActions';
+
+
 
 const FlaggedTopics = () => {
     const [uniqueTopics, setUniqueTopics] = useState([]);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [deleteTargetId, setDeleteTargetId] = useState(null);
+    const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
+    const [showDeleteIgnoreConfirmation, setShowDeleteIgnoreConfirmation] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,7 +29,7 @@ const FlaggedTopics = () => {
 
                 // Iterate over flagged topics and fetch details
                 const topicsWithDetails = await Promise.all(response.data.map(async (topic) => {
-                    console.log(topic.topicId ,topic.topicName ); // Access topicId, topicName directly from flagged topics
+                    console.log(topic.topicId, topic.topicName); // Access topicId, topicName directly from flagged topics
 
                     // Fetch topic details by topicId
                     const topicResponse = await axios.get(`http://localhost:3001/api/topics/getByTopic/${topic.topicId}`);
@@ -36,11 +47,11 @@ const FlaggedTopics = () => {
                     // Return topic details with additional data
                     return {
                         topicId: topic.topicId, // Include topicId in the returned object
-                        topicName:topic.topicName,
+                        topicName: topic.topicName,
                         keywordName,
                         topicDomainName,
-                        reasons:topic.reasons,
-                        count:topic.count
+                        reasons: topic.reasons,
+                        count: topic.count
                     };
                 }));
 
@@ -53,7 +64,70 @@ const FlaggedTopics = () => {
         fetchData();
     }, []);
 
+    const handleDeleteClick = (topicId) => {
+        setDeleteTargetId(topicId);
+        setShowDeleteConfirmation(true);
+    };
+    const handleIgnoreClick = (topicId) => {
+        setDeleteTargetId(topicId);
+        setShowDeleteIgnoreConfirmation(true);
+    };
+    const handleConfirmDelete = async () => {
+        try {
+            // Delete the topic
+            await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
 
+            // Delete flagged topics related to the deleted topic
+            await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+
+            // Update the state to remove the deleted topic from the UI
+            setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
+            setShowDeleteConfirmation(false);
+
+            // Show success message
+            setDeleteSuccessfulAlertOpen(true);
+
+            // Hide the message after 20 seconds
+            setTimeout(() => {
+                setDeleteSuccessfulAlertOpen(false);
+            }, 20000);
+        } catch (error) {
+            console.error("Error deleting data:", error);
+        }
+    };
+
+
+
+    const handleCloseDeleteSuccessfulAlertOpen = () => {
+        setDeleteSuccessfulAlertOpen(false);
+    };
+
+    const handleConfirmIgnore = async () => {
+        try {
+            // Delete flagged topics related to the topic ID
+            await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+
+            // Update the state to remove the ignored topic from the UI
+            setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
+            setShowDeleteIgnoreConfirmation(false);
+
+            // Show success message
+            setDeleteSuccessfulAlertOpen(true);
+
+            // Hide the message after 20 seconds
+            setTimeout(() => {
+                setDeleteSuccessfulAlertOpen(false);
+            }, 20000);
+        } catch (error) {
+            console.error("Error ignoring flagged topic:", error);
+        }
+    };
+
+
+
+    const handleCloseIgnoreConfirmation = () => {
+        setShowDeleteIgnoreConfirmation(false);
+    };
 
     return (
         <>
@@ -105,7 +179,10 @@ const FlaggedTopics = () => {
                                                     </TableCell>
                                                     <TableCell>{topic.count}</TableCell>
                                                     <TableCell>
-                                                        <Button variant="contained" color="error">Delete</Button>
+                                                        <Box sx={{ display: 'flex', gap: '8px' }}>
+                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Delete</Button>
+                                                            <Button variant="contained" color="primary" onClick={() => handleIgnoreClick(topic.topicId)}>Ignore</Button>
+                                                        </Box>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
@@ -114,9 +191,31 @@ const FlaggedTopics = () => {
                                 </TableContainer>
                             </Grid>
                         </Grid>
+                        {deleteSuccessfulAlertOpen && (
+                            <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                                Topic deleted successfully.
+                            </div>
+                        )}
                     </div>
                 </Navbar>
             </div>
+            <Dialog open={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)}>
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>Are you sure you want to delete this topic?</DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowDeleteConfirmation(false)} color="primary">Cancel</Button>
+                    <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={showDeleteIgnoreConfirmation} onClose={handleCloseIgnoreConfirmation}>
+                <DialogTitle>Confirm Ignore</DialogTitle>
+                <DialogContent>Are you sure you want to ignore this flagged topic?</DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseIgnoreConfirmation} color="primary">Cancel</Button>
+                    <Button onClick={handleConfirmIgnore} color="primary">Ignore</Button>
+                </DialogActions>
+            </Dialog>
+
         </>
     );
 };
