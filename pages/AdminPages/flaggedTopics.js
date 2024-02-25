@@ -7,8 +7,18 @@ import Button from "@mui/material/Button";
 import Navbar from '../../components/Navbar';
 import axios from 'axios';
 
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import  DialogContent from "@mui/material/DialogContent"; 
+import DialogActions  from '@mui/material/DialogActions';
+
+
+
 const FlaggedTopics = () => {
     const [uniqueTopics, setUniqueTopics] = useState([]);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -53,7 +63,40 @@ const FlaggedTopics = () => {
         fetchData();
     }, []);
 
+    const handleDeleteClick = (topicId) => {
+        setDeleteTargetId(topicId);
+        setShowDeleteConfirmation(true);
+    };
 
+    const handleConfirmDelete = async () => {
+        try {
+            // Delete the topic
+            await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
+    
+            // Delete flagged topics related to the deleted topic
+            await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+    
+            // Update the state to remove the deleted topic from the UI
+            setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
+            setShowDeleteConfirmation(false);
+    
+            // Show success message
+            setDeleteSuccessfulAlertOpen(true);
+    
+            // Hide the message after 20 seconds
+            setTimeout(() => {
+                setDeleteSuccessfulAlertOpen(false);
+            }, 20000);
+        } catch (error) {
+            console.error("Error deleting data:", error);
+        }
+    };
+    
+
+
+    const handleCloseDeleteSuccessfulAlertOpen = () => {
+        setDeleteSuccessfulAlertOpen(false);
+    };
 
     return (
         <>
@@ -105,7 +148,7 @@ const FlaggedTopics = () => {
                                                     </TableCell>
                                                     <TableCell>{topic.count}</TableCell>
                                                     <TableCell>
-                                                        <Button variant="contained" color="error">Delete</Button>
+                                                        <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Delete</Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
@@ -117,6 +160,19 @@ const FlaggedTopics = () => {
                     </div>
                 </Navbar>
             </div>
+            <Dialog open={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)}>
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>Are you sure you want to delete this topic?</DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowDeleteConfirmation(false)} color="primary">Cancel</Button>
+                    <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
+            {deleteSuccessfulAlertOpen && (
+                <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                    Topic deleted successfully.
+                </div>
+            )}
         </>
     );
 };

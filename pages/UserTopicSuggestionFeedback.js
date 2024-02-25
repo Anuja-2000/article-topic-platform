@@ -8,8 +8,9 @@ const UserTopicSuggestionFeedback = () => {
   const [searchResults, setSearchResults] = useState([]);
   //const { userId } = useUserId(); // Get userId from context
   const [showFeedbackSuccessfulAlert, setShowFeedbackSuccessfulAlert] = useState(false);
+  
 
-  /*ENable this if dont use session storage
+  /*.........Enable this if don't use session storage..........
   useEffect(() => {
     const { searchResults } = router.query;
     if (searchResults) {
