@@ -35,6 +35,7 @@ import FlagIcon from '@mui/icons-material/Flag';
 import GroupIcon from '@mui/icons-material/Group';
 import CheckIcon from '@mui/icons-material/Check';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import GradingIcon from '@mui/icons-material/Grading';
 
 const drawerWidth = 240;
 
@@ -111,6 +112,7 @@ export default function Navbar({children}) {
         'Keywords': <TopicIcon sx={{ color: 'white' }} />,
         'Topics': < ArticleIcon sx={{ color: 'white' }} />,
         'Flagged Topics': <FlagIcon sx={{ color: 'white' }} />,
+        'Approve Articles': <GradingIcon sx={{ color: 'white' }} />,
         'Deactivate Writers': <CheckIcon sx={{ color: 'white' }} />,
         'User Roles': <GroupIcon sx={{ color: 'white' }} />,
         'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
@@ -121,7 +123,7 @@ const [selectedIndex, setSelectedIndex] = useState(0);
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'DeactivateWriters', 'UserRoles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'ApproveArticles','DeactivateWriters', 'UserRoles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
@@ -203,7 +205,7 @@ const handleListItemClick = (event, index) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Topic Domains', 'Keywords','Topics', 'Flagged Topics', 'Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Topic Domains', 'Keywords','Topics', 'Flagged Topics', 'Approve Articles','Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton

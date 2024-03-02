@@ -1,4 +1,4 @@
-import { Container, Input, Paper, Typography } from '@mui/material';
+import { Container, Divider, Input, Paper, Typography } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
@@ -351,9 +351,10 @@ function Reports() {
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
                         <Container maxWidth="md">
-                            <Typography marginBottom={1}>User Details</Typography>
+                            <Typography variant='h4' marginBottom={1} color={'primary.dark'}>User Details</Typography>
+                            <Divider />
                             <Box display="flex" justifyContent="space-between" marginY={2}>
-                                <Typography >Writer Details</Typography>
+                                <Typography marginY={2}>Writer Details</Typography>
                                 <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
                                     <InputLabel htmlFor="outlined-adornment-search">Search User Name</InputLabel>
                                     <OutlinedInput
