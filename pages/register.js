@@ -70,7 +70,8 @@ export default function Register() {
       userId: userId,
       email: values.email,
       name: values.username,
-      type: values.usertype,
+      // type: values.usertype,
+      type: "Reader",
       password: values.password,
     }).then((response) => {
       if (response.status == 201) {
@@ -124,7 +125,7 @@ export default function Register() {
             margin="dense"
           />
 
-          <FormControl variant="outlined" margin="dense" required sx={{minWidth:"120px"}}>
+          {/* <FormControl variant="outlined" margin="dense" required sx={{minWidth:"120px"}}>
           <InputLabel id="demo-simple-select-label">User Type</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -137,7 +138,7 @@ export default function Register() {
             <MenuItem value={"Reader"}>Reader</MenuItem>
             <MenuItem value={"Writer"}>Writer</MenuItem>
           </Select>
-          </FormControl>
+          </FormControl> */}
           <TextField
             onChange={handleChange}
             name="password"

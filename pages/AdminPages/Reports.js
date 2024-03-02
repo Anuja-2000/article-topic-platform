@@ -137,19 +137,34 @@ function Reports() {
         });
 
         //get all topic domains
-        const domains = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {
+        /*const domainss = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {
             let temp = [];
             let dummyData = [];
             res.data.forEach((domain) => {
                 temp.push(domain.topicDomainName);
             });
-            xLabelsDomain = temp;
+            //xLabelsDomain = temp;
             let x = temp.length;
             while (x > 0) {
                 dummyData.push(Math.floor(Math.random() * 100) + 1);
                 x--;
             }
             domData = dummyData;
+        }).catch((error) => {
+            console.log(error);
+        });*/
+
+        const domains = axios.get('http://localhost:3001/api/readerArticle/count-by-domain').then((res) => {
+            let temp = [];
+            let countData = [];
+            res.data.forEach((item) => {
+                if(item.domain != null){
+                    temp.push(item.domain);
+                    countData.push(item.count);
+                }
+            });
+            xLabelsDomain = temp;
+            domData = countData;
         }).catch((error) => {
             console.log(error);
         });
