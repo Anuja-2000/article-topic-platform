@@ -7,6 +7,8 @@ import ReportDialog from "../../components/ReportDialog";
 import { Button,Typography } from "@mui/material";
 import Link from 'next/link';
 import { useState } from 'react';
+import Search from '../searchArticle/search';
+import HomeNav from './homeNav';
 function HomePage(){
 
     const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
@@ -21,35 +23,7 @@ function HomePage(){
 
     return(
         <div className={Styles.outer}>
-            <div className={Styles.navBar} >
-                <div style={{ flexGrow: 0.1 }} ></div>
-                    <Typography variant="h6" noWrap component="div"
-                          sx={{
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: '#9399f7',
-                            textDecoration: 'none',
-                          }}>
-                          Writer
-                     </Typography>
-                    <Typography variant="h6" noWrap component="div"
-                          sx={{
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                            paddingLeft: '10px',
-                          }}>
-                          GATE
-                </Typography>
-        
-                <div style={{ flexGrow: 1 }} ></div>
-                <Link href="/contactUs"> <Button  sx={{marginRight:4, textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Contact Us</Button></Link>
-                <Link href="/login"> <Button  sx={{marginRight:4 , textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Sign In</Button></Link>
-                <Link href="/register"> <Button sx={{borderRadius:6,marginRight:14,textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}} variant="contained">Sign Up for Free</Button></Link>
-            </div>
+            <HomeNav/>
             <div className={Styles.introBox}>
                 <h1 className={Styles.h1}>Start Today</h1>
                 <p className={Styles.paragraph}>Discover stories, thinking, and expertise from writers on any topic</p>
@@ -60,7 +34,7 @@ function HomePage(){
             </div>
             <h3 className={Styles.trending}>#Trendings</h3>
             <div className={style.articleBoxOuter}>
-                { < SearchArticleBox/> }
+            < SearchArticleBox keyword={' '}/>
             </div>
             
         </div>

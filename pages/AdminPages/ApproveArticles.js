@@ -9,7 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import Paper from '@mui/material/Paper';
 import Chip from '@mui/material/Chip';
-import { Container } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import axios from 'axios';
 
 function createData(name, calories, fat, carbs, protein) {
@@ -53,15 +53,15 @@ export default function ApproveArticles() {
         <div>
             <Navbar>
                 <Container maxWidth="lg">
-                    <h1>Approve Articles</h1>
+                    <Typography variant='h4' marginBottom={2} color={'primary.main'}>Approve Articles</Typography>
                     <TableContainer component={Paper}>
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Title</TableCell>
-                                    <TableCell>Writer</TableCell>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell align='center'>View & Approve</TableCell>
+                                    <TableCell sx={{ fontSize: '1.1rem', color: 'white' }}>Title</TableCell>
+                                    <TableCell sx={{ fontSize: '1.1rem', color: 'white' }}>Writer</TableCell>
+                                    <TableCell sx={{ fontSize: '1.1rem', color: 'white' }}>Date</TableCell>
+                                    <TableCell align='center' sx={{ fontSize: '1.1rem', color: 'white' }}>View & Approve</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
