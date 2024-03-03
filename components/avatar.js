@@ -45,6 +45,9 @@ export default function AvatarIcon() {
     window.location.href = "/login";
   };
 
+  const viewProfile = () => {
+    window.location.href = "/AdminPages/profile";
+  };
   // const getFirstLetter = () => {
   //   try{
   //     console.log(username);
@@ -107,7 +110,7 @@ export default function AvatarIcon() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={viewProfile}>
           <Avatar /> Profile
         </MenuItem>
         <MenuItem onClick={handleClose}>
