@@ -31,6 +31,7 @@ export default function HomeNav() {
         
                 <div style={{ flexGrow: 1 }} ></div>
                 <Link href="/HomePage/faq"> <Button  sx={{marginRight:4, textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>FAQ</Button></Link>
+                <Link href="/WriterPages/signup/writerLogin"> <Button  sx={{marginRight:4, textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Writer SignIn</Button></Link>
                 <Link href="/contactUs"> <Button  sx={{marginRight:4, textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Contact Us</Button></Link>
                 <Link href="/login"> <Button  sx={{marginRight:4 , textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}}>Sign In</Button></Link>
                 <Link href="/register"> <Button sx={{borderRadius:6,marginRight:14,textTransform: 'none',fontFamily:'Ubuntu',fontSize:16}} variant="contained">Sign Up for Free</Button></Link>
