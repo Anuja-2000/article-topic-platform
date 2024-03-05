@@ -13,7 +13,8 @@
     background-color:#fff ;
     overflow: hidden;
     z-index: 5;
-    
+    margin-bottom: 12vh;
+    box-shadow: rgb(199, 199, 199) 0px 0px 10px;
 }
 
 .introBox{

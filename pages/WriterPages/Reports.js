@@ -1,4 +1,4 @@
-import { Container, Divider, Input, Paper, Typography } from '@mui/material';
+import { Container, Input, Paper, Typography } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
@@ -137,34 +137,19 @@ function Reports() {
         });
 
         //get all topic domains
-        /*const domainss = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {
+        const domains = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {
             let temp = [];
             let dummyData = [];
             res.data.forEach((domain) => {
                 temp.push(domain.topicDomainName);
             });
-            //xLabelsDomain = temp;
+            xLabelsDomain = temp;
             let x = temp.length;
             while (x > 0) {
                 dummyData.push(Math.floor(Math.random() * 100) + 1);
                 x--;
             }
             domData = dummyData;
-        }).catch((error) => {
-            console.log(error);
-        });*/
-
-        const domains = axios.get('http://localhost:3001/api/readerArticle/count-by-domain').then((res) => {
-            let temp = [];
-            let countData = [];
-            res.data.forEach((item) => {
-                if(item.domain != null){
-                    temp.push(item.domain);
-                    countData.push(item.count);
-                }
-            });
-            xLabelsDomain = temp;
-            domData = countData;
         }).catch((error) => {
             console.log(error);
         });
@@ -351,10 +336,9 @@ function Reports() {
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
                         <Container maxWidth="md">
-                            <Typography variant='h4' marginBottom={1} color={'primary.dark'}>User Details</Typography>
-                            <Divider />
+                            <Typography marginBottom={1}>User Details</Typography>
                             <Box display="flex" justifyContent="space-between" marginY={2}>
-                                <Typography marginY={2}>Writer Details</Typography>
+                                <Typography >Writer Details</Typography>
                                 <FormControl sx={{ m: 1, width: '35ch' }} variant="outlined">
                                     <InputLabel htmlFor="outlined-adornment-search">Search User Name</InputLabel>
                                     <OutlinedInput

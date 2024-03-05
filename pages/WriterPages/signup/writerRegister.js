@@ -1,6 +1,6 @@
 import Head from "next/head"
-import LoginLayout from "../components/loginlayout"
-import styles from "../styles/register.module.css";
+import LoginLayout from "../../../components/loginlayout";
+import styles from "../../../styles/login.module.css";
 import Link from "next/link";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
@@ -12,12 +12,12 @@ import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 
 
-export default function Register() {
+export default function WriterRegister() {
 
   const [values, setValues] = useState({
     username: "",
     email: "",
-    usertype: "",
+    usertype: "Writer",
     password: "",
     confirmPassword: ""
   });
@@ -30,7 +30,7 @@ export default function Register() {
   };
 
   const validateForm = () => {
-    if (values.username == "" || values.email == "" || values.usertype == "" || values.password == "" || values.confirmPassword == "") {
+    if (values.username == "" || values.email == "" || values.password == "" || values.confirmPassword == "") {
       alert("All fields must be filled out");
       return false;
     } else if (values.password != values.confirmPassword) {
@@ -70,8 +70,7 @@ export default function Register() {
       userId: userId,
       email: values.email,
       name: values.username,
-      // type: values.usertype,
-      type: "Reader",
+      type: values.usertype,
       password: values.password,
     }).then((response) => {
       if (response.status == 201) {
@@ -124,21 +123,7 @@ export default function Register() {
             required
             margin="dense"
           />
-
-          {/* <FormControl variant="outlined" margin="dense" required sx={{minWidth:"120px"}}>
-          <InputLabel id="demo-simple-select-label">User Type</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="usertype"
-            name="usertype"
-            value={values.usertype}
-            label="User Type"
-            onChange={handleChange}
-          >
-            <MenuItem value={"Reader"}>Reader</MenuItem>
-            <MenuItem value={"Writer"}>Writer</MenuItem>
-          </Select>
-          </FormControl> */}
+          
           <TextField
             onChange={handleChange}
             name="password"
@@ -178,7 +163,7 @@ export default function Register() {
         {/*bottom*/}
         <p className={styles.footer}>
           Already have an account?
-          <Link href={"/login"} className={styles.last}>
+          <Link href={"/WriterPages/signup/writerLogin"} className={styles.last}>
             Log in
           </Link>
         </p>
