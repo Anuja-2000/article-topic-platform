@@ -136,7 +136,7 @@ const UserTopicSuggestionFeedback = () => {
       // Set a timeout to hide the happy alert and redirect after 3 seconds
       setTimeout(() => {
         setShowFeedbackSuccessfulAlert(false);
-        router.push('/WriterDashboard');
+        router.push('/WriterPages/CreateArticle');
       }, 3000);
     } catch (error) {
       console.error('Error submitting flagged topics:', error);
