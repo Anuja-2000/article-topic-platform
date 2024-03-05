@@ -33,10 +33,10 @@ function SearchArticleBox({keyword}) {
   
 
         return (
-            <div style={{marginTop:'20px', width:'100%'}}>
-                <Grid sx={{ flexGrow: 1 }}>
-                    <Grid item xs={12}>
-                        <Grid container justifyContent="center" spacing={3}>
+          <div style={{marginTop:'20px', width:'100%'}}>
+              <Grid sx={{ flexGrow: 1 }}>
+                <Grid item xs={12}>
+                  <Grid container justifyContent="center" spacing={3}>
                         {/*articleData.map((article) => (
                             <Grid key={item.articleId} article>
                                  {<Link href={`/article?id=${item.id}`} passHref>
@@ -45,15 +45,17 @@ function SearchArticleBox({keyword}) {
                     </Grid>
                         ))*/}
                             {articleData.map((article) => (
-                                <Link href={`/article/${article.id}`} passHref>
-                                      <ArticleCard {...article}  />
-                                </Link>
+                               <Grid key={article.id} article style={{marginTop:'20px'}}>
+                                  <Link href={`/article/${article.id}`} passHref>
+                                        <ArticleCard {...article}  />
+                                  </Link>
+                                </Grid>
                              ))}
-                        </Grid>
-                    </Grid>
-                        </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
                 
-            </div>
+          </div>
             
         );
 }

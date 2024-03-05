@@ -24,12 +24,12 @@ const ArticleCard = ({ title, date, writer, profilePic,image, tags }) => {
           {title}
         </Typography>
         <Box marginTop="10px">
-          {/*tags.map((tag, index) => (
+          {tags.map((tag, index) => (
             <Chip key={index} label={tag} size="small" style={{ marginRight: '8px', backgroundColor: '#f6e58d'}} />
-          ))*/}
+          ))}
         </Box>
       </CardContent>
-      <CardMedia component="img" height="140" src={image} alt={title} style={{marginBottom: '15px',borderRadius: '4px' }} />
+      <CardMedia component="img" height="160" src={image} alt={title} style={{marginBottom: '0px',borderRadius: '4px' }} />
     </Card>
   );
 };
