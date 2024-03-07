@@ -130,7 +130,7 @@ function Reports() {
         });
 
         //get all readers details
-        const readerRes = axios.get('http://localhost:3001/api/user/get-readers').then((res) => {
+        const readerRes = axios.get('http://localhost:3001/api/user/get-readers').then((res) => {        
             setReaders(res.data);
         }).catch((error) => {
             console.log(error);

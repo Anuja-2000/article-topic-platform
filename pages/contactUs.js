@@ -3,6 +3,7 @@ import Container from "@mui/material/Container";
 import axios from "axios";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import HomeNav from "../pages/HomePage/homeNav";
 
 export default function ContactUs() {
   const [values, setValues] = useState({
@@ -74,7 +75,9 @@ export default function ContactUs() {
 
 
   return (
-    <Container maxWidth="lg" sx={{ marginTop: 10 }}>
+<>
+    <HomeNav />
+    <Container maxWidth="lg" sx={{ marginTop: 15 }}>
       <Paper elevation={4}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -156,6 +159,7 @@ export default function ContactUs() {
         </Grid>
       </Paper>
     </Container>
+  </>
   );
 }
 
