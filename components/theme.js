@@ -8,11 +8,14 @@ export const theme = createTheme({
       contrastText: '#fff'
     },
     secondary: {
-      main: "#FFD700",
-      dark: '#FFA500',
-      light: '#FFD700',
+      main: "#535C91",
+      dark: '#1B1A55',
+      light: '#9290C3',
       contrastText: '#fff'
     },
+    action: {
+      disabled: '#0080FE',
+  },
   },
   components: {
     MuiTableHead: {

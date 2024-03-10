@@ -103,7 +103,6 @@ export default function ViewContactUsMessages() {
   let [messages, setMessages] = React.useState([]);
   const [isLoading, setLoading] = React.useState(true);
   React.useEffect(() => {
-    if (isLoading) {
       const response = axios.get('http://localhost:3001/api/contactMessage/getAll').then((res) => {
         const messages = res.data;
         setMessages(messages);
@@ -111,8 +110,7 @@ export default function ViewContactUsMessages() {
       }).catch((error) => {
         console.log(error);
       });
-    }
-  },[isLoading]);
+  },[]);
 
 
   let msgs = sort_by_key(messages, "savedAt");

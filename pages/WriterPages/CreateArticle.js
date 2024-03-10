@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Navbar from "../../components/createArticleNavbar";
+
+import WriterNavbar from '../../components/WriterNavbar';
 import {
   Box,
   Button,
@@ -39,7 +40,7 @@ function CreateArticles() {
   };
   return (
     <div>
-      <Navbar>
+      <WriterNavbar /> {/* Add WriterNavbar here */}
         <div className="App" style={{ marginTop: "60px" }}>
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
@@ -58,7 +59,7 @@ function CreateArticles() {
             </Grid>
           </Stack>
         </div>
-      </Navbar>
+  
     </div>
   );
 }
