@@ -3,7 +3,7 @@ import SearchArticleBox from '../searchArticle/searchArticleBox';
 import style from "../../styles/search.module.css";
 import Styles from '../../styles/homePage.module.css'
 import React from 'react';
-import ReportDialog from "../../components/reportDialog";
+import ReportDialog from "../../components/article/reportDialog";
 import { Button, Typography } from "@mui/material";
 import Link from 'next/link';
 import { useState } from 'react';
