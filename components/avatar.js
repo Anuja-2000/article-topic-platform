@@ -16,6 +16,8 @@ import Link from 'next/link';
 
 export default function AvatarIcon() {
   const [username, setUsername] = React.useState(" ");
+  const [imgUrl, setImgUrl] = React.useState(" ");
+  
 
   React.useEffect(() => {
     const name = localStorage.getItem("username");
@@ -24,6 +26,9 @@ export default function AvatarIcon() {
     }else{
       setUsername("!user");
     }
+    
+    setImgUrl(localStorage.getItem("imgUrl"));
+  
   }, []);
    
 
@@ -71,7 +76,7 @@ export default function AvatarIcon() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor:'darkblue' }}>{username.charAt(0).toUpperCase()}</Avatar>
+            <Avatar sx={{ width: 32, height: 32, bgcolor:'darkblue' }} src={imgUrl}>{username.charAt(0).toUpperCase()}</Avatar>
           </IconButton>
         </Tooltip>
       </Box>

@@ -45,11 +45,13 @@ export default function Login() {
         const username = response.data.data.username;
         const email = response.data.data.email;
         const userId = response.data.data.userId;
+        const imgUrl = response.data.data.imgUrl;
         localStorage.setItem("token", token);
         localStorage.setItem("type", type);
         localStorage.setItem("username", username);
         localStorage.setItem("email", email);
         localStorage.setItem("userId", userId);
+        localStorage.setItem("imgUrl", imgUrl);
         setAuthtoken(token);
         if(type == "Admin"){
           window.location.href = "/AdminPages/Dashboard";
