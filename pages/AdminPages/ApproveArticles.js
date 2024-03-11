@@ -43,7 +43,6 @@ export default function ApproveArticles() {
     React.useEffect(() => {
         const data = axios.get('http://localhost:3001/api/readerArticle/getAll').then((response) => {
             setArticles(response.data);
-            console.log(response.data);
         }).catch((error) => {
             console.log(error);
         });
