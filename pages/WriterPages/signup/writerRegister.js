@@ -70,7 +70,7 @@ export default function WriterRegister() {
       userId: userId,
       email: values.email,
       name: values.username,
-      type: values.usertype,
+      type: 'Writer',
       password: values.password,
     }).then((response) => {
       if (response.status == 201) {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import WriterNavbar from '../../components/WriterNavbar';
 import {
   Box,
   Button,
@@ -12,7 +11,7 @@ import {
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import dynamic from "next/dynamic";
-
+import Navbar from "../../components/createArticleNavbar";
 const TextEditor = dynamic(() => import("../../components/textEditor"), {
   ssr: false,
 });
@@ -40,15 +39,31 @@ function CreateArticles() {
   };
   return (
     <div>
-      <WriterNavbar /> {/* Add WriterNavbar here */}
-        <div className="App" style={{ marginTop: "60px" }}>
-          <Stack spacing={3}>
-            <Stack direction="row" justifyContent="space-between" spacing={4}>
-              <Stack spacing={1}>
-                <Typography variant="h4">Write Article</Typography>
-                <Stack alignItems="center" direction="row" spacing={1}></Stack>
-              </Stack>
+      <Navbar /> {/* Add WriterNavbar here */}
+      <div className="App" style={{ marginTop: "60px" }}>
+        <Stack spacing={3}>
+          <Stack direction="row" justifyContent="center" spacing={4}>
+            <Stack spacing={1}>
+              <Typography
+                variant="h4"
+                noWrap
+                component="div"
+                sx={{
+                  fontFamily: "Montserrat, sans-serif",
+                  fontWeight: 700,
+                  letterSpacing: ".3rem",
+                  color: "black",
+                  textDecoration: "none",
+                  paddingLeft: "10px",
+                  marginBottom: "30px",
+                }}
+              >
+                Write Article
+              </Typography>
+              <Stack alignItems="center" direction="row" spacing={1}></Stack>
             </Stack>
+          </Stack>
+          <Stack direction="row" justifyContent="center" spacing={4}>
             <Grid container spacing={3}>
               {/* ( */}
               {isQuillLoaded ? (
@@ -58,8 +73,8 @@ function CreateArticles() {
               )}
             </Grid>
           </Stack>
-        </div>
-  
+        </Stack>
+      </div>
     </div>
   );
 }

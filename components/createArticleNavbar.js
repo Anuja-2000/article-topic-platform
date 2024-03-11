@@ -108,10 +108,7 @@ export default function Navbar({ children }) {
     "Create Article": <CreateIcon sx={{ color: "white" }} />,
     "Saved Articles": <TopicIcon sx={{ color: "white" }} />,
     Drafts: <ArticleIcon sx={{ color: "white" }} />,
-    "Flagged Topics": <FlagIcon sx={{ color: "white" }} />,
-    "Deactivate Writers": <CheckIcon sx={{ color: "white" }} />,
-    "User Roles": <GroupIcon sx={{ color: "white" }} />,
-    Reports: <AssessmentIcon sx={{ color: "white" }} />,
+    Statistics: <AssessmentIcon sx={{ color: "white" }} />,
   };
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -124,10 +121,7 @@ export default function Navbar({ children }) {
       "Create Article",
       "Saved Articles",
       "Drafts",
-      "Flagged Topics",
-      "DeactivateWriters",
-      "UserRoles",
-      "Reports",
+      "Statistics",
     ].findIndex((text) => path.includes(text.replace(" ", "")));
     setSelectedIndex(index);
   }, [router.pathname]); //only be executed if router.pathname changes between renders.
@@ -229,10 +223,7 @@ export default function Navbar({ children }) {
             "Create Article",
             "Saved Articles",
             "Drafts",
-            "Flagged Topics",
-            "Deactivate Writers",
-            "User Roles",
-            "Reports",
+            "Statistics",
           ].map((text, index) => (
             <ListItem
               key={text}

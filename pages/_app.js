@@ -7,7 +7,6 @@ import { theme } from "../components/theme"
 import setAuthToken from "./api/auth/axios-set-token";
 import { useEffect, useState } from "react";
 import { UserIdProvider } from "./UserIdContext"; // Update the path
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App({ Component, pageProps }) {
 

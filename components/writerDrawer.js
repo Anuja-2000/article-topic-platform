@@ -1,4 +1,6 @@
-//Permanent drawer
+//Permanent drawer only for writer pages
+//This drawer is used to navigate between different writer pages
+
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -124,12 +126,10 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 export default function WriterDrawer({children}) {
     const iconMap = {
         'Dashboard': < DashboardIcon sx={{ color: 'white' }} />,
-        'Templates': <CreateIcon sx={{ color: 'white' }} />,
         'Create Article': <TopicIcon sx={{ color: 'white' }} />,
         'Saved Artciles': < ArticleIcon sx={{ color: 'white' }} />,
         'Drafts': <FlagIcon sx={{ color: 'white' }} />,
-        'User Roles': <GroupIcon sx={{ color: 'white' }} />,
-        'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
+        'Statistics': <GroupIcon sx={{ color: 'white' }} />,
       };
     const router = useRouter();
 const [selectedIndex, setSelectedIndex] = useState(0);
@@ -137,7 +137,7 @@ const [selectedIndex, setSelectedIndex] = useState(0);
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'Templates', 'Create Article','Saved Artciles',  'Drafts','Deactivate Writers', 'User Roles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'Create Article','Saved Artciles',  'Drafts','Statistics'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
@@ -205,7 +205,7 @@ const handleListItemClick = (event, index) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Templates','Topic Domains', 'Article Types',  'Flagged Topics','Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Create Article','Saved Artciles',  'Drafts','Statistics'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/WriterPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton

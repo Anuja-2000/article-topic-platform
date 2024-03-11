@@ -5,6 +5,7 @@ import "quill/dist/quill.snow.css";
 import styles from "../styles/EditingArea.module.css";
 import { ARTICLE_ROUTES } from "../public/constants/routes";
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -35,7 +36,9 @@ const TextEditor = () => {
   };
 
   const handleSave = () => {
+    const articleId = articleName + "-" + uuidv4();
     const articleData = {
+      articleId: articleId,
       userId: userId,
       title: articleName,
       content: text,
