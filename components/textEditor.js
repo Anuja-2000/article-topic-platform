@@ -155,6 +155,10 @@ const TextEditor = () => {
       <br />
       <Button variant="contained" color="primary" onClick={handleSave}>
         Save Article
+      </Button>
+      {" "}{" "}{" "}
+      <Button variant="contained" color="secondary" onClick={()=>{}}>
+        Save AS DRAFT
       </Button>{" "}
       {/* Apply a CSS class to style the button */}
       <br />
