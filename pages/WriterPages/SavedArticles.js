@@ -1,48 +1,99 @@
-/*import React from 'react';
+import ArticlesCard from "../../components/article/writer/ArticlesCard";
+import ArticlePopup from "../../components/article/writer/ArticlePopup";
+import { ARTICLE_ROUTES } from "../../public/constants/routes";
 
-
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box } from '@mui/material';
-*/
+import {
+  Box,
+  Button,
+  Container,
+  Pagination,
+  Stack,
+  SvgIcon,
+  Typography,
+  Unstable_Grid2 as Grid,
+} from "@mui/material";
 
 import React, { useState, useEffect } from "react";
-import Grid from "@mui/material/Grid";
 import axios from "axios";
-import Alert from "@mui/material/Alert";
-import Button from "@mui/material/Button";
 import Navbar from "../../components/createArticleNavbar";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
-import EditConfirmationDialog from "../../components/EditConfirmationDialog";
-import AddTopicDomainConfirmationDialog from "../../components/AddTopicDomainConfirmationDialog";
-import AlertDialog from "../../components/AlertDialog";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
 
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePaginationActions from "../../components/TablePaginationActions";
-import Paper from "@mui/material/Paper";
+function SavedArticles() {
+  const [articles, setArticles] = useState([]);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-import TableFooter from "@mui/material/TableFooter";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
+  const handleArticleClick = (article) => {
+    setSelectedArticle(article);
+    setIsPopupOpen(true);
+  };
 
-const api = axios.create({
-  baseURL: `http://localhost:3001/api/topicDomains`,
-});
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get(ARTICLE_ROUTES.FIND);
+        if (response.data && response.data.success) {
+          setArticles(
+            response.data.articles.map((article, index) => ({
+              id: article._id,
+              createdAt: new Date(article.createdAt).toLocaleDateString(),
+              updatedAt: new Date(article.updatedAt).toLocaleDateString(),
+              description: article.content,
+              logo: article.coverImage || "https://picsum.photos/600/600", // Use cover image or a random image
+              title: article.title,
+              coverImage: `https://picsum.photos/500/300?random=${index}`,
+              status: article.status,
+            }))
+          );
+        } else {
+          console.error("Failed to fetch articles: ", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching articles: ", error);
+      }
+    };
 
-function TopicDomains() {
+    fetchArticles();
+  }, []);
+
   return (
     <div>
       <Navbar>
         <h1>Saved Articles</h1>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            py: 8,
+          }}
+        >
+          <Container maxWidth="xl">
+            <Stack spacing={3}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                spacing={4}
+              ></Stack>
+              {/* Grid content */}
+              {articles.map((article) => (
+                console.log(article),
+                <ArticlesCard
+                  article={article}
+                  key={article.id}
+                  onClick={() => handleArticleClick(article)} // Pass onClick handler
+                />
+              ))}
+            </Stack>
+          </Container>
+        </Box>
+        {/* Render ArticlePopup component */}
+        <ArticlePopup
+          article={selectedArticle}
+          open={isPopupOpen}
+          onClose={() => setIsPopupOpen(false)}
+        />
       </Navbar>
     </div>
   );
 }
 
-export default TopicDomains;
+export default SavedArticles;

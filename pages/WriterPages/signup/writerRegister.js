@@ -1,5 +1,5 @@
 import Head from "next/head"
-import LoginLayout from "../../../components/loginlayout";
+import LoginLayout2 from "../../../components/loginlayout2";
 import styles from "../../../styles/login.module.css";
 import Link from "next/link";
 import { useState } from "react";
@@ -90,7 +90,7 @@ export default function WriterRegister() {
   };
 
   return (
-    <LoginLayout>
+    <LoginLayout2>
 
       <Head>
         <title>Create an account</title>
@@ -168,6 +168,6 @@ export default function WriterRegister() {
           </Link>
         </p>
       </section>
-    </LoginLayout>
+    </LoginLayout2>
   )
 }
