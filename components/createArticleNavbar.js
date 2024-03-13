@@ -22,6 +22,8 @@ import MailIcon from "@mui/icons-material/Mail";
 import AvatarIcon from "../components/avatar";
 import CustomNotificationIcon from "../components/customNotificationIcon";
 import Tooltip from "@mui/material/Tooltip";
+import { Button } from "@mui/material";
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -108,13 +110,14 @@ export default function Navbar({ children }) {
     "Create Article": <CreateIcon sx={{ color: "white" }} />,
     "Saved Articles": <TopicIcon sx={{ color: "white" }} />,
     Drafts: <ArticleIcon sx={{ color: "white" }} />,
-    "Flagged Topics": <FlagIcon sx={{ color: "white" }} />,
-    "Deactivate Writers": <CheckIcon sx={{ color: "white" }} />,
-    "User Roles": <GroupIcon sx={{ color: "white" }} />,
-    Reports: <AssessmentIcon sx={{ color: "white" }} />,
+    Statistics: <AssessmentIcon sx={{ color: "white" }} />,
   };
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const handleClickTopicSuggestion = () => {
+    router.push("/userTopicSuggestion");
+  };
 
   useEffect(() => {
     // Update the selected index whenever the route changes
@@ -124,10 +127,7 @@ export default function Navbar({ children }) {
       "Create Article",
       "Saved Articles",
       "Drafts",
-      "Flagged Topics",
-      "DeactivateWriters",
-      "UserRoles",
-      "Reports",
+      "Statistics",
     ].findIndex((text) => path.includes(text.replace(" ", "")));
     setSelectedIndex(index);
   }, [router.pathname]); //only be executed if router.pathname changes between renders.
@@ -193,12 +193,41 @@ export default function Navbar({ children }) {
           >
             GATE
           </Typography>
+          <Button
+            onClick={handleClickTopicSuggestion}
+            color="inherit"
+            sx={{
+              textDecoration: "none",
+              color: "inherit",
+              display: "flex",
+              alignItems: "center",
+              borderRadius: 6,
+              marginLeft: 13,
+              fontSize: 20,
+              textTransform: "none",
+              fontFamily: "Ubuntu",
+            }}
+          >
+            <LightbulbIcon sx={{ marginRight: "5px" }} />
+            <Typography
+              variant="body1"
+              sx={{
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              Topic Suggestion
+            </Typography>
+          </Button>
           <div style={{ flexGrow: 1 }}></div>
           <IconButton
             size="large"
             color="inherit"
             aria-label="search"
-            onClick={() => router.push("/view-contact-us-messages")}
+            onClick={() => {}}
           >
             <Tooltip title="View Messages" arrow>
               <MailIcon />
@@ -229,10 +258,7 @@ export default function Navbar({ children }) {
             "Create Article",
             "Saved Articles",
             "Drafts",
-            "Flagged Topics",
-            "Deactivate Writers",
-            "User Roles",
-            "Reports",
+            "Statistics",
           ].map((text, index) => (
             <ListItem
               key={text}

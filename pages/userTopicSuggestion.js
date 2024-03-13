@@ -227,7 +227,7 @@ const UserTopicSuggestion = () => {
                   </div>
                   {/* Redirect link to writer dashboard */}
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
-                    <Link href="http://localhost:3000/WriterDashboard">
+                    <Link href="http://localhost:3000/WriterPages/CreateArticle">
                       <Typography variant="body1" style={{ color: 'blue', fontStyle: 'italic' }}>
                         Redirect to writer dashboard
                       </Typography>
