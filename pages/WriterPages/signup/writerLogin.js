@@ -1,5 +1,5 @@
 import Head from "next/head";
-import LoginLayout from "../../../components/loginlayout";
+import LoginLayout2 from "../../../components/loginlayout2";
 import styles from "../../../styles/login.module.css";
 import Link from "next/link";
 import { useState } from "react";
@@ -37,9 +37,7 @@ export default function WriterLogin() {
         password: values.password,
       })
       .then((response) => {
-
         if (response.status == 200) {
-
           const token = response.data.data.token;
           const type = response.data.data.type;
           const username = response.data.data.username;
@@ -60,7 +58,6 @@ export default function WriterLogin() {
             window.location.href = "/WriterPages/Dashboard";
           }
         }
-
       })
 
       .catch((error) => {
@@ -74,7 +71,7 @@ export default function WriterLogin() {
   }
 
   return (
-    <LoginLayout>
+    <LoginLayout2>
       <Head>
         <title>Login</title>
       </Head>
@@ -82,12 +79,11 @@ export default function WriterLogin() {
         <div className={styles.title}>
           <h1 className={styles.title1}>Writer Login</h1>
           <p className={styles.word}>
-            Welcome back! please enter your details.
+            Join our dynamic blogging community to inspire the world!
           </p>
         </div>
         {/*form*/}
         <form className={styles.form} onSubmit={handleSubmit}>
-
           {/* <input
               className={styles.email}
               type="email"
@@ -165,6 +161,6 @@ export default function WriterLogin() {
           </Link>
         </p>
       </section>
-    </LoginLayout>
+    </LoginLayout2>
   );
 }

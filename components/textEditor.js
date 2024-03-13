@@ -5,6 +5,7 @@ import "quill/dist/quill.snow.css";
 import styles from "../styles/EditingArea.module.css";
 import { ARTICLE_ROUTES } from "../public/constants/routes";
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -35,7 +36,9 @@ const TextEditor = () => {
   };
 
   const handleSave = () => {
+    const articleId = articleName + "-" + uuidv4();
     const articleData = {
+      articleId: articleId,
       userId: userId,
       title: articleName,
       content: text,
@@ -152,6 +155,10 @@ const TextEditor = () => {
       <br />
       <Button variant="contained" color="primary" onClick={handleSave}>
         Save Article
+      </Button>
+      {" "}{" "}{" "}
+      <Button variant="contained" color="secondary" onClick={()=>{}}>
+        Save AS DRAFT
       </Button>{" "}
       {/* Apply a CSS class to style the button */}
       <br />
