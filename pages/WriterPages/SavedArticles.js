@@ -1,6 +1,5 @@
 import ArticlesCard from "../../components/article/writer/ArticlesCard";
 import ArticlePopup from "../../components/article/writer/ArticlePopup";
-import { ARTICLE_ROUTES } from "../../public/constants/routes";
 
 import {
   Box,
@@ -45,9 +44,16 @@ function SavedArticles() {
           `http://localhost:3001/api/article/writer/${userid}`
         );
 
+        console.log("Response: ", response.data);
+
         if (response.data && response.data.success) {
+
+          const filteredArticles = response.data.articles.filter(
+            (article) => article.savedType === "saved"
+          );
+
           setArticles(
-            response.data.articles.map((article, index) => ({
+            filteredArticles.map((article, index) => ({
               id: article._id,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
