@@ -7,7 +7,7 @@
 .screen2 {
     display: flex;
     height: 100vh;
-    background-color: rgba(220, 121, 250, 0.521);
+    background-color: rgba(170, 48, 153, 0.521);
     min-width: 720px;
   }
 
