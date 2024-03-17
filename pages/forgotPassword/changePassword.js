@@ -17,7 +17,7 @@ const RestButton = styled(Button)({
   width: '450px',
   height: '55px',
   borderRadius: '20px',
-  backgroundColor: '#060606',
+  backgroundColor: '#0080FE',
   fontSize: '25px',
   fontFamily: 'sans-serif',
 });
@@ -91,7 +91,7 @@ function ChangePassword() {
   return (
     <div className={Style.box}>
       <div className={Style.pic}>
-        <Image src="/../public/reset.jpg" width="700" height="500" alt="Reset Password" />
+        <Image src="/reset.jpg" width="700" height="500" alt="Reset Password" />
       </div>
       <div className={Style.box1}>
         <div className={Style.innerBox}>

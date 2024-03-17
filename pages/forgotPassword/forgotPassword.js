@@ -12,7 +12,7 @@ const RestButton = styled(Button)({
   width: '500px',
   height: '55px',
   borderRadius: '20px',
-  backgroundColor: '#060606',
+  backgroundColor: '#0080FE',
   fontSize: '25px',
   fontFamily: 'sans-serif',
 });
@@ -23,11 +23,12 @@ function forgotPassword() {
   const [message, setMessage] = React.useState('');
 
   const onSubmit = async (formData) => {
-    const { email } = formData;
+    const { name,email } = formData;
     try {
+      console.log(name,email);
       const response = await fetch(`/api/auth/reset-password`, {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ name,email }),
         headers: {
           'Content-Type': 'application/json'
         }
@@ -51,20 +52,30 @@ function forgotPassword() {
     <div className={styles.box}>
       <div className={styles.box1}>
         <div className={styles.innerBox}>
-          <h1 className={styles.title}>Forget<br /> Your Password?</h1>
+          <h1 className={styles.title}>Forgot<br /> Your Password?</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+               id="standard-basic"
+               type="text" 
+               name="name"
+               label="User Name"
+               variant="standard"
+               required
+               sx={{ mt: 4, ml:3, width: '60ch', fontFamily: 'FontAwesome' }}
+              {...register('name', { required: true })} 
+            /><br/>
+            {errors.email && <span>Email is required</span>}
             <TextField
                id="standard-basic"
                type="email" 
                name="email"
                label="Email address"
                variant="standard"
-               sx={{ mt: 4, width: '60ch', fontFamily: 'FontAwesome' }}
+               required
+               sx={{ mt: 4, ml:3, width: '60ch', fontFamily: 'FontAwesome' }}
               {...register('email', { required: true })} 
-            /><br/>
-            {errors.email && <span>Email is required</span>}
-          
-            <RestButton variant="contained"  type="submit">
+            />
+            <RestButton variant="contained"  type="submit" sx={{ml:3}}>
               Reset Password
             </RestButton>
           </form>
@@ -73,7 +84,7 @@ function forgotPassword() {
         </div>
       </div>
       <div className={styles.box2}>
-        <Image src="/../public/forgotPassword.jpg" width="800" height="708" alt='Forgot Password' />
+        <Image src="/forgotPassword.jpg" width="800" height="708" alt='Forgot Password' />
       </div>
     </div>
   );

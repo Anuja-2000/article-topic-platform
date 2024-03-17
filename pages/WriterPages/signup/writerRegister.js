@@ -64,7 +64,7 @@ export default function WriterRegister() {
 
     const userId = values.username + "-" + uuidv4();
 
-    const response = axios.post("http://localhost:3001/api/user/signup", {
+    const response = axios.post("http://localhost:3001/api/auth/signup", {
       userId: userId,
       email: values.email,
       name: values.username,
