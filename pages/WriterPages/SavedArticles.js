@@ -1,6 +1,5 @@
 import ArticlesCard from "../../components/article/writer/ArticlesCard";
 import ArticlePopup from "../../components/article/writer/ArticlePopup";
-import { ARTICLE_ROUTES } from "../../public/constants/routes";
 
 import {
   Box,
@@ -21,19 +20,40 @@ function SavedArticles() {
   const [articles, setArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+  const [userid, setUserId] = useState(null);
   const handleArticleClick = (article) => {
     setSelectedArticle(article);
     setIsPopupOpen(true);
   };
 
   useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    setUserId(userId);
+    console.log("User ID: ", userId);
+  }, []);
+
+  useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get(ARTICLE_ROUTES.FIND);
+        if (!userid) {
+          console.error("User ID is not defined.");
+          return;
+        }
+
+        const response = await axios.get(
+          `http://localhost:3001/api/article/writer/${userid}`
+        );
+
+        console.log("Response: ", response.data);
+
         if (response.data && response.data.success) {
+
+          const filteredArticles = response.data.articles.filter(
+            (article) => article.savedType === "saved"
+          );
+
           setArticles(
-            response.data.articles.map((article, index) => ({
+            filteredArticles.map((article, index) => ({
               id: article._id,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
@@ -52,8 +72,10 @@ function SavedArticles() {
       }
     };
 
-    fetchArticles();
-  }, []);
+    if (userid) {
+      fetchArticles();
+    }
+  }, [userid]);
 
   return (
     <div>
@@ -74,14 +96,18 @@ function SavedArticles() {
                 spacing={4}
               ></Stack>
               {/* Grid content */}
-              {articles.map((article) => (
-                console.log(article),
-                <ArticlesCard
-                  article={article}
-                  key={article.id}
-                  onClick={() => handleArticleClick(article)} // Pass onClick handler
-                />
-              ))}
+              {articles.map(
+                (article) => (
+                  console.log(article),
+                  (
+                    <ArticlesCard
+                      article={article}
+                      key={article.id}
+                      onClick={() => handleArticleClick(article)} // Pass onClick handler
+                    />
+                  )
+                )
+              )}
             </Stack>
           </Container>
         </Box>
