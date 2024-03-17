@@ -23,7 +23,9 @@ import AvatarIcon from "../components/avatar";
 import CustomNotificationIcon from "../components/customNotificationIcon";
 import Tooltip from "@mui/material/Tooltip";
 import { Button } from "@mui/material";
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -109,7 +111,8 @@ export default function Navbar({ children }) {
     Dashboard: <DashboardIcon sx={{ color: "white" }} />,
     "Create Article": <CreateIcon sx={{ color: "white" }} />,
     "Saved Articles": <TopicIcon sx={{ color: "white" }} />,
-    Drafts: <ArticleIcon sx={{ color: "white" }} />,
+    Drafts: <SaveAsIcon sx={{ color: "white" }} />,
+    Trash: <DeleteSweepIcon sx={{ color: "white" }} />,
     Statistics: <AssessmentIcon sx={{ color: "white" }} />,
   };
   const router = useRouter();
@@ -127,6 +130,7 @@ export default function Navbar({ children }) {
       "Create Article",
       "Saved Articles",
       "Drafts",
+      "Trash",
       "Statistics",
     ].findIndex((text) => path.includes(text.replace(" ", "")));
     setSelectedIndex(index);
@@ -258,6 +262,7 @@ export default function Navbar({ children }) {
             "Create Article",
             "Saved Articles",
             "Drafts",
+            "Trash",
             "Statistics",
           ].map((text, index) => (
             <ListItem

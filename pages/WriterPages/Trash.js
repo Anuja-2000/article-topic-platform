@@ -16,7 +16,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../components/createArticleNavbar";
 
-function Drafts() {
+function Trash() {
   const [articles, setArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -47,8 +47,9 @@ function Drafts() {
         console.log("Response: ", response.data);
 
         if (response.data && response.data.success) {
+
           const filteredArticles = response.data.articles.filter(
-            (article) => article.savedType === "draft"
+            (article) => article.savedType === "trashed"
           );
 
           setArticles(
@@ -79,7 +80,7 @@ function Drafts() {
   return (
     <div>
       <Navbar>
-        <h1>Drafts</h1>
+        <h1>Trash</h1>
         <Box
           component="main"
           sx={{
@@ -120,4 +121,5 @@ function Drafts() {
     </div>
   );
 }
-export default Drafts;
+
+export default Trash;
