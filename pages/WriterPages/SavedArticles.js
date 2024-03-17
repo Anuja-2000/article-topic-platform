@@ -21,16 +21,30 @@ function SavedArticles() {
   const [articles, setArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+  const [userid, setUserId] = useState(null);
   const handleArticleClick = (article) => {
     setSelectedArticle(article);
     setIsPopupOpen(true);
   };
 
   useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    setUserId(userId);
+    console.log("User ID: ", userId);
+  }, []);
+
+  useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get(ARTICLE_ROUTES.FIND);
+        if (!userid) {
+          console.error("User ID is not defined.");
+          return;
+        }
+
+        const response = await axios.get(
+          `http://localhost:3001/api/article/writer/${userid}`
+        );
+
         if (response.data && response.data.success) {
           setArticles(
             response.data.articles.map((article, index) => ({
@@ -52,8 +66,10 @@ function SavedArticles() {
       }
     };
 
-    fetchArticles();
-  }, []);
+    if (userid) {
+      fetchArticles();
+    }
+  }, [userid]);
 
   return (
     <div>
@@ -74,14 +90,18 @@ function SavedArticles() {
                 spacing={4}
               ></Stack>
               {/* Grid content */}
-              {articles.map((article) => (
-                console.log(article),
-                <ArticlesCard
-                  article={article}
-                  key={article.id}
-                  onClick={() => handleArticleClick(article)} // Pass onClick handler
-                />
-              ))}
+              {articles.map(
+                (article) => (
+                  console.log(article),
+                  (
+                    <ArticlesCard
+                      article={article}
+                      key={article.id}
+                      onClick={() => handleArticleClick(article)} // Pass onClick handler
+                    />
+                  )
+                )
+              )}
             </Stack>
           </Container>
         </Box>
