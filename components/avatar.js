@@ -46,6 +46,7 @@ export default function AvatarIcon() {
     localStorage.removeItem("type");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
+    localStorage.removeItem("imgUrl");
 
     window.location.href = "/login";
   };

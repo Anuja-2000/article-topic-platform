@@ -113,16 +113,18 @@ function Reports() {
     const [writerCountForMonth, setWriterCountForMonth] = React.useState(0);
     const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
     const [writerNames, setWriterNames] = React.useState([]);
+
     React.useEffect(() => {
         //get users count
-        const userRes = axios.get('http://localhost:3001/api/user/count').then((res) => {
+        const userRes = axios.get('http://localhost:3001/api/user-util/count').then((res) => {
             setUsersCount(res.data);
         }).catch((error) => {
             console.log(error);
         });
 
         //get all writers details
-        const writerRes = axios.get('http://localhost:3001/api/user/get-writers').then((res) => {
+        const writerRes = axios.get('http://localhost:3001/api/user-util/get-writers').then((res) => {
+            console.log(res);
             setWriters(res.data);
             setWriterNames(writers.map((writer) => writer.name));
         }).catch((error) => {
@@ -130,7 +132,7 @@ function Reports() {
         });
 
         //get all readers details
-        const readerRes = axios.get('http://localhost:3001/api/user/get-readers').then((res) => {        
+        const readerRes = axios.get('http://localhost:3001/api/user-util/get-readers').then((res) => {        
             setReaders(res.data);
         }).catch((error) => {
             console.log(error);
@@ -157,6 +159,7 @@ function Reports() {
         const domains = axios.get('http://localhost:3001/api/readerArticle/count-by-domain').then((res) => {
             let temp = [];
             let countData = [];
+            
             res.data.forEach((item) => {
                 if(item.domain != null){
                     temp.push(item.domain);
@@ -170,7 +173,7 @@ function Reports() {
         });
 
         //get writer count for the month
-        const writersCountForMonth = axios.get("http://localhost:3001/api/user/get-user-count-by-month/Writer").then((res) => {
+        const writersCountForMonth = axios.get("http://localhost:3001/api/user-util/get-user-count-by-month/Writer").then((res) => {
             let count = res.data;
             if (count < 10) {
                 count = "0" + count;
@@ -181,7 +184,7 @@ function Reports() {
         });
 
         //get reader count for the month
-        const readersCountForMonth = axios.get("http://localhost:3001/api/user/get-user-count-by-month/Reader").then((res) => {
+        const readersCountForMonth = axios.get("http://localhost:3001/api/user-util/get-user-count-by-month/Reader").then((res) => {
             let count = res.data;
             if (count < 10) {
                 count = "0" + count;
@@ -198,7 +201,7 @@ function Reports() {
     const handleWriterSearch = (event) => {
         if (event.target.value === '') {
             setWriterSearchTerm(event.target.value);
-            const writerRes = axios.get('http://localhost:3001/api/user/get-writers').then((res) => {
+            const writerRes = axios.get('http://localhost:3001/api/user-util/get-writers').then((res) => {
                 setWriters(res.data);
                 return;
             }).catch((error) => {
@@ -208,7 +211,7 @@ function Reports() {
             setWriterSearchTerm(event.target.value);
             console.log(writerSearchTerm);
             let type = 'Writer';
-            const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${writerSearchTerm}`).then((res) => {
+            const nameResult = axios.get(`http://localhost:3001/api/user-util/get-user-by-name/${type}/${writerSearchTerm}`).then((res) => {
                 setWriters(res.data);
             }).catch((error) => {
                 console.log(error);
@@ -226,7 +229,7 @@ function Reports() {
     const handleReaderSearch = (event) => {
         if (event.target.value === '') {
             setReaderSearchTerm(event.target.value);
-            const result = axios.get('http://localhost:3001/api/user/get-writers').then((res) => {
+            const result = axios.get('http://localhost:3001/api/user-util/get-writers').then((res) => {
                 setWriters(res.data);
                 return;
             }).catch((error) => {
@@ -235,7 +238,7 @@ function Reports() {
         }else{
         setReaderSearchTerm(event.target.value);
         let type = 'Reader';
-        const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${readerSearchTerm}`).then((res) => {
+        const nameResult = axios.get(`http://localhost:3001/api/user-util/get-user-by-name/${type}/${readerSearchTerm}`).then((res) => {
             setReaders(res.data);
         }).catch((error) => {
             console.log(error);

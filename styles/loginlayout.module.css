@@ -3,6 +3,7 @@
   height: 100vh;
   background-color: rgb(96, 165, 250);
   min-width: 720px;
+  margin-top: 60px;
 }
 .screen2 {
     display: flex;
