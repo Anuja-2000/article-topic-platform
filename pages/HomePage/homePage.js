@@ -40,7 +40,7 @@ function HomePage() {
                 <p className={Styles.paragraph}>Discover stories, thinking, and expertise from writers on any topic</p>
                 <Button sx={{ borderRadius: 6, marginLeft: 13, marginTop: 4, height: 52, fontSize: 20, textTransform: 'none', fontFamily: 'Ubuntu' }} variant="contained">Get Started</Button>
                 {/*Start........need to move i will do that (Chamodya)*/}
-               {/* <button onClick={handleReportClick}>Report</button>*/}
+                <button onClick={handleReportClick}>Report</button>
             <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} onSuccess={handleSuccess} />
             {successMessage && (
               <div style={{ backgroundColor: 'green', color: 'white', padding: '10px', textAlign: 'center' }}>

@@ -50,27 +50,27 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
       setIsShareClicked(false);
     }
   };
-
-  const updateData = async () => {
-    try {
-      console.log('Updating');
-      await fetch(`http://localhost:3001/api/readerArticle/update`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json', // Adjust the content type if needed
-        },
-        body: JSON.stringify({ 
-          id: article,
-          likes: likes 
-        }),
-        
-    });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-   
-
+  useEffect(() => {
+  
+    const updateData = async () => {
+      try {
+        await fetch(`http://localhost:3001/api/readerArticle/update`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json', // Adjust the content type if needed
+          },
+          body: JSON.stringify({ 
+            id: article,
+            likes: likes 
+          }),
+          
+      });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    updateData();
+  }, [likes]);
    
 
   
@@ -80,7 +80,6 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
 
     // Update the number of likes based on the current state
     setLikes((prevLikes) => (isLiked ? prevLikes - 1 : prevLikes + 1));
-    updateData();
     
   };
 
