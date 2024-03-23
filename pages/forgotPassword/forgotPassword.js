@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import React from 'react';
 import { useForm } from "react-hook-form";
+import axios from 'axios';
 
 const RestButton = styled(Button)({
   textTransform: 'none',
@@ -26,20 +27,12 @@ function forgotPassword() {
     const { name,email } = formData;
     try {
       console.log(name,email);
-      const response = await fetch(`/api/auth/reset-password`, {
-        method: 'POST',
-        body: JSON.stringify({ name,email }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await axios.post('http://localhost:3001/api/auth/reset-password', { name,email });
 
-      const data = await response.json()
-      if (response.ok) {
-        console.log(response);  
+      if (response.data.success) {        
         setMessage({ text: 'Reset password email sent.', type: 'success' });
       } else {
-        setMessage({ text: data.error, type: 'error' });
+        setMessage({ text: response.data.message, type: 'error' });
       }
     } catch (error) {
       console.error('An error occurred:', error);
