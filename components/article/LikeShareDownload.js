@@ -12,8 +12,8 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
   const [isShareClicked, setIsShareClicked] = useState(false);
   const [likes, setLikes] = useState(0); // Initial number of likes
   const [isLiked, setIsLiked] = useState(false);
-
-  useEffect(() => {
+console.log(likes);
+ useEffect(() => {
     setLikes(initialLikes);
   }, [initialLikes]);
   const handleShareClick = async () => {
@@ -37,27 +37,27 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
       setIsShareClicked(false);
     }
   };
-  useEffect(() => {
-  
-    const updateData = async () => {
-      try {
-        await fetch(`http://localhost:3001/api/readerArticle/update`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json', // Adjust the content type if needed
-          },
-          body: JSON.stringify({ 
-            id: article,
-            likes: likes 
-          }),
-          
-      });
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    updateData();
-  }, [likes]);
+
+  const updateData = async () => {
+    try {
+      console.log('Updating');
+      await fetch(`http://localhost:3001/api/readerArticle/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json', // Adjust the content type if needed
+        },
+        body: JSON.stringify({ 
+          id: article,
+          likes: likes 
+        }),
+        
+    });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+   
+
    
 
   
@@ -67,6 +67,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
 
     // Update the number of likes based on the current state
     setLikes((prevLikes) => (isLiked ? prevLikes - 1 : prevLikes + 1));
+    updateData();
     
   };
 
