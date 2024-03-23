@@ -1,4 +1,4 @@
-
+'use client'
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { styled, useTheme } from '@mui/material/styles';
@@ -136,7 +136,10 @@ const handleListItemClick = (event, index) => {
 
   const theme = useTheme();
   let openValue = false;
-  openValue = localStorage.getItem('open') === 'true' ? true : false;
+  if (typeof window !== 'undefined') {
+    openValue = localStorage.getItem('open') === 'true' ? true : false;
+  }
+
   const [open, setOpen] = React.useState(openValue) 
 
 
