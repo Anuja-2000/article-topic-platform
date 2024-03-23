@@ -6,7 +6,7 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import setAuthtoken from "./api/auth/axios-set-token";
-
+import HomeNav from "../pages/HomePage/homeNav";
 
 export default function Login() {
 
@@ -34,7 +34,7 @@ export default function Login() {
 
   };
   async function sendLoginReqest() {
-    const response = axios.post("http://localhost:3001/api/user/login", {
+    const response = axios.post("http://localhost:3001/api/auth/login", {
       username: values.username,
       email: values.email,
       password: values.password,
@@ -45,11 +45,13 @@ export default function Login() {
         const username = response.data.data.username;
         const email = response.data.data.email;
         const userId = response.data.data.userId;
+        const imgUrl = response.data.data.imgUrl;
         localStorage.setItem("token", token);
         localStorage.setItem("type", type);
         localStorage.setItem("username", username);
         localStorage.setItem("email", email);
         localStorage.setItem("userId", userId);
+        localStorage.setItem("imgUrl", imgUrl);
         setAuthtoken(token);
         if(type == "Admin"){
           window.location.href = "/AdminPages/Dashboard";
@@ -72,7 +74,10 @@ export default function Login() {
   }
 
   return (
-    <LoginLayout>
+  <>
+  
+    <HomeNav />  
+    <LoginLayout>    
       <Head>
         <title>Login</title>
       </Head>
@@ -129,8 +134,8 @@ export default function Login() {
             />
 
           <div className={styles.raw}>
-            <div className={styles.keep}>keep me log in</div>
-            <div className={styles.forgot}>Forgot Password?</div>
+            {/* <div className={styles.keep}>keep me log in</div> */}
+            <div className={styles.forgot}><Link href={"/forgotPassword/forgotPassword"}>Forgot Password?</Link></div>
           </div>
           {/* </div> */}
           {/*login buttons */}
@@ -158,5 +163,6 @@ export default function Login() {
         </p>
       </section>
     </LoginLayout>
+  </>
   );
 }

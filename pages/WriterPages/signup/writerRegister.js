@@ -1,16 +1,14 @@
 import Head from "next/head"
-import LoginLayout from "../../../components/loginlayout";
-import styles from "../../../styles/login.module.css";
+import LoginLayout2 from "../../../components/loginlayout2";
+import styles from "../../../styles/writerSignUp.module.css";
 import Link from "next/link";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-
+import Button from '@mui/material/Button';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import GoogleIcon from '@mui/icons-material/Google';
 
 export default function WriterRegister() {
 
@@ -66,11 +64,11 @@ export default function WriterRegister() {
 
     const userId = values.username + "-" + uuidv4();
 
-    const response = axios.post("http://localhost:3001/api/user/signup", {
+    const response = axios.post("http://localhost:3001/api/auth/signup", {
       userId: userId,
       email: values.email,
       name: values.username,
-      type: values.usertype,
+      type: 'Writer',
       password: values.password,
     }).then((response) => {
       if (response.status == 201) {
@@ -90,7 +88,7 @@ export default function WriterRegister() {
   };
 
   return (
-    <LoginLayout>
+    <LoginLayout2>
 
       <Head>
         <title>Create an account</title>
@@ -98,7 +96,7 @@ export default function WriterRegister() {
 
       <section className={styles.section}>
         <div className={styles.title}>
-          <h1 className={styles.title1}>Create an account</h1>
+          <h1 className={styles.title1}>Join our community <br/> to inspire the world!</h1>
 
         </div>
         {/*form*/}
@@ -144,21 +142,36 @@ export default function WriterRegister() {
             required
             margin="dense"
           />
-          {/*login buttons */}
-          <div className={styles.raw2}>
-            <div className="inputbutton">
-              <button type="submit" className={styles.submit}>
-                Create account
-              </button>
-            </div>
-            <div className={styles.or}>OR</div>
-            <div className={styles.inputbutton2}>
-              <button type="submit" className={styles.submit2}>
-                Sign up with Google
-              </button>
-            </div>
-          </div>
-        </form>
+{/*login buttons */}
+<div className={styles.raw2}>
+  <div className="inputbutton">
+    <button type="submit" className={styles.submit}>
+      Create account
+    </button>
+  </div>
+  <div className={styles.or}>OR</div>
+  <div className={styles.socialLogin}>
+    {/* Facebook sign-in */}
+    <button 
+      className={`${styles.socialButton} ${styles.facebookButton}`}
+      onMouseOver={(e) => e.target.classList.add(styles.hoverEffect)}
+      onMouseOut={(e) => e.target.classList.remove(styles.hoverEffect)}
+    >
+      <FacebookIcon />
+      Sign in with Facebook
+    </button>
+    {/* Google sign-in */}
+    <button 
+      className={`${styles.socialButton} ${styles.googleButton}`}
+      onMouseOver={(e) => e.target.classList.add(styles.hoverEffect)}
+      onMouseOut={(e) => e.target.classList.remove(styles.hoverEffect)}
+    >
+      <GoogleIcon />
+      Sign in with Google
+    </button>
+  </div>
+</div>
+</form>
 
         {/*bottom*/}
         <p className={styles.footer}>
@@ -168,6 +181,6 @@ export default function WriterRegister() {
           </Link>
         </p>
       </section>
-    </LoginLayout>
+    </LoginLayout2>
   )
 }

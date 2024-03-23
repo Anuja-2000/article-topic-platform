@@ -1,8 +1,17 @@
 import React, { useState, useEffect} from 'react';
 import { IconButton, Typography, Box } from '@mui/material';
 import { ThumbUp, Share, GetApp } from '@mui/icons-material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+
 import { useRouter } from 'next/router';
+import { Card } from '@mui/material/Card';
+
+import CardContent from '@mui/material';
+import Button from '@mui/material';
+import MoreOptionsCard from './MoreOptionsCard';
+import ReportDialog from './reportDialog';
+
+
 
 
 const LikeShareDownload = ({ articleTitle, initialLikes}) => {
@@ -12,8 +21,12 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
   const [isShareClicked, setIsShareClicked] = useState(false);
   const [likes, setLikes] = useState(0); // Initial number of likes
   const [isLiked, setIsLiked] = useState(false);
-console.log(likes);
- useEffect(() => {
+  
+  const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+ 
+
+  useEffect(() => {
     setLikes(initialLikes);
   }, [initialLikes]);
   const handleShareClick = async () => {
@@ -71,6 +84,19 @@ console.log(likes);
     
   };
 
+  const handleMoreVertIconClick = () => {
+    setIsMoreOptionsOpen(!isMoreOptionsOpen);
+  };
+
+  const handleReportAuthorClick = () => {
+    setIsReportDialogOpen(true);
+    setIsMoreOptionsOpen(false); // Close MoreOptionsCard
+  };
+
+  const handleCloseReportDialog = () => {
+    setIsReportDialogOpen(false);
+
+  };
 
   return (
     <>
@@ -86,13 +112,16 @@ console.log(likes);
         <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft: '10px' }} onClick={handleShareClick}>
           <Share />
         </IconButton>
-        <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft: '10px' }}>
-          <GetApp />
+        
+        <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft: '10px' }} onClick={handleMoreVertIconClick}>
+          <MoreVertIcon />
         </IconButton>
-        <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft:'10px' }}>
-        <MoreVertIcon/>
-      </IconButton>
       </Box>
+
+      {isMoreOptionsOpen && <MoreOptionsCard onReportAuthorClick={handleReportAuthorClick} />}
+
+      <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} />
+   
       {/*isShareClicked && (
         <Head>
           <meta property="og:title" content={articleTitle} />

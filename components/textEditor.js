@@ -5,6 +5,7 @@ import "quill/dist/quill.snow.css";
 import styles from "../styles/EditingArea.module.css";
 import { ARTICLE_ROUTES } from "../public/constants/routes";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -35,7 +36,41 @@ const TextEditor = () => {
   };
 
   const handleSave = () => {
+    const articleId = articleName + "-" + uuidv4();
     const articleData = {
+      articleId: articleId,
+      userId: userId,
+      title: articleName,
+      content: text,
+      savedType: "saved",
+    };
+
+    const config = {
+      method: "post",
+      url: ARTICLE_ROUTES.CREATE,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: articleData,
+    };
+
+    console.log(articleData);
+
+    axios(config)
+      .then((response) => {
+        console.log(response.data);
+        alert("Success", "Article saved successfully");
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Failed", error.message);
+      });
+  };
+
+  const handleDraftSave = () => {
+    const articleId = articleName + "-" + uuidv4();
+    const articleData = {
+      articleId: articleId,
       userId: userId,
       title: articleName,
       content: text,
@@ -152,6 +187,10 @@ const TextEditor = () => {
       <br />
       <Button variant="contained" color="primary" onClick={handleSave}>
         Save Article
+      </Button>{" "}
+      
+      <Button variant="contained" color="secondary" onClick={handleDraftSave}>
+        Save AS DRAFT
       </Button>{" "}
       {/* Apply a CSS class to style the button */}
       <br />
