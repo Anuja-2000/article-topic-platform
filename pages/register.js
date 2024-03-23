@@ -30,7 +30,7 @@ export default function Register() {
   };
 
   const validateForm = () => {
-    if (values.username == "" || values.email == "" || values.usertype == "" || values.password == "" || values.confirmPassword == "") {
+    if (values.username == "" || values.email == "" || values.password == "" || values.confirmPassword == "") {
       alert("All fields must be filled out");
       return false;
     } else if (values.password != values.confirmPassword) {

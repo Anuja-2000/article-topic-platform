@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { styled, useTheme } from '@mui/material/styles';
@@ -134,13 +135,18 @@ const handleListItemClick = (event, index) => {
 
 
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  let openValue = false;
+  openValue = localStorage.getItem('open') === 'true' ? true : false;
+  const [open, setOpen] = React.useState(openValue) 
+
 
   const handleDrawerOpen = () => {
+    localStorage.setItem('open', true);
     setOpen(true);
   };
 
   const handleDrawerClose = () => {
+    localStorage.setItem('open', false);
     setOpen(false);
   };
 

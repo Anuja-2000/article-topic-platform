@@ -255,7 +255,7 @@ function Reports() {
                         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                             <Tab label="Graphs" {...a11yProps(0)} />
                             <Tab label="Tabular Reports" {...a11yProps(1)} />
-                            <Tab label="Item Three" {...a11yProps(2)} />
+                            <Tab label="Article details" {...a11yProps(2)} />
                         </Tabs>
                     </Box>
                     <CustomTabPanel value={value} index={0}>
@@ -497,7 +497,19 @@ function Reports() {
                         </Container>
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={2}>
-                        Item Three
+                        <Container maxWidth="md">
+                            <Typography variant='h4' marginBottom={1} color={'primary.dark'}>Article Details</Typography>
+                            <Divider />
+                            <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    options={xLabelsDomain}
+                                    sx={{ width: 300 }}
+                                    renderInput={(params) => <TextField {...params} label="Select Domain" />}
+                                />
+                            </Paper>
+                            </Container>
                     </CustomTabPanel>
                 </Box>
             </Navbar>
