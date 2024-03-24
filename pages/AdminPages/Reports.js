@@ -39,6 +39,13 @@ const columns = [
   { id: "savedAt", label: "Joined at", minWidth: 135 },
 ];
 
+const Articlecolumns = [
+    { id: "title", label: "Article Title", minWidth: 135 },
+    { id: "name", label: "Author username", minWidth: 135 },
+    { id: "email", label: "Author email", minWidth: 135 },
+    { id: "published", label: "Published On", minWidth: 135 },
+  ];
+
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -98,29 +105,71 @@ const month = [
 ];
 
 function Reports() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [writerPage, setWriterPage] = React.useState(0);
+  const [rowsPerWriterPage, setRowsPerWriterPage] = React.useState(10);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleChangeWriterPage = (event, newPage) => {
+    setWriterPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const handleChangeRowsPerWriterPage = (event) => {
+    setRowsPerWriterPage(+event.target.value);
+    setWriterPage(0);
   };
+
+  const [readerPage, setReaderPage] = React.useState(0);
+  const [rowsPerReaderPage, setRowsPerReaderPage] = React.useState(10);
+
+  const handleChangeReaderPage = (event, newPage) => {
+    setReaderPage(newPage);
+  };
+
+  const handleChangeRowsPerReaderPage = (event) => {
+    setRowsPerReaderPage(+event.target.value);
+    setReaderPage(0);
+  };
+
+  const [articlesPage, setArticlesPage] = React.useState(0);
+  const [rowsPerArticlesPage, setRowsPerArticlesPage] = React.useState(10);
+
+  const handleChangeArticlesPage = (event, newPage) => {
+    setArticlesPage(newPage);
+  };
+
+  const handleChangeRowsPerArticlesPage = (event) => {
+    setRowsPerArticlesPage(+event.target.value);
+    setArticlesPage(0);
+  };
+
 
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+const handleChangeDomain = (event, newValue) => {
+  console.log(newValue);
+    setDomain(newValue);
+
+    const result = axios.get(`http://localhost:3001/api/readerArticle/articles-by-domain/${newValue}`).then((res) => {
+        console.log(res.data);
+        setArticles(res.data);
+    }
+    ).catch((error) => {
+        console.log(error);
+    });
+
+    };
+
+
   const [usersCount, setUsersCount] = React.useState([0, 0]);
   const [writers, setWriters] = React.useState([]);
   const [readers, setReaders] = React.useState([]);
+  const [articles, setArticles] = React.useState([]);
   const [writerSearchTerm, setWriterSearchTerm] = React.useState("");
   const [readerSearchTerm, setReaderSearchTerm] = React.useState("");
-  const [type, setType] = React.useState("Writer");
+  const [domain, setDomain] = React.useState("Technical");
   const [writerCountForMonth, setWriterCountForMonth] = React.useState(0);
   const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
   const [writerNames, setWriterNames] = React.useState([]);
@@ -140,7 +189,6 @@ function Reports() {
     const writerRes = axios
       .get("http://localhost:3001/api/user-util/get-writers")
       .then((res) => {
-        console.log(res);
         setWriters(res.data);
         setWriterNames(writers.map((writer) => writer.name));
       })
@@ -222,6 +270,12 @@ function Reports() {
       .catch((error) => {
         console.log(error);
       });
+
+      const articleData = axios.get(`http://localhost:3001/api/readerArticle/articles-by-domain/${domain}`).then((res) => {
+        setArticles(res.data);
+    }).catch((error) => {
+        console.log(error);
+        });
   }, []);
 
   //console.log(writers);
@@ -337,7 +391,7 @@ function Reports() {
               <Paper
                 elevation={3}
                 style={{
-                  width: 800,
+                  width: 600,
                   padding: "20px",
                   marginTop: "20px",
                   marginRight: "40px",
@@ -347,7 +401,7 @@ function Reports() {
                   Domain Popularity
                 </Typography>
                 <BarChart
-                  width={750}
+                  width={600}
                   height={300}
                   series={[
                     {
@@ -496,8 +550,8 @@ function Reports() {
                     <TableBody>
                       {writers
                         .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
+                          writerPage * rowsPerWriterPage,
+                          writerPage * rowsPerWriterPage + rowsPerWriterPage
                         )
                         .map((row) => {
                           return (
@@ -530,10 +584,10 @@ function Reports() {
                   rowsPerPageOptions={[10, 25, 100]}
                   component="div"
                   count={writers.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPage={rowsPerWriterPage}
+                  page={writerPage}
+                  onPageChange={handleChangeWriterPage}
+                  onRowsPerPageChange={handleChangeRowsPerWriterPage}
                 />
               </Paper>
               <Box display="flex" justifyContent="space-between" marginY={2}>
@@ -582,8 +636,8 @@ function Reports() {
                     <TableBody>
                       {readers
                         .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
+                          readerPage * rowsPerReaderPage,
+                          readerPage * rowsPerReaderPage + rowsPerReaderPage
                         )
                         .map((row) => {
                           return (
@@ -616,16 +670,16 @@ function Reports() {
                   rowsPerPageOptions={[10, 25, 100]}
                   component="div"
                   count={readers.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPage={rowsPerReaderPage}
+                  page={readerPage}
+                  onPageChange={handleChangeReaderPage}
+                  onRowsPerPageChange={handleChangeRowsPerReaderPage}
                 />
               </Paper>
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
               <Typography variant="h4" marginBottom={1} color={"primary.dark"}>
                 Article Details
               </Typography>
@@ -645,6 +699,8 @@ function Reports() {
                         renderInput={(params) => (
                           <TextField {...params} label="Select Domain" />
                         )}
+                        value={domain}
+                        onChange={handleChangeDomain}
                       />
                     </Grid>
                     <Grid item xs={4}>
@@ -653,7 +709,7 @@ function Reports() {
                         sx={{ borderRadius: "10px"}}
                       >
                         <Box padding={2} color={"primary.main"} display='flex'>
-                          <Typography variant="h2">10</Typography>
+                          <Typography variant="h2">{articles.length}</Typography>
                           <Box sx={{marginLeft:'10px'}}>
                           <Typography variant="h4">Articles</Typography>
                           <Typography variant="h6">Published</Typography>
@@ -666,7 +722,7 @@ function Reports() {
                         <Table stickyHeader aria-label="sticky table">
                           <TableHead>
                             <TableRow>
-                              {columns.map((column) => (
+                              {Articlecolumns.map((column) => (
                                 <TableCell
                                   key={column.id}
                                   align={column.align}
@@ -683,10 +739,10 @@ function Reports() {
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {readers
+                            {articles
                               .slice(
-                                page * rowsPerPage,
-                                page * rowsPerPage + rowsPerPage
+                                articlesPage * rowsPerArticlesPage,
+                                articlesPage * rowsPerArticlesPage + rowsPerArticlesPage
                               )
                               .map((row) => {
                                 return (
@@ -694,7 +750,7 @@ function Reports() {
                                     hover
                                     role="checkbox"
                                     tabIndex={-1}
-                                    key={row.userId}
+                                    key={row.id}
                                   >
                                     {/* {columns.map((column) => {
                                                             const value = row[column.id];
@@ -704,10 +760,11 @@ function Reports() {
                                                                 </TableCell>
                                                             );
                                                         })} */}
-                                    <TableCell>{row.name}</TableCell>
-                                    <TableCell>{row.email}</TableCell>
+                                    <TableCell>{row.title}</TableCell>
+                                    <TableCell>{row.userData[0].name}</TableCell>
+                                    <TableCell>{row.userData[0].email}</TableCell>
                                     <TableCell>
-                                      {new Date(row.savedAt).toDateString()}
+                                      {new Date(row.date).toDateString()}
                                     </TableCell>
                                   </TableRow>
                                 );
@@ -718,11 +775,11 @@ function Reports() {
                       <TablePagination
                         rowsPerPageOptions={[10, 25, 100]}
                         component="div"
-                        count={readers.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        count={articles.length}
+                        rowsPerPage={rowsPerArticlesPage}
+                        page={articlesPage}
+                        onPageChange={handleChangeArticlesPage}
+                        onRowsPerPageChange={handleChangeRowsPerArticlesPage}
                       />
                     </Grid>
                   </Grid>
