@@ -14,16 +14,17 @@ import cookie from 'js-cookie';
 const ArticlePage = () => {
   const router = useRouter();
   const [articleData, setData] = useState([]);
-  const article  = router.query.article;
+  const articleId = router.query.article ?? null;
 
   
   useEffect(() => {
     const fetchData = async () => {
+      if (!articleId) return;
       try {
          const response = await fetch(`http://localhost:3001/api/readerArticle/get`, {
           headers: {
             'Content-Type': 'application/json', // Adjust the content type if needed
-            'id': article, // Add your custom data in headers
+            'id': articleId, // Add your custom data in headers
           },
       });
         const jsonData = await response.json();
@@ -35,7 +36,7 @@ const ArticlePage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [articleId]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;

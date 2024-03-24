@@ -10,6 +10,7 @@ import {
   styled,
 } from '@mui/material';
 import { Send as SendIcon } from '@mui/icons-material';
+import { v4 as uuidv4 } from 'uuid';
 
 const CommentForm = styled('form')(({ theme }) => ({
   display: 'flex',
@@ -20,8 +21,27 @@ const CommentForm = styled('form')(({ theme }) => ({
 const CommentSection = ({articleId}) => {
   const [articleData, setData] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [username, setusername] = useState(" ");
+  const [userImg, setuserImg] = useState(null);
+  const commentId = "com" + uuidv4();
+
   useEffect(() => {
+    const username = localStorage.getItem("username");
+    const userImg = localStorage.getItem("imgUrl");
+    if (username != null) {
+      setusername(username);
+    } else {
+        setName(" ");
+    }
+    setuserImg("/path/to/profile.jpg");
+    //console.log(localStorage.getItem("imgUrl"));
+   /* if (userImg != null) {
+      setuserImg(userImg);
+    } else {
+      setuserImg("/path/to/profile.jpg");
+    }*/
     const fetchData = async () => {
+      if (!articleId) return;
       try {
         const response = await fetch(`http://localhost:3001/api/comment/get`, {
           headers: {
@@ -40,12 +60,41 @@ const CommentSection = ({articleId}) => {
 
     fetchData();
   }, [articleId]);
+  console.log(userImg);
+
+  const requestBody = {
+    comId:commentId,
+    artId: articleId,
+    commentorName:username,
+    commentContent: commentText,
+    profilePic:userImg,
+  };
+
+  const addComment = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comment/save`, {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+    });
+      const jsonData = await response.json();
+      setData(jsonData);
+      console.log(jsonData);
+      console.log(articleData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
 
   
   const handleCommentSubmit = () => {
     // Handle the comment submission here, you can send the comment to the server or update the state as needed
+    console.log('Comment user:', username);
     console.log('Comment submitted:', commentText);
-
+    addComment();
     // Clear the comment input after submission if needed
     setCommentText('');
   };
@@ -61,7 +110,7 @@ const CommentSection = ({articleId}) => {
        <CommentForm>
         <Grid container spacing={2}>
           <Grid item>
-            <Avatar alt="User" src="/path/to/avatar.jpg" />
+            <Avatar alt="User" src={userImg} />
           </Grid>
           <Grid item xs>
             <OutlinedInput
