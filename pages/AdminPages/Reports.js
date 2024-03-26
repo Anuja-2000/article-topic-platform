@@ -40,11 +40,14 @@ const columns = [
 ];
 
 const Articlecolumns = [
-    { id: "title", label: "Article Title", minWidth: 135 },
-    { id: "name", label: "Author username", minWidth: 135 },
-    { id: "email", label: "Author email", minWidth: 135 },
-    { id: "published", label: "Published On", minWidth: 135 },
-  ];
+  { id: "title", label: "Article Title", minWidth: 135 },
+  { id: "name", label: "Author username", minWidth: 135 },
+  { id: "email", label: "Author email", minWidth: 135 },
+  { id: "published", label: "Published On", minWidth: 135 },
+];
+
+let popularityResData = [];
+let popularityData = [{ label: "Anuja", value: 30 }];
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -141,27 +144,28 @@ function Reports() {
     setArticlesPage(0);
   };
 
-
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-const handleChangeDomain = (event, newValue) => {
-  console.log(newValue);
+  const handleChangeDomain = (event, newValue) => {
+    console.log(newValue);
     setDomain(newValue);
 
-    const result = axios.get(`http://localhost:3001/api/readerArticle/articles-by-domain/${newValue}`).then((res) => {
+    const result = axios
+      .get(
+        `http://localhost:3001/api/readerArticle/articles-by-domain/${newValue}`
+      )
+      .then((res) => {
         console.log(res.data);
         setArticles(res.data);
-    }
-    ).catch((error) => {
+      })
+      .catch((error) => {
         console.log(error);
-    });
-
-    };
-
+      });
+  };
 
   const [usersCount, setUsersCount] = React.useState([0, 0]);
   const [writers, setWriters] = React.useState([]);
@@ -172,7 +176,7 @@ const handleChangeDomain = (event, newValue) => {
   const [domain, setDomain] = React.useState("Technical");
   const [writerCountForMonth, setWriterCountForMonth] = React.useState(0);
   const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
-  const [writerNames, setWriterNames] = React.useState([]);
+  const [writerPopularity, setWriterPopularity] = React.useState([]);
 
   React.useEffect(() => {
     //get users count
@@ -190,7 +194,7 @@ const handleChangeDomain = (event, newValue) => {
       .get("http://localhost:3001/api/user-util/get-writers")
       .then((res) => {
         setWriters(res.data);
-        setWriterNames(writers.map((writer) => writer.name));
+        //setWriterNames(writers.map((writer) => writer.name));
       })
       .catch((error) => {
         console.log(error);
@@ -271,11 +275,34 @@ const handleChangeDomain = (event, newValue) => {
         console.log(error);
       });
 
-      const articleData = axios.get(`http://localhost:3001/api/readerArticle/articles-by-domain/${domain}`).then((res) => {
+    //get all articles by domain
+    const articleData = axios
+      .get(
+        `http://localhost:3001/api/readerArticle/articles-by-domain/${domain}`
+      )
+      .then((res) => {
         setArticles(res.data);
-    }).catch((error) => {
+      })
+      .catch((error) => {
         console.log(error);
-        });
+      });
+
+    //get writer popularity on number of articles they have written
+    const writerPopularityData = axios
+      .get(`http://localhost:3001/api/readerArticle/writer-popularity`)
+      .then((res) => {
+        popularityResData = res.data;
+        setWriterPopularity([]);
+        for (let user of popularityResData) {
+          console.log(user);
+          popularityData.push({ label: user.userData[0].name, value: user.count });
+          //setWriterPopularity(writerPopularity.push({label: user.userData[0].name, value: user.count}));
+        }
+        console.log(writerPopularity);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   //console.log(writers);
@@ -442,12 +469,7 @@ const handleChangeDomain = (event, newValue) => {
                 <PieChart
                   series={[
                     {
-                      data: [
-                        { label: "Anuja", value: 30, color: "green" },
-                        { label: "Shiran", value: 40, color: "blue" },
-                        { label: "Chamodya", value: 50, color: "yellow" },
-                        { label: "Upeksha", value: 60, color: "red" },
-                      ],
+                      data: popularityData,
                       innerRadius: 50,
                       outerRadius: 95,
                       paddingAngle: 4,
@@ -695,7 +717,7 @@ const handleChangeDomain = (event, newValue) => {
                         disablePortal
                         id="combo-box-demo"
                         options={xLabelsDomain}
-                        sx={{ width: 300, marginTop: 3}}
+                        sx={{ width: 300, marginTop: 3 }}
                         renderInput={(params) => (
                           <TextField {...params} label="Select Domain" />
                         )}
@@ -704,15 +726,14 @@ const handleChangeDomain = (event, newValue) => {
                       />
                     </Grid>
                     <Grid item xs={4}>
-                      <Paper
-                        elevation={3}
-                        sx={{ borderRadius: "10px"}}
-                      >
-                        <Box padding={2} color={"primary.main"} display='flex'>
-                          <Typography variant="h2">{articles.length}</Typography>
-                          <Box sx={{marginLeft:'10px'}}>
-                          <Typography variant="h4">Articles</Typography>
-                          <Typography variant="h6">Published</Typography>
+                      <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                        <Box padding={2} color={"primary.main"} display="flex">
+                          <Typography variant="h2">
+                            {articles.length}
+                          </Typography>
+                          <Box sx={{ marginLeft: "10px" }}>
+                            <Typography variant="h4">Articles</Typography>
+                            <Typography variant="h6">Published</Typography>
                           </Box>
                         </Box>
                       </Paper>
@@ -742,7 +763,8 @@ const handleChangeDomain = (event, newValue) => {
                             {articles
                               .slice(
                                 articlesPage * rowsPerArticlesPage,
-                                articlesPage * rowsPerArticlesPage + rowsPerArticlesPage
+                                articlesPage * rowsPerArticlesPage +
+                                  rowsPerArticlesPage
                               )
                               .map((row) => {
                                 return (
@@ -761,8 +783,12 @@ const handleChangeDomain = (event, newValue) => {
                                                             );
                                                         })} */}
                                     <TableCell>{row.title}</TableCell>
-                                    <TableCell>{row.userData[0].name}</TableCell>
-                                    <TableCell>{row.userData[0].email}</TableCell>
+                                    <TableCell>
+                                      {row.userData[0].name}
+                                    </TableCell>
+                                    <TableCell>
+                                      {row.userData[0].email}
+                                    </TableCell>
                                     <TableCell>
                                       {new Date(row.date).toDateString()}
                                     </TableCell>
