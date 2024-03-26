@@ -24,6 +24,7 @@ const CommentSection = ({articleId}) => {
   const [username, setusername] = useState(" ");
   const [userImg, setuserImg] = useState(null);
   const commentId = "com" + uuidv4();
+  const artId = articleId;
 
   useEffect(() => {
     const username = localStorage.getItem("username");
@@ -40,31 +41,33 @@ const CommentSection = ({articleId}) => {
     } else {
       setuserImg("/path/to/profile.jpg");
     }*/
-    const fetchData = async () => {
-      if (!articleId) return;
-      try {
-        const response = await fetch(`http://localhost:3001/api/comment/get`, {
-          headers: {
-            'Content-Type': 'application/json', // Adjust the content type if needed
-            'artId': articleId, // Add your custom data in headers
-          },
-      });
-        const jsonData = await response.json();
-        setData(jsonData);
-        console.log(jsonData);
-        console.log(articleData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchData();
-  }, [articleId]);
-  console.log(userImg);
+  }, [artId]);
+ // console.log(userImg);
+
+ const fetchData = async () => {
+  console.log(artId);
+if (!artId) return;
+  try {
+    console.log(artId);
+    const response = await fetch(`http://localhost:3001/api/comment/get`, {
+      headers: {
+        id: artId,
+        'Content-Type': 'application/json', // Adjust the content type if needed
+      },
+  });
+    const jsonData = await response.json();
+    console.log(typeof articleData);
+    setData(jsonData);
+    console.log(jsonData);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
 
   const requestBody = {
     comId:commentId,
-    artId: articleId,
+    artId: artId,
     commentorName:username,
     commentContent: commentText,
     profilePic:userImg,
@@ -79,10 +82,6 @@ const CommentSection = ({articleId}) => {
           'Content-Type': 'application/json',
         },
     });
-      const jsonData = await response.json();
-      setData(jsonData);
-      console.log(jsonData);
-      console.log(articleData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -90,11 +89,16 @@ const CommentSection = ({articleId}) => {
 
 
   
-  const handleCommentSubmit = () => {
+  const handleCommentSubmit =async() => {
     // Handle the comment submission here, you can send the comment to the server or update the state as needed
     console.log('Comment user:', username);
     console.log('Comment submitted:', commentText);
-    addComment();
+    console.log('Comment artilce:', articleId);
+    console.log(typeof articleData);
+    await addComment();
+    await fetchData();
+    console.log(articleData);
+    //addComment();
     // Clear the comment input after submission if needed
     setCommentText('');
   };
@@ -135,7 +139,7 @@ const CommentSection = ({articleId}) => {
           </Grid>
         </Grid>
       </CommentForm>
-      {/* Display comments */}
+      {console.log(articleData)}
       {articleData.map((comment) => (
         <div key={comment.id}>
           <Grid container spacing={2} mt={1}>
