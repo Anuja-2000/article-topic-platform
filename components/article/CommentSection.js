@@ -1,16 +1,20 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Typography,
   OutlinedInput,
-  Paper,
+  IconButton,
   Button,
   Avatar,
-  Divider,
   Grid,
   styled,
+  Modal,
+  Backdrop,
+  Fade,
 } from '@mui/material';
-import { Send as SendIcon } from '@mui/icons-material';
+import { Send as SendIcon, Edit as EditIcon } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
+import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+import MoreOptionsCard from './MoreOptionsCard';
 
 const CommentForm = styled('form')(({ theme }) => ({
   display: 'flex',
@@ -18,11 +22,15 @@ const CommentForm = styled('form')(({ theme }) => ({
   alignItems: 'stretch',
 }));
 
-const CommentSection = ({articleId}) => {
+const CommentSection = ({ articleId }) => {
   const [articleData, setData] = useState([]);
   const [commentText, setCommentText] = useState('');
-  const [username, setusername] = useState(" ");
+  const [username, setusername] = useState('');
   const [userImg, setuserImg] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [commentBeingEdited, setCommentBeingEdited] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [updateCommentID, setupdateCommentID] = useState("");
   const commentId = "com" + uuidv4();
   const artId = articleId;
 
@@ -32,89 +40,104 @@ const CommentSection = ({articleId}) => {
     if (username != null) {
       setusername(username);
     } else {
-        setName(" ");
+      setusername(" ");
     }
     setuserImg("/path/to/profile.jpg");
-    //console.log(localStorage.getItem("imgUrl"));
-   /* if (userImg != null) {
-      setuserImg(userImg);
-    } else {
-      setuserImg("/path/to/profile.jpg");
-    }*/
     fetchData();
   }, [artId]);
- // console.log(userImg);
 
- const fetchData = async () => {
-  console.log(artId);
-if (!artId) return;
-  try {
-    console.log(artId);
-    const response = await fetch(`http://localhost:3001/api/comment/get`, {
-      headers: {
-        id: artId,
-        'Content-Type': 'application/json', // Adjust the content type if needed
-      },
-  });
-    const jsonData = await response.json();
-    console.log(typeof articleData);
-    setData(jsonData);
-    console.log(jsonData);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
+  const fetchData = async () => {
+    if (!artId) return;
+    try {
+      const response = await fetch(`http://localhost:3001/api/comment/get`, {
+        headers: {
+          id: artId,
+          'Content-Type': 'application/json',
+        },
+      });
+      const jsonData = await response.json();
+      setData(jsonData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-  const requestBody = {
-    comId:commentId,
-    artId: artId,
-    commentorName:username,
-    commentContent: commentText,
-    profilePic:userImg,
+  const handleEdit = (comment) => {
+    setCommentBeingEdited(comment);
+    setCommentText(comment.commentContent);
+    setEditMode(true);
+    setModalOpen(true);
+    setupdateCommentID(comment.comId);
   };
 
   const addComment = async () => {
     try {
       const response = await fetch(`http://localhost:3001/api/comment/save`, {
         method: 'POST',
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(
+          {
+            comId:commentId,
+            artId: artId,
+            commentorName:username,
+            commentContent: commentText,
+            profilePic:userImg,
+          }
+        ),
         headers: {
           'Content-Type': 'application/json',
         },
-    });
+      });
+      // Handle response as needed
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
+  const updateComment = async () => {
+    try {
+      console.log(updateCommentID);
+      const response = await fetch(`http://localhost:3001/api/comment/update`, {
+        method: 'PUT',
+        body: JSON.stringify(
+          {
+            comId:updateCommentID,
+            commentContent: commentText,
+          }
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      // Handle response as needed
+      console.log(response);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-  
-  const handleCommentSubmit =async() => {
-    // Handle the comment submission here, you can send the comment to the server or update the state as needed
-    console.log('Comment user:', username);
-    console.log('Comment submitted:', commentText);
-    console.log('Comment artilce:', articleId);
-    console.log(typeof articleData);
-    await addComment();
+  const handleCommentSubmit = async () => {
+    if (editMode && commentBeingEdited) {
+      // Handle edit submission
+      // Update the comment in the backend
+      // Update the comment in the state
+      setEditMode(false);
+      setCommentBeingEdited(null);
+      await updateComment();
+    } else {
+      // Handle new comment submission
+      await addComment();
+    }
     await fetchData();
-    console.log(articleData);
-    //addComment();
-    // Clear the comment input after submission if needed
     setCommentText('');
   };
-  // Sample comments data
-  // const comments = [
-  //   { id: 1, user: 'John Doe', text: 'Great article!', time: '2 hours ago' },
-  //   { id: 2, user: 'Alice Smith', text: 'I learned a lot. Thanks for sharing!', time: '1 day ago' },
-  // ];
 
   return (
     <div elevation={2} sx={{ padding: (theme) => theme.spacing(3), marginTop: (theme) => theme.spacing(3) }}>
-       {/* Comment input form */}
-       <CommentForm>
+      <h3>{articleData.length} Comments</h3>
+      <CommentForm sx={{ mt: 4 }}>
         <Grid container spacing={2}>
           <Grid item>
-            <Avatar alt="User" src={userImg} />
+            <Avatar alt="User" src={"/path/to/profile.jpg"} />
           </Grid>
           <Grid item xs>
             <OutlinedInput
@@ -123,7 +146,7 @@ if (!artId) return;
               multiline
               rows={3}
               value={commentText}
-              onChange={(e) => setCommentText(e.target.value)} 
+              onChange={(e) => setCommentText(e.target.value)}
               sx={{ marginBottom: (theme) => theme.spacing(2) }}
             />
             <Button
@@ -134,12 +157,12 @@ if (!artId) return;
               endIcon={<SendIcon />}
               onClick={handleCommentSubmit}
             >
-              Comment
+              {editMode ? 'Edit Comment' : 'Add Comment'}
             </Button>
           </Grid>
         </Grid>
       </CommentForm>
-      {console.log(articleData)}
+
       {articleData.map((comment) => (
         <div key={comment.id}>
           <Grid container spacing={2} mt={1}>
@@ -151,9 +174,17 @@ if (!artId) return;
                 <strong>{comment.commentorName}: {comment.time}</strong><br />{comment.commentContent}
               </Typography>
             </Grid>
+            <IconButton
+              color="inherit"
+              sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft: '10px' }}
+              onClick={() => handleEdit(comment)}
+            >
+              <MoreVertIcon />
+            </IconButton>
           </Grid>
         </div>
       ))}
+
     </div>
   );
 };
