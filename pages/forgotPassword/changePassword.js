@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Style from '../../styles/changePassword.module.css';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -39,12 +40,13 @@ function ChangePassword() {
     reset,
   } = useForm({ mode: 'onChange' });
 
+  const router = useRouter();
   const password = watch('newPass', '');
   const confirmPassword = watch('confPass', '');
   const [showPassword, setShowPassword] = useState(false);
   const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
-
+  const userId = router.query.id;
   const handleSuccessAlertClose = () => {
     setOpenSuccessAlert(false);
   };
@@ -53,16 +55,21 @@ function ChangePassword() {
     setOpenErrorAlert(false);
   };
   const onSubmit = async (formData) => {
-    const { newPass, confPass, email } = formData;
+    const { newPass, confPass} = formData;
 
     if (newPass !== confPass) {
       return;
     }
+    console.log(userId);
+    const requestBody = {
+      userId: userId,
+      newPass: newPass
+    };
 
     try {
-      const response = await fetch(`/api/auth/reset-password`, {
-        method: 'POST',
-        body: JSON.stringify({ email }),
+      const response = await fetch(`http://localhost:3001/api/user/updatePassword`, {
+        method: 'PATCH',
+        body: JSON.stringify(requestBody),
         headers: {
           'Content-Type': 'application/json',
         },
