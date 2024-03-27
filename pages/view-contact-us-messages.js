@@ -103,7 +103,12 @@ export default function ViewContactUsMessages() {
   let [messages, setMessages] = React.useState([]);
   const [isLoading, setLoading] = React.useState(true);
   React.useEffect(() => {
-      const response = axios.get('http://localhost:3001/api/contactMessage/getAll').then((res) => {
+      const response = axios.get('http://localhost:3001/api/contactMessage/getAll',{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      }).then((res) => {
+        console.log(res.data);
         const messages = res.data;
         setMessages(messages);
         setLoading(false);
