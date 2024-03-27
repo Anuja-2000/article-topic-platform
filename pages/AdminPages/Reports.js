@@ -47,7 +47,7 @@ const Articlecolumns = [
 ];
 
 let popularityResData = [];
-let popularityData = [{ label: "Anuja", value: 30 }];
+let popularityData = [];
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -292,13 +292,10 @@ function Reports() {
       .get(`http://localhost:3001/api/readerArticle/writer-popularity`)
       .then((res) => {
         popularityResData = res.data;
-        setWriterPopularity([]);
+        popularityData = [];
         for (let user of popularityResData) {
-          console.log(user);
           popularityData.push({ label: user.userData[0].name, value: user.count });
-          //setWriterPopularity(writerPopularity.push({label: user.userData[0].name, value: user.count}));
         }
-        console.log(writerPopularity);
       })
       .catch((error) => {
         console.log(error);
@@ -387,7 +384,12 @@ function Reports() {
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            <Container maxWidth="xl" sx={{ display: "flex" }}>
+            <Container maxWidth="lg" >
+            <Typography variant="h4" marginBottom={1} color={"primary.dark"}>
+                Graphs
+              </Typography>
+              <Divider />
+              <Box sx={{ display: "flex" }}>
               <Paper
                 elevation={3}
                 style={{
@@ -454,14 +456,11 @@ function Reports() {
                   yAxis={[{ id: "leftAxisId" }]}
                 />
               </Paper>
-            </Container>
-            <Container
-              maxWidth="xl"
-              sx={{ display: "flex", marginTop: "30px" }}
-            >
+              </Box>
+              <Box sx={{ display: "flex", marginTop: "30px" }}>
               <Paper
                 elevation={3}
-                style={{ height: 350, width: 450, padding: "20px" }}
+                style={{ height: 350, width: 500, padding: "20px" }}
               >
                 <Typography variant="h5" gutterBottom>
                   Writer Popularity
@@ -518,6 +517,7 @@ function Reports() {
                   </Paper>
                 </Box>
               </Paper>
+              </Box>
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
