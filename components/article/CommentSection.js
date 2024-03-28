@@ -62,11 +62,35 @@ const CommentSection = ({ articleId }) => {
   };
 
   const handleEdit = (comment) => {
+    const updateCommentID = comment.comId;
     setCommentBeingEdited(comment);
     setCommentText(comment.commentContent);
     setEditMode(true);
     handleClose();
-    setupdateCommentID(comment.comId);
+    setupdateCommentID(updateCommentID);
+  };
+
+  const handleDelete = async(comment) => {
+    const commentId = comment.comId;
+    await DeleteComment(commentId);
+    await fetchData();
+  };
+
+  const DeleteComment = async(commentId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comment/delete`, {
+        method: 'DELETE',
+        headers: {
+          id: commentId,
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response);
+      // Handle response as needed
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    
   };
 
   const addComment = async () => {
@@ -196,11 +220,11 @@ const CommentSection = ({ articleId }) => {
             >
               <MenuItem onClick={() => { handleEdit(comment); handleClose(); }}>
                 <EditIcon />
-                Edit
+                &nbsp; Edit
               </MenuItem>
-              <MenuItem onClick={() => { handleDelete(comment.comId); handleClose(); }}>
+              <MenuItem onClick={() => { handleDelete(comment); handleClose(); }}>
                 <DeleteIcon />
-                Delete
+                &nbsp; Delete
               </MenuItem>
             </Menu>
           </Grid>
