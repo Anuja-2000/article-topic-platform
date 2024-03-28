@@ -7,13 +7,11 @@ import {
   Avatar,
   Grid,
   styled,
-  Modal,
-  Backdrop,
-  Fade,
+  Menu,
+  MenuItem,
 } from '@mui/material';
-import { Send as SendIcon, Edit as EditIcon } from '@mui/icons-material';
 import { v4 as uuidv4 } from 'uuid';
-import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { Send as SendIcon, Edit as EditIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import MoreOptionsCard from './MoreOptionsCard';
 
 const CommentForm = styled('form')(({ theme }) => ({
@@ -29,8 +27,9 @@ const CommentSection = ({ articleId }) => {
   const [userImg, setuserImg] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [commentBeingEdited, setCommentBeingEdited] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [updateCommentID, setupdateCommentID] = useState("");
+  const [selectedComment, setSelectedComment] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const commentId = "com" + uuidv4();
   const artId = articleId;
 
@@ -63,11 +62,35 @@ const CommentSection = ({ articleId }) => {
   };
 
   const handleEdit = (comment) => {
+    const updateCommentID = comment.comId;
     setCommentBeingEdited(comment);
     setCommentText(comment.commentContent);
     setEditMode(true);
-    setModalOpen(true);
-    setupdateCommentID(comment.comId);
+    handleClose();
+    setupdateCommentID(updateCommentID);
+  };
+
+  const handleDelete = async(comment) => {
+    const commentId = comment.comId;
+    await DeleteComment(commentId);
+    await fetchData();
+  };
+
+  const DeleteComment = async(commentId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/comment/delete`, {
+        method: 'DELETE',
+        headers: {
+          id: commentId,
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response);
+      // Handle response as needed
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    
   };
 
   const addComment = async () => {
@@ -131,13 +154,22 @@ const CommentSection = ({ articleId }) => {
     setCommentText('');
   };
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedComment(event.currentTarget.id);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
-    <div elevation={2} sx={{ padding: (theme) => theme.spacing(3), marginTop: (theme) => theme.spacing(3) }}>
+    <div elevation={2} style={{ padding: '16px', marginTop: '16px' }}>
       <h3>{articleData.length} Comments</h3>
-      <CommentForm sx={{ mt: 4 }}>
+      <CommentForm style={{ marginTop: '16px' }}>
         <Grid container spacing={2}>
           <Grid item>
-            <Avatar alt="User" src={"/path/to/profile.jpg"} />
+            <Avatar alt="User" src="/path/to/profile.jpg" />
           </Grid>
           <Grid item xs>
             <OutlinedInput
@@ -147,13 +179,13 @@ const CommentSection = ({ articleId }) => {
               rows={3}
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              sx={{ marginBottom: (theme) => theme.spacing(2) }}
+              style={{ marginBottom: '8px' }}
             />
             <Button
               variant="contained"
               color="primary"
               size="small"
-              sx={{ marginLeft: 'auto', marginTop: (theme) => theme.spacing(1) }}
+              style={{ marginLeft: 'auto', marginTop: '8px' }}
               endIcon={<SendIcon />}
               onClick={handleCommentSubmit}
             >
@@ -163,28 +195,41 @@ const CommentSection = ({ articleId }) => {
         </Grid>
       </CommentForm>
 
-      {articleData.map((comment) => (
-        <div key={comment.id}>
-          <Grid container spacing={2} mt={1}>
+      {articleData.map((comment, index) => (
+        <div key={index}>
+          <Grid container spacing={2} style={{ marginTop: '8px' }}>
             <Grid item>
               <Avatar alt={comment.commentorName} src={comment.profilePic} />
             </Grid>
-            <Grid item xs mt={1}>
+            <Grid item xs style={{ marginTop: '8px' }}>
               <Typography variant="body2">
                 <strong>{comment.commentorName}: {comment.time}</strong><br />{comment.commentContent}
               </Typography>
             </Grid>
             <IconButton
-              color="inherit"
-              sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft: '10px' }}
-              onClick={() => handleEdit(comment)}
+              id={comment.comId}
+              onClick={handleClick}
+              style={{ marginTop: '8px' }}
             >
               <MoreVertIcon />
             </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl && anchorEl.id === comment.comId)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={() => { handleEdit(comment); handleClose(); }}>
+                <EditIcon />
+                &nbsp; Edit
+              </MenuItem>
+              <MenuItem onClick={() => { handleDelete(comment); handleClose(); }}>
+                <DeleteIcon />
+                &nbsp; Delete
+              </MenuItem>
+            </Menu>
           </Grid>
         </div>
       ))}
-
     </div>
   );
 };
