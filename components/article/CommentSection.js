@@ -22,9 +22,10 @@ const CommentForm = styled('form')(({ theme }) => ({
 
 const CommentSection = ({ articleId }) => {
   const [articleData, setData] = useState([]);
-  const [commentText, setCommentText] = useState('');
-  const [username, setusername] = useState('');
+  const [commentText, setCommentText] = useState("");
+  const [username, setUsername] = useState("");
   const [userImg, setuserImg] = useState(null);
+  const [userId, setUserId] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [commentBeingEdited, setCommentBeingEdited] = useState(null);
   const [updateCommentID, setupdateCommentID] = useState("");
@@ -33,11 +34,14 @@ const CommentSection = ({ articleId }) => {
   const commentId = "com" + uuidv4();
   const artId = articleId;
 
+
   useEffect(() => {
     const username = localStorage.getItem("username");
     const userImg = localStorage.getItem("imgUrl");
+    const userId = localStorage.getItem("userId");
     if (username != null) {
-      setusername(username);
+      setUserId(userId);
+      setUsername(username);
     } else {
       setusername(" ");
     }
@@ -104,6 +108,7 @@ const CommentSection = ({ articleId }) => {
             commentorName:username,
             commentContent: commentText,
             profilePic:userImg,
+            userId:userId,
           }
         ),
         headers: {
@@ -206,13 +211,13 @@ const CommentSection = ({ articleId }) => {
                 <strong>{comment.commentorName}: {comment.time}</strong><br />{comment.commentContent}
               </Typography>
             </Grid>
-            <IconButton
+           { (userId===comment.userId) && ( <IconButton
               id={comment.comId}
               onClick={handleClick}
               style={{ marginTop: '8px' }}
             >
               <MoreVertIcon />
-            </IconButton>
+            </IconButton> )}
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl && anchorEl.id === comment.comId)}
