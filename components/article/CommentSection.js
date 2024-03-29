@@ -43,7 +43,7 @@ const CommentSection = ({ articleId }) => {
       setUserId(userId);
       setUsername(username);
     } else {
-      setusername(" ");
+      setUsername(" ");
     }
     setuserImg("/path/to/profile.jpg");
     fetchData();
@@ -171,10 +171,10 @@ const CommentSection = ({ articleId }) => {
   return (
     <div elevation={2} style={{ padding: '16px', marginTop: '16px' }}>
       <h3>{articleData.length} Comments</h3>
-      <CommentForm style={{ marginTop: '16px' }}>
+    {userId!=="" && <CommentForm style={{ marginTop: '16px' }}>
         <Grid container spacing={2}>
           <Grid item>
-            <Avatar alt="User" src="/path/to/profile.jpg" />
+            <Avatar alt={username.toUpperCase()} src="/path/to/profile.jpg" />
           </Grid>
           <Grid item xs>
             <OutlinedInput
@@ -198,13 +198,13 @@ const CommentSection = ({ articleId }) => {
             </Button>
           </Grid>
         </Grid>
-      </CommentForm>
+      </CommentForm>}
 
       {articleData.map((comment, index) => (
         <div key={index}>
           <Grid container spacing={2} style={{ marginTop: '8px' }}>
             <Grid item>
-              <Avatar alt={comment.commentorName} src={comment.profilePic} />
+              <Avatar alt={comment.commentorName.toUpperCase()} src={comment.profilePic} />
             </Grid>
             <Grid item xs style={{ marginTop: '8px' }}>
               <Typography variant="body2">
