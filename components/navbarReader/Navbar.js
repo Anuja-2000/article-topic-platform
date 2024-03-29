@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Link from 'next/link';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -99,7 +100,11 @@ const Navbar = () => {
           open={Boolean(userMenuAnchorEl)}
           onClose={handleUserMenuClose}
         >
-          <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
+          <MenuItem onClick={handleUserMenuClose} >
+            <Link href={`/reader/profile`} passHref>
+              Profile
+            </Link>
+          </MenuItem>
           <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
           <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
         </Menu>
