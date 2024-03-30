@@ -20,6 +20,7 @@ import Link from 'next/link';
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [username, setUsername] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
   const [notifications, setNotifications] = useState([
     { message: 'New message 1', read: false },
     { message: 'New message 2', read: true },
@@ -27,6 +28,8 @@ const Navbar = () => {
   ]);
   useEffect(() => {
     const username = localStorage.getItem("username");
+    const imgUrl = localStorage.getItem("imgUrl");
+    setImgUrl(imgUrl);
     setUsername(username);
   });
 
@@ -93,7 +96,7 @@ const Navbar = () => {
         {/* User Icon and Menu */}
         <IconButton color="inherit" onClick={handleUserIconClick}>
           {/*<AccountCircle />*/}
-          <Avatar alt={username!==null ?username.toUpperCase():"User"} src="/path/to/profile.jpg" />
+          <Avatar alt={username!==null ?username.toUpperCase():"User"} src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} />
         </IconButton>
         <Menu
           anchorEl={userMenuAnchorEl}
