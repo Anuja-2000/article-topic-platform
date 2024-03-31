@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -7,6 +7,7 @@ import {
   Badge,
   Button,
   Popover,
+  Avatar,
   List,
   ListItem,
   Menu,
@@ -14,14 +15,23 @@ import {
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Link from 'next/link';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [username, setUsername] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
   const [notifications, setNotifications] = useState([
     { message: 'New message 1', read: false },
     { message: 'New message 2', read: true },
     { message: 'New message 3', read: false },
   ]);
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    const imgUrl = localStorage.getItem("imgUrl");
+    setImgUrl(imgUrl);
+    setUsername(username);
+  });
 
   const handleNotificationClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -85,14 +95,19 @@ const Navbar = () => {
 
         {/* User Icon and Menu */}
         <IconButton color="inherit" onClick={handleUserIconClick}>
-          <AccountCircle />
+          {/*<AccountCircle />*/}
+          <Avatar alt={username!==null ?username.toUpperCase():"User"} src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} />
         </IconButton>
         <Menu
           anchorEl={userMenuAnchorEl}
           open={Boolean(userMenuAnchorEl)}
           onClose={handleUserMenuClose}
         >
-          <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
+          <MenuItem onClick={handleUserMenuClose} >
+            <Link href={`/reader/profile`} passHref>
+              Profile
+            </Link>
+          </MenuItem>
           <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
           <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
         </Menu>
