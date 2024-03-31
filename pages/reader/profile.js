@@ -5,6 +5,10 @@ import axios from 'axios';
 import Navbar from "../../components/navbarReader/Navbar";
 import { Alert } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import { useForm } from 'react-hook-form';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -18,9 +22,20 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
+const ShowHideButton = styled('button')({
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+  });
+
 const Profile = () => {
+    const {
+        register,
+      } = useForm({ mode: 'onChange' });
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [imgFile, setImgFile] = useState(null);
@@ -40,17 +55,11 @@ const Profile = () => {
     const handleMissMatchAlertClose = () => {
         setOpenMissMatchAlert(false);
     };
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevShowPassword) => !prevShowPassword);
+      };
 
     useEffect(() => {
-        /*const name = localStorage.getItem("username");
-        const email = localStorage.getItem("email");
-        if (name != null && email != null) {
-            setName(name);
-            setEmail(email);
-        } else {
-            setName("!user");
-        }*/
-
         const fetchData = async () => {
             try {
                 const userId = localStorage.getItem("userId");
@@ -227,8 +236,46 @@ const Profile = () => {
                         <Typography variant="h5" sx={{ marginTop: 3 }}>Edit Profile</Typography>
                         <TextField id="username" label="Username" variant="outlined" value={name} onChange={handleUsernameChange} color='primary' sx={{ marginTop: 2, width: '100%' }} />
                         <TextField id="email" label="Email" variant="outlined" value={email} disabled color='primary' sx={{ marginTop: 2, width: '100%' }} />
-                        <TextField id="new-password" label="New Password" variant="outlined" type="password" value={newPassword} onChange={handleNewPasswordChange} color='primary' sx={{ marginTop: 2, width: '100%' }} />
-                        <TextField id="confirm-password" label="Confirm New Password" variant="outlined" type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} color='primary' sx={{ marginTop: 2, width: '100%' }} />
+                        <TextField 
+                            id="new-password" 
+                            label="New Password" 
+                            variant="outlined"
+                            name="new password"
+                            onChange={handleNewPasswordChange} 
+                            color='primary' 
+                            sx={{ marginTop: 2, width: '100%', fontFamily: 'FontAwesome' }} 
+                            type={showPassword ? 'text' : 'password'}
+                            {...register('new password', { required: true })}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <ShowHideButton type="button" onClick={togglePasswordVisibility}>
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                  </ShowHideButton>
+                                </InputAdornment>
+                              ),
+                            }}
+                        />
+                        <TextField 
+                            id="confirm-password" 
+                            label="Confirm New Password" 
+                            variant="outlined" 
+                            name="confirm password"
+                            onChange={handleConfirmPasswordChange} 
+                            color='primary' 
+                            sx={{ marginTop: 2, width: '100%', fontFamily: 'FontAwesome' }} 
+                            type={showPassword ? 'text' : 'password'}
+                            {...register('confirm password', { required: true })}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <ShowHideButton type="button" onClick={togglePasswordVisibility}>
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                  </ShowHideButton>
+                                </InputAdornment>
+                              ),
+                            }}
+                        />
                         <Button variant="contained" sx={{ marginTop: 4, width: '100%' }} onClick={sendFileToServer}>Save Changes</Button>
                     </Box>
                 </Paper>
