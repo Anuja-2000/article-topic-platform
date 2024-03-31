@@ -3,6 +3,12 @@ import { Container, TextField, Typography, Button, Paper, Box, Avatar } from "@m
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import Navbar from "../../components/navbarReader/Navbar";
+import { Alert } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import { useForm } from 'react-hook-form';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -16,43 +22,106 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
+const ShowHideButton = styled('button')({
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+  });
+
 const Profile = () => {
+    const {
+        register,
+      } = useForm({ mode: 'onChange' });
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [imgFile, setImgFile] = useState(null);
     const [imgUrl, setImgUrl] = useState("");
+    const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
+    const [openErrorAlert, setOpenErrorAlert] = useState(false);
+    const [openMissMatchAlert, setOpenMissMatchAlert] = useState(false);
+ 
+    const handleSuccessAlertClose = () => {
+        setOpenSuccessAlert(false);
+    };
 
-    useEffect(() => {
-        const name = localStorage.getItem("username");
-        const email = localStorage.getItem("email");
-        if (name != null && email != null) {
-            setName(name);
-            setEmail(email);
-        } else {
-            setName("!user");
-        }
-        setImgUrl(localStorage.getItem("imgUrl"));
-    });
+    const handleErrorAlertClose = () => {
+        setOpenErrorAlert(false);
+    };
+
+    const handleMissMatchAlertClose = () => {
+        setOpenMissMatchAlert(false);
+    };
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevShowPassword) => !prevShowPassword);
+      };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const userId = localStorage.getItem("userId");
                 const response = await axios.get(`http://localhost:3001/api/user/${userId}`);
-                const { username, email, imgUrl } = response.data;
-               // setName(username);
-                //setEmail(email);
-                //setImgUrl(imgUrl);
+                const {name,email,imgUrl } = response.data;
+                if (name != null && email != null) {
+                    setName(name);
+                    setEmail(email);
+                } else {
+                    setName("!user");
+                }
+                setImgUrl(imgUrl);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
         };
 
         fetchData();
-    }, []);
+    },[]);
+
+    const sendFileToServer = async () => {
+        const formData = new FormData();
+        formData.append('file', imgFile);
+        if(changePassword()=="password does not match"){
+            return;
+        };
+        // let reader = new FileReader(); 
+        // reader.onload = function() {
+        //  reader.readAsDataURL(imgFile);
+        // }
+        
+        await axios.post('http://localhost:3001/api/file/setUserId', {
+            userId: localStorage.getItem("userId"),
+        }).then((response) => {
+            console.log(response);
+        }).catch((error) => {
+            console.log(error);
+        });
+
+        await axios.put('http://localhost:3001/api/user/updateName', {
+                userId: localStorage.getItem("userId"),
+                name: name,
+        }).then((response) => {
+            console.log(response);
+        }).catch((error) => {
+            console.log(error);
+        });
+
+        await axios.post('http://localhost:3001/api/file/upload',formData,{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((response) => {
+            console.log(response);
+            localStorage.removeItem("imgUrl");
+            reFreshProfileimg();
+        }).catch((error) => {
+            console.log(error);
+        });
+
+       
+    }
 
     const handleChange = (event) => {
         setImgFile(event.target.files?.[0]);
@@ -60,10 +129,6 @@ const Profile = () => {
 
     const handleUsernameChange = (event) => {
         setName(event.target.value);
-    };
-
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
     };
 
     const handleNewPasswordChange = (event) => {
@@ -78,10 +143,80 @@ const Profile = () => {
         // Implement logic to update username, password, and/or profile picture
         console.log("Submitted!");
     };
+    const changePassword = async() => {
+        if(newPassword == ""){
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setOpenMissMatchAlert(true);
+            return "password does not match";
+          }
+      
+          const requestBody = {
+            userId: localStorage.getItem("userId"),
+            newPass: newPassword
+          };
+      
+          try {
+            const response = await fetch(`http://localhost:3001/api/user/updatePassword`, {
+              method: 'PATCH',
+              body: JSON.stringify(requestBody),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+      
+            if (response.ok) {
+              console.log(response);
+              setOpenSuccessAlert(true);
+              setNewPassword("");
+              setConfirmPassword("");
+            } else {
+                console.error('An error occurred:', error);
+                setOpenErrorAlert(true);
+            }
+          } catch (error) {
+            console.error('An error occurred:', error);
+            setOpenErrorAlert(true);
+            // Handle error
+          }
+    }
 
     return (
         <>
             <Navbar />
+            <>
+                <Snackbar
+                open={openSuccessAlert}
+                autoHideDuration={5000}
+                onClose={handleSuccessAlertClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                 >
+                    <Alert onClose={handleSuccessAlertClose} severity="success" sx={{ width: '100%' }}>
+                    Password is reset
+                    </Alert>
+                 </Snackbar>
+                <Snackbar
+                    open={openMissMatchAlert}
+                    autoHideDuration={5000}
+                    onClose={handleMissMatchAlertClose}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                    <Alert onClose={handleMissMatchAlertClose} severity="error" sx={{ width: '100%' }}>
+                    Passwords dosen't match
+                    </Alert>
+                </Snackbar>
+                <Snackbar
+                    open={openErrorAlert}
+                    autoHideDuration={5000}
+                    onClose={handleErrorAlertClose}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                    <Alert onClose={handleErrorAlertClose} severity="error" sx={{ width: '100%' }}>
+                    Error occurred. Please try again.
+                    </Alert>
+                </Snackbar>
+            </>
             <Container maxWidth="sm" sx={{ marginTop: 8 }}>
                 <Paper elevation={3} sx={{ padding: 4 }}>
                     <Box sx={{
@@ -101,9 +236,47 @@ const Profile = () => {
                         <Typography variant="h5" sx={{ marginTop: 3 }}>Edit Profile</Typography>
                         <TextField id="username" label="Username" variant="outlined" value={name} onChange={handleUsernameChange} color='primary' sx={{ marginTop: 2, width: '100%' }} />
                         <TextField id="email" label="Email" variant="outlined" value={email} disabled color='primary' sx={{ marginTop: 2, width: '100%' }} />
-                        <TextField id="new-password" label="New Password" variant="outlined" type="password" value={newPassword} onChange={handleNewPasswordChange} color='primary' sx={{ marginTop: 2, width: '100%' }} />
-                        <TextField id="confirm-password" label="Confirm New Password" variant="outlined" type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} color='primary' sx={{ marginTop: 2, width: '100%' }} />
-                        <Button variant="contained" sx={{ marginTop: 4, width: '100%' }} onClick={handleSubmit}>Save Changes</Button>
+                        <TextField 
+                            id="new-password" 
+                            label="New Password" 
+                            variant="outlined"
+                            name="new password"
+                            onChange={handleNewPasswordChange} 
+                            color='primary' 
+                            sx={{ marginTop: 2, width: '100%', fontFamily: 'FontAwesome' }} 
+                            type={showPassword ? 'text' : 'password'}
+                            {...register('new password', { required: true })}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <ShowHideButton type="button" onClick={togglePasswordVisibility}>
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                  </ShowHideButton>
+                                </InputAdornment>
+                              ),
+                            }}
+                        />
+                        <TextField 
+                            id="confirm-password" 
+                            label="Confirm New Password" 
+                            variant="outlined" 
+                            name="confirm password"
+                            onChange={handleConfirmPasswordChange} 
+                            color='primary' 
+                            sx={{ marginTop: 2, width: '100%', fontFamily: 'FontAwesome' }} 
+                            type={showPassword ? 'text' : 'password'}
+                            {...register('confirm password', { required: true })}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <ShowHideButton type="button" onClick={togglePasswordVisibility}>
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                  </ShowHideButton>
+                                </InputAdornment>
+                              ),
+                            }}
+                        />
+                        <Button variant="contained" sx={{ marginTop: 4, width: '100%' }} onClick={sendFileToServer}>Save Changes</Button>
                     </Box>
                 </Paper>
             </Container>

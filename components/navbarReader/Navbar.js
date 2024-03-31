@@ -14,7 +14,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import axios from 'axios';
 import Link from 'next/link';
 
 const Navbar = () => {
@@ -28,9 +28,19 @@ const Navbar = () => {
   ]);
   useEffect(() => {
     const username = localStorage.getItem("username");
-    const imgUrl = localStorage.getItem("imgUrl");
-    setImgUrl(imgUrl);
     setUsername(username);
+    const fetchData = async () => {
+      try {
+          const userId = localStorage.getItem("userId");
+          const response = await axios.get(`http://localhost:3001/api/user/${userId}`);
+          const {imgUrl } = response.data;
+          setImgUrl(imgUrl);
+      } catch (error) {
+          console.error("Error fetching user data:", error);
+      }
+  };
+
+  fetchData();
   });
 
   const handleNotificationClick = (event) => {
