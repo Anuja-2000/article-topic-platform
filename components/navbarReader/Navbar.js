@@ -16,6 +16,7 @@ import {
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import axios from 'axios';
 import Link from 'next/link';
+import { Logout,Settings } from '@mui/icons-material';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -115,11 +116,36 @@ const Navbar = () => {
         >
           <MenuItem onClick={handleUserMenuClose} >
             <Link href={`/reader/profile`} passHref>
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="settings"
+              >
+                <Avatar alt={username!==null ?username.toUpperCase():"User"} 
+                src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} />
+              </IconButton>
               Profile
             </Link>
           </MenuItem>
-          <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
-          <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
+          <MenuItem onClick={handleUserMenuClose}>
+            <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="settings"
+            >
+              <Settings />
+            </IconButton>
+            Settings
+          </MenuItem>
+          <MenuItem onClick={handleUserMenuClose}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="settings">
+            <Logout />
+          </IconButton>
+            Logout
+          </MenuItem>
         </Menu>
 
         {/* Notifications Popover */}
