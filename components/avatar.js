@@ -14,12 +14,14 @@ import Logout from "@mui/icons-material/Logout";
 import Link from "next/link";
 
 export default function AvatarIcon() {
+  const[userType, setUserType] = React.useState(" ");
   const [username, setUsername] = React.useState(" ");
   const [imgUrl, setImgUrl] = React.useState(" ");
 
   React.useEffect(() => {
     const name = localStorage.getItem("username");
     if (name != null) {
+      setUserType(localStorage.getItem("type"));
       setUsername(name);
     } else {
       setUsername("!user");
@@ -48,7 +50,12 @@ export default function AvatarIcon() {
   };
 
   const viewProfile = () => {
-    window.location.href = "/AdminPages/profile";
+    if(userType === "writer"){
+      window.location.href = "/AdminPages/profile";
+    }else{
+      window.location.href = "/reader/profile";
+    }
+    
   };
 
   const viewSettings = () => {
@@ -112,7 +119,10 @@ export default function AvatarIcon() {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={viewProfile}>
-          <Avatar /> Profile
+          <Avatar alt={username!==null ?username.toUpperCase():"User"} 
+                src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} 
+          /> 
+          Profile
         </MenuItem>
         <Divider />
         <MenuItem onClick={viewSettings}>

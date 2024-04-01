@@ -33,6 +33,7 @@ const Profile = () => {
     const {
         register,
       } = useForm({ mode: 'onChange' });
+    const [username, setUserName] = useState("");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -64,11 +65,13 @@ const Profile = () => {
             try {
                 const userId = localStorage.getItem("userId");
                 const response = await axios.get(`http://localhost:3001/api/user/${userId}`);
-                const {name,email,imgUrl } = response.data;
+                const {name,displayName,email,imgUrl } = response.data;
                 if (name != null && email != null) {
-                    setName(name);
+                    setUserName(name);
+                    setName(displayName);
                     setEmail(email);
                 } else {
+                    setUserName("");
                     setName("!user");
                 }
                 setImgUrl(imgUrl);
@@ -86,11 +89,6 @@ const Profile = () => {
         if(changePassword()=="password does not match"){
             return;
         };
-        // let reader = new FileReader(); 
-        // reader.onload = function() {
-        //  reader.readAsDataURL(imgFile);
-        // }
-        
         await axios.post('http://localhost:3001/api/file/setUserId', {
             userId: localStorage.getItem("userId"),
         }).then((response) => {
@@ -127,7 +125,7 @@ const Profile = () => {
         setImgFile(event.target.files?.[0]);
     };
 
-    const handleUsernameChange = (event) => {
+    const handleDisplayChange = (event) => {
         setName(event.target.value);
     };
 
@@ -234,8 +232,12 @@ const Profile = () => {
                             <VisuallyHiddenInput type="file" onChange={handleChange} />
                         </Button>
                         <Typography variant="h5" sx={{ marginTop: 3 }}>Edit Profile</Typography>
-                        <TextField id="username" label="Username" variant="outlined" value={name} onChange={handleUsernameChange} color='primary' sx={{ marginTop: 2, width: '100%' }} />
-                        <TextField id="email" label="Email" variant="outlined" value={email} disabled color='primary' sx={{ marginTop: 2, width: '100%' }} />
+                        <TextField id="username" label="Username" variant="outlined" value={username} disabled color='primary' 
+                        sx={{ marginTop: 2, width: '100%' }} />
+                        <TextField id="display-name" label="Display Name" variant="outlined" value={name} onChange={handleDisplayChange} color='primary' 
+                        sx={{ marginTop: 2, width: '100%' }} />
+                        <TextField id="email" label="Email" variant="outlined" value={email} disabled color='primary' 
+                        sx={{ marginTop: 2, width: '100%' }} />
                         <TextField 
                             id="new-password" 
                             label="New Password" 
