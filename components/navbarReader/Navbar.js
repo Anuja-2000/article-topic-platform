@@ -2,35 +2,27 @@ import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
-  IconButton,
   Typography,
   Badge,
   Button,
   Popover,
-  Avatar,
   List,
   ListItem,
-  Menu,
-  MenuItem,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import Link from 'next/link';
+import AvatarIcon from '../avatar'
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [username, setUsername] = useState("");
-  const [imgUrl, setImgUrl] = useState("");
   const [notifications, setNotifications] = useState([
     { message: 'New message 1', read: false },
     { message: 'New message 2', read: true },
     { message: 'New message 3', read: false },
   ]);
   useEffect(() => {
-    const username = localStorage.getItem("username");
-    const imgUrl = localStorage.getItem("imgUrl");
-    setImgUrl(imgUrl);
-    setUsername(username);
+    setUsername(localStorage.getItem("username"));
+    console.log(username);
   });
 
   const handleNotificationClick = (event) => {
@@ -87,33 +79,15 @@ const Navbar = () => {
        
 
         {/* Notifications Icon with Badge */}
-        <Button color="inherit" onClick={handleNotificationClick}>
+        {username!==null && <Button color="inherit" onClick={handleNotificationClick}>
           <Badge badgeContent={unreadNotifications} color="secondary">
             <NotificationsIcon />
           </Badge>
-        </Button>
-
-        {/* User Icon and Menu */}
-        <IconButton color="inherit" onClick={handleUserIconClick}>
-          {/*<AccountCircle />*/}
-          <Avatar alt={username!==null ?username.toUpperCase():"User"} src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} />
-        </IconButton>
-        <Menu
-          anchorEl={userMenuAnchorEl}
-          open={Boolean(userMenuAnchorEl)}
-          onClose={handleUserMenuClose}
-        >
-          <MenuItem onClick={handleUserMenuClose} >
-            <Link href={`/reader/profile`} passHref>
-              Profile
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
-          <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
-        </Menu>
-
+        </Button>}
+        {username!==null && <AvatarIcon />}
+       
         {/* Notifications Popover */}
-        <Popover
+        {username!==null && <Popover
           open={open}
           anchorEl={anchorEl}
           onClose={handlePopoverClose}
@@ -133,7 +107,7 @@ const Navbar = () => {
               </ListItem>
             ))}
           </List>
-        </Popover>
+        </Popover>}
       </Toolbar>
     </AppBar>
   );
