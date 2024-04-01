@@ -21,6 +21,12 @@ import { useRouter } from "next/router";
 import NavBar from "../../components/Navbar";
 import axios from "axios";
 import Divider from "@mui/material/Divider";
+import Chip from "@mui/material/Chip";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -98,20 +104,17 @@ TablePaginationActions.propTypes = {
 
 export default function UserRoles() {
   const [admins, setAdmins] = React.useState([]);
-  const [users, setUsers] = React.useState([]);
+  const [otherUsers, setOtherUsers] = React.useState([]);
+  const [userSearchTerm, setUserSearchTerm] = React.useState(" ");
 
   React.useEffect(() => {
     const response = axios
-      .get("http://localhost:3001/api/user/getAll", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .get("http://localhost:3001/api/user/getAll")
       .then((res) => {
         console.log(res.data);
         const filteredAdmins = res.data.filter((user) => user.type === "Admin");
-        const otherUsers = res.data.filter((user) => user.type != "Admin");
-        setUsers(otherUsers);
+        let others = res.data.filter((user) => user.type != "Admin");
+        setOtherUsers(others);
         setAdmins(filteredAdmins);
         console.log(admins);
       })
@@ -125,20 +128,6 @@ export default function UserRoles() {
 
   const [userPage, setUserPage] = React.useState(0);
   const [userRowsPerPage, setUserRowsPerPage] = React.useState(5);
-
-//   function sort_by_key(array, key) {
-//     return array.sort(function (a, b) {
-//       var x = a[key];
-//       var y = b[key];
-//       return x > y ? -1 : x < y ? 1 : 0;
-//     });
-//   }
-
-
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    adminPage > 0 ? Math.max(0, (1 + adminPage) * adminRowsPerPage - admins.length) : 0;
 
   const handleChangeAdminPage = (event, newPage) => {
     setAdminPage(newPage);
@@ -156,6 +145,33 @@ export default function UserRoles() {
   const handleChangeUserRowsPerPage = (event) => {
     setUserRowsPerPage(parseInt(event.target.value, 10));
     setUserPage(0);
+  };
+
+  const handleUserSearch = (event) => {
+    if (event.target.value === "") {
+      setUserSearchTerm(event.target.value);
+      const result = axios
+        .get("http://localhost:3001/api/user-util/get-others")
+        .then((res) => {
+          setOtherUsers(res.data);
+          console.log(res.data);
+          return;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      setUserSearchTerm(event.target.value);
+      let type = "Reader";
+      const nameResult = axios
+        .get(`http://localhost:3001/api/user-util/search/${userSearchTerm}`)
+        .then((res) => {
+          setOtherUsers(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   return (
@@ -213,8 +229,8 @@ export default function UserRoles() {
               <TableBody>
                 {(adminRowsPerPage > 0
                   ? admins.slice(
-                    adminPage * adminRowsPerPage,
-                    adminPage * adminRowsPerPage + adminRowsPerPage
+                      adminPage * adminRowsPerPage,
+                      adminPage * adminRowsPerPage + adminRowsPerPage
                     )
                   : admins
                 ).map((admin) => (
@@ -225,9 +241,10 @@ export default function UserRoles() {
                     <TableCell>{admin.name}</TableCell>
                     <TableCell>{admin.email}</TableCell>
                     <TableCell>
-                        <Button variant="contained" color="primary">
-                            Admin
-                        </Button>
+                    <Chip
+                          label={admin.type}
+                          color="primary"
+                        />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -235,11 +252,7 @@ export default function UserRoles() {
               <TableFooter>
                 <TableRow>
                   <TablePagination
-                    rowsPerPageOptions={[
-                      5,
-                      10,
-                      25
-                    ]}
+                    rowsPerPageOptions={[5, 10, 25]}
                     count={admins.length}
                     rowsPerPage={adminRowsPerPage}
                     page={adminPage}
@@ -251,89 +264,122 @@ export default function UserRoles() {
             </Table>
           </TableContainer>
           <Box marginTop={5}>
-          <Typography variant="h5" marginY={3} color={"primary.dark"}>
-            Other Users
-          </Typography>
-          <TableContainer component={Paper} elevation={4} marginY={3}>
-            <Table
-              sx={{ minWidth: 650 }}
-              stickyHeader
-              aria-label="simple table"
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      backgroundColor: "#0080FE",
-                      color: "#fff",
-                      fontWeight: 600,
-                      fontSize: "1rem",
-                    }}
-                  >
-                    Name
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      backgroundColor: "#0080FE",
-                      color: "#fff",
-                      fontWeight: 600,
-                      fontSize: "1rem",
-                    }}
-                  >
-                    Email
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      backgroundColor: "#0080FE",
-                      color: "#fff",
-                      fontWeight: 600,
-                      fontSize: "1rem",
-                    }}
-                  >
-                    User Type
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(userRowsPerPage > 0
-                  ? users.slice(
-                    userPage * userRowsPerPage,
-                    userPage * userRowsPerPage + userRowsPerPage
-                    )
-                  : users
-                ).map((user) => (
-                  <TableRow
-                    key={user.userId}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                        <Button variant="contained" color="primary">
-                            {user.type}
-                        </Button>
+            <Box display="flex" justifyContent="space-between" marginY={2}>
+              <Typography variant="h5" marginY={3} color={"primary.dark"}>
+                Other Users
+              </Typography>
+              <FormControl sx={{ m: 1, width: "35ch" }} variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-search">
+                  Search User Name
+                </InputLabel>
+                <OutlinedInput
+                  id="reader-search"
+                  type="text"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton>
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Search"
+                  onChange={handleUserSearch}
+                  value={userSearchTerm}
+                />
+              </FormControl>
+            </Box>
+            <TableContainer component={Paper} elevation={4} marginY={3}>
+              <Table
+                sx={{ minWidth: 650 }}
+                stickyHeader
+                aria-label="simple table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#0080FE",
+                        color: "#fff",
+                        fontWeight: 600,
+                        fontSize: "1rem",
+                      }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#0080FE",
+                        color: "#fff",
+                        fontWeight: 600,
+                        fontSize: "1rem",
+                      }}
+                    >
+                      Email
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#0080FE",
+                        color: "#fff",
+                        fontWeight: 600,
+                        fontSize: "1rem",
+                      }}
+                    >
+                      User Type
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        backgroundColor: "#0080FE",
+                        color: "#fff",
+                        fontWeight: 600,
+                        fontSize: "1rem",
+                      }}
+                    >
+                      Assign Role
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[
-                      5,
-                      10,
-                      25
-                    ]}
-                    count={users.length}
-                    rowsPerPage={userRowsPerPage}
-                    page={userPage}
-                    onPageChange={handleChangeUserPage}
-                    onRowsPerPageChange={handleChangeUserRowsPerPage}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {(userRowsPerPage > 0
+                    ? otherUsers.slice(
+                        userPage * userRowsPerPage,
+                        userPage * userRowsPerPage + userRowsPerPage
+                      )
+                    : users
+                  ).map((user) => (
+                    <TableRow
+                      key={user.userId}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={user.type}
+                          color={user.type === "Writer" ? "primary" : "success"}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="contained" color="primary">
+                          Assign
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25]}
+                      count={otherUsers.length}
+                      rowsPerPage={userRowsPerPage}
+                      page={userPage}
+                      onPageChange={handleChangeUserPage}
+                      onRowsPerPageChange={handleChangeUserRowsPerPage}
+                    />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </TableContainer>
           </Box>
         </Container>
       </NavBar>
