@@ -223,7 +223,7 @@ const Profile = () => {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        <Avatar alt={name.toUpperCase()} src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} sx={{ width: 100, height: 100, marginBottom: 4 }} />
+                        <Avatar  src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} sx={{ width: 100, height: 100, marginBottom: 4 }} />
                         <Button
                             component="label"
                             variant="contained"
