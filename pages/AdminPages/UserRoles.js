@@ -27,6 +27,14 @@ import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { set } from "react-hook-form";
+import { v4 as uuidv4 } from 'uuid';
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -106,17 +114,29 @@ export default function UserRoles() {
   const [admins, setAdmins] = React.useState([]);
   const [otherUsers, setOtherUsers] = React.useState([]);
   const [userSearchTerm, setUserSearchTerm] = React.useState(" ");
+  const [assignUser, setAssignUser] = React.useState(null);
+
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = (user) => {
+    setOpen(true);
+    setAssignUser(user);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   React.useEffect(() => {
     const response = axios
       .get("http://localhost:3001/api/user/getAll")
       .then((res) => {
-        console.log(res.data);
+        
         const filteredAdmins = res.data.filter((user) => user.type === "Admin");
         let others = res.data.filter((user) => user.type != "Admin");
         setOtherUsers(others);
         setAdmins(filteredAdmins);
-        console.log(admins);
       })
       .catch((error) => {
         console.log(error);
@@ -172,6 +192,22 @@ export default function UserRoles() {
           console.log(error);
         });
     }
+  };
+
+  const sendEmail = () => {
+    handleClose();
+    const response = axios
+      .post("http://localhost:3001/api/user-util/assign-admin", {
+        userId: uuidv4(),
+        email: assignUser.email,
+        name: assignUser.name,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -359,7 +395,7 @@ export default function UserRoles() {
                         />
                       </TableCell>
                       <TableCell>
-                        <Button variant="contained" color="primary">
+                        <Button variant="contained" color="primary" onClick={()=>handleClickOpen(user)}>
                           Assign
                         </Button>
                       </TableCell>
@@ -381,6 +417,23 @@ export default function UserRoles() {
               </Table>
             </TableContainer>
           </Box>
+          <React.Fragment>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogTitle>Assign Admin</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to assign this user as an admin?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button type="submit" color="warning" variant="contained" onClick={sendEmail}>Assign</Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
         </Container>
       </NavBar>
     </div>

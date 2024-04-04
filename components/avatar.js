@@ -50,16 +50,19 @@ export default function AvatarIcon() {
   };
 
   const viewProfile = () => {
-    if(userType === "writer"){
+    if(userType === "Admin"){
       window.location.href = "/AdminPages/profile";
-    }else{
+    }else if (userType === "Reader"){
       window.location.href = "/reader/profile";
+    }else if (userType === "Writer"){
+      window.location.href = "/writer/profile";
     }
-    
   };
 
   const viewSettings = () => {
-    window.location.href = "/AdminPages/settings";
+    if(userType === "Admin"){
+      window.location.href = "/AdminPages/settings";
+    }
   };
 
   return (
