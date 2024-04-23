@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { styled, useTheme } from '@mui/material/styles';
@@ -121,11 +121,14 @@ export default function Navbar({children}) {
     const router = useRouter();
 const [selectedIndex, setSelectedIndex] = useState(0);
 
+let openValue = false;
+
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
   const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'ApproveArticles','DeactivateWriters', 'UserRoles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
+  openValue = localStorage.getItem('open') === 'true' ? true : false;
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
 
@@ -135,7 +138,6 @@ const handleListItemClick = (event, index) => {
 
 
   const theme = useTheme();
-  let openValue = false;
   if (typeof window !== 'undefined') {
     openValue = localStorage.getItem('open') === 'true' ? true : false;
   }

@@ -80,6 +80,7 @@ export default function Register() {
       }
     }).catch((error) => {
       console.log(error.response.status);
+      console.log(error.message);
       if (error.response.status == 409) {
         alert("User already exists");
       } else {

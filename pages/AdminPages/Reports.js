@@ -1,4 +1,5 @@
 import {
+  Button,
   Container,
   Divider,
   Grid,
@@ -31,7 +32,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import Iconbutton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { set } from "react-hook-form";
 
 const columns = [
   { id: "name", label: "User Name", minWidth: 135 },
@@ -294,15 +294,16 @@ function Reports() {
         popularityResData = res.data;
         popularityData = [];
         for (let user of popularityResData) {
-          popularityData.push({ label: user.userData[0].name, value: user.count });
+          popularityData.push({
+            label: user.userData[0].name,
+            value: user.count,
+          });
         }
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
-
-  //console.log(writers);
 
   const handleWriterSearch = (event) => {
     if (event.target.value === "") {
@@ -368,6 +369,7 @@ function Reports() {
     }
   };
 
+
   return (
     <>
       <Navbar>
@@ -379,144 +381,162 @@ function Reports() {
               aria-label="basic tabs example"
             >
               <Tab label="Graphs" {...a11yProps(0)} />
-              <Tab label="Tabular Reports" {...a11yProps(1)} />
+              <Tab label="User Details" {...a11yProps(1)} />
               <Tab label="Article details" {...a11yProps(2)} />
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            <Container maxWidth="lg" >
-            <Typography variant="h4" marginBottom={1} color={"primary.dark"}>
-                Graphs
-              </Typography>
+            <Container maxWidth="lg">
+              <Box display={"flex"}>
+                <Typography
+                  variant="h4"
+                  marginBottom={1}
+                  color={"primary.dark"}
+                >
+                  Graphs
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  style={{
+                    marginBottom: "8px",
+                    marginLeft: "auto",
+                    paddingY: "8px",
+                  }}
+                >
+                  Download
+                </Button>
+                
+              </Box>
               <Divider />
               <Box sx={{ display: "flex" }}>
-              <Paper
-                elevation={3}
-                style={{
-                  width: 300,
-                  padding: "20px",
-                  marginTop: "20px",
-                  marginRight: "40px",
-                }}
-              >
-                <Typography variant="h5" gutterBottom fontStyle={"bold"}>
-                  User Details
-                </Typography>
-                <BarChart
-                  width={250}
-                  height={300}
-                  series={[
-                    {
-                      data: usersCount,
-                      label: "No of users",
-                      id: "pvId",
-                      yAxisKey: "leftAxisId",
-                    },
-                  ]}
-                  xAxis={[{ data: xLabelsUser, scaleType: "band" }]}
-                  yAxis={[{ id: "leftAxisId" }]}
-                />
-              </Paper>
-              <Paper
-                elevation={3}
-                style={{
-                  width: 600,
-                  padding: "20px",
-                  marginTop: "20px",
-                  marginRight: "40px",
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Domain Popularity
-                </Typography>
-                <BarChart
-                  width={600}
-                  height={300}
-                  series={[
-                    {
-                      data: domData,
-                      label: "No of Articles",
-                      id: "pvId",
-                      yAxisKey: "leftAxisId",
-                      color: "#3f51b5",
-                    },
-                  ]}
-                  xAxis={[
-                    {
-                      data: xLabelsDomain,
-                      scaleType: "band",
-                      tickLabelStyle: {
-                        angle: 20,
-                        textAnchor: "start",
-                        fontSize: 12,
-                        fontWeight: 400,
+                <Paper
+                  elevation={3}
+                  style={{
+                    width: 300,
+                    padding: "20px",
+                    marginTop: "20px",
+                    marginRight: "40px",
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom fontStyle={"bold"}>
+                    User Details
+                  </Typography>
+                  <BarChart
+                    width={250}
+                    height={300}
+                    series={[
+                      {
+                        data: usersCount,
+                        label: "No of users",
+                        id: "pvId",
+                        yAxisKey: "leftAxisId",
                       },
-                    },
-                  ]}
-                  yAxis={[{ id: "leftAxisId" }]}
-                />
-              </Paper>
+                    ]}
+                    xAxis={[{ data: xLabelsUser, scaleType: "band" }]}
+                    yAxis={[{ id: "leftAxisId" }]}
+                  />
+                </Paper>
+                <Paper
+                  elevation={3}
+                  style={{
+                    width: 600,
+                    padding: "20px",
+                    marginTop: "20px",
+                    marginRight: "40px",
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom>
+                    Domain Popularity
+                  </Typography>
+                  <BarChart
+                    width={600}
+                    height={300}
+                    series={[
+                      {
+                        data: domData,
+                        label: "No of Articles",
+                        id: "pvId",
+                        yAxisKey: "leftAxisId",
+                        color: "#3f51b5",
+                      },
+                    ]}
+                    xAxis={[
+                      {
+                        data: xLabelsDomain,
+                        scaleType: "band",
+                        tickLabelStyle: {
+                          angle: 20,
+                          textAnchor: "start",
+                          fontSize: 12,
+                          fontWeight: 400,
+                        },
+                      },
+                    ]}
+                    yAxis={[{ id: "leftAxisId" }]}
+                  />
+                </Paper>
               </Box>
               <Box sx={{ display: "flex", marginTop: "30px" }}>
-              <Paper
-                elevation={3}
-                style={{ height: 350, width: 500, padding: "20px" }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Writer Popularity
-                </Typography>
-                <PieChart
-                  series={[
-                    {
-                      data: popularityData,
-                      innerRadius: 50,
-                      outerRadius: 95,
-                      paddingAngle: 4,
-                      cornerRadius: 8,
-                      startAngle: -180,
-                      endAngle: 180,
-                      cx: 125,
-                      cy: 130,
-                    },
-                  ]}
-                  // slotProps={{ legend: { hidden: true } }}
-                />
-              </Paper>
-
-              <Paper
-                elevation={3}
-                style={{
-                  height: 350,
-                  width: 450,
-                  padding: "20px",
-                  marginLeft: "40px",
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  New Users for {month[new Date().getMonth()]}
-                </Typography>
-                <Box
-                  display={"flex"}
-                  sx={{ justifyContent: "space-evenly", marginTop: "50px" }}
+                <Paper
+                  elevation={3}
+                  style={{ height: 350, width: 500, padding: "20px" }}
                 >
-                  <Paper elevation={3} sx={{ borderRadius: "10px" }}>
-                    <Box padding={2} color={"primary.main"}>
-                      <Typography variant="h2">
-                        {writerCountForMonth}
-                      </Typography>
-                      <Typography variant="h4">Writers</Typography>
-                    </Box>
-                  </Paper>
-                  <Paper elevation={3} sx={{ borderRadius: "10px" }}>
-                    <Box padding={2} color={"primary.dark"}>
-                      <Typography variant="h2">
-                        {readerCountForMonth}
-                      </Typography>
-                      <Typography variant="h4">Readers</Typography>
-                    </Box>
-                  </Paper>
-                </Box>
-              </Paper>
+                  <Typography variant="h5" gutterBottom>
+                    Writer Popularity
+                  </Typography>
+                  <PieChart
+                    series={[
+                      {
+                        data: popularityData,
+                        innerRadius: 50,
+                        outerRadius: 95,
+                        paddingAngle: 4,
+                        cornerRadius: 8,
+                        startAngle: -180,
+                        endAngle: 180,
+                        cx: 125,
+                        cy: 130,
+                      },
+                    ]}
+                    // slotProps={{ legend: { hidden: true } }}
+                  />
+                </Paper>
+
+                <Paper
+                  elevation={3}
+                  style={{
+                    height: 350,
+                    width: 450,
+                    padding: "20px",
+                    marginLeft: "40px",
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom>
+                    New Users for {month[new Date().getMonth()]}
+                  </Typography>
+                  <Box
+                    display={"flex"}
+                    sx={{ justifyContent: "space-evenly", marginTop: "50px" }}
+                  >
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.main"}>
+                        <Typography variant="h2">
+                          {writerCountForMonth}
+                        </Typography>
+                        <Typography variant="h4">Writers</Typography>
+                      </Box>
+                    </Paper>
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.dark"}>
+                        <Typography variant="h2">
+                          {readerCountForMonth}
+                        </Typography>
+                        <Typography variant="h4">Readers</Typography>
+                      </Box>
+                    </Paper>
+                  </Box>
+                </Paper>
               </Box>
             </Container>
           </CustomTabPanel>
