@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import NavBar from "../components/Navbar";
 import axios from "axios";
 import { set } from "react-hook-form";
+import urls from "../enums/url";
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -103,7 +104,7 @@ export default function ViewContactUsMessages() {
   let [messages, setMessages] = React.useState([]);
   const [isLoading, setLoading] = React.useState(true);
   React.useEffect(() => {
-      const response = axios.get('http://localhost:3001/api/contactMessage/getAll',{
+      const response = axios.get(`${urls.BASE_URL_CONTACT_MESSAGE}getAll`,{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         }

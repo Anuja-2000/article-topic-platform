@@ -19,6 +19,7 @@ import axios from "axios";
 import NavBar from "../components/Navbar";
 import { set } from "react-hook-form";
 import Divider from "@mui/material/Divider";
+import urls from "../enums/url";
 
 
 
@@ -29,7 +30,7 @@ export default function ViewContactUsMessage() {
    const id = router.query.id;
 
   React.useEffect(() => {
-    const response = axios.get("http://localhost:3001/api/contactMessage/get",{
+    const response = axios.get(`${urls.BASE_URL_CONTACT_MESSAGE}get`,{
       params: {
         "id":id
       }
@@ -58,7 +59,7 @@ export default function ViewContactUsMessage() {
   var message = response.message;
 
   const updateReplied = async (value) => {
-    const reponse = await axios.put("http://localhost:3001/api/contactMessage/update", {
+    const reponse = await axios.put(`${urls.BASE_URL_CONTACT_MESSAGE}update`, {
       "messageId": messageId,
       "email": email,
       "name" : name,

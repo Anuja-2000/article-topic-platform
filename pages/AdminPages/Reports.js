@@ -32,6 +32,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Iconbutton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import urls from "../../enums/url";
 
 const columns = [
   { id: "name", label: "User Name", minWidth: 135 },
@@ -156,7 +157,7 @@ function Reports() {
 
     const result = axios
       .get(
-        `http://localhost:3001/api/readerArticle/articles-by-domain/${newValue}`
+        `${urls.BASE_URL_ARTICLE}articles-by-domain/${newValue}`
       )
       .then((res) => {
         console.log(res.data);
@@ -181,7 +182,7 @@ function Reports() {
   React.useEffect(() => {
     //get users count
     const userRes = axios
-      .get("http://localhost:3001/api/user-util/count")
+      .get(`${urls.BASE_URL_USER_UTILITY}count`)
       .then((res) => {
         setUsersCount(res.data);
       })
@@ -191,10 +192,9 @@ function Reports() {
 
     //get all writers details
     const writerRes = axios
-      .get("http://localhost:3001/api/user-util/get-writers")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
       .then((res) => {
         setWriters(res.data);
-        //setWriterNames(writers.map((writer) => writer.name));
       })
       .catch((error) => {
         console.log(error);
@@ -202,7 +202,7 @@ function Reports() {
 
     //get all readers details
     const readerRes = axios
-      .get("http://localhost:3001/api/user-util/get-readers")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-readers`)
       .then((res) => {
         setReaders(res.data);
       })
@@ -210,26 +210,8 @@ function Reports() {
         console.log(error);
       });
 
-    //get all topic domains
-    /*const domainss = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {
-            let temp = [];
-            let dummyData = [];
-            res.data.forEach((domain) => {
-                temp.push(domain.topicDomainName);
-            });
-            //xLabelsDomain = temp;
-            let x = temp.length;
-            while (x > 0) {
-                dummyData.push(Math.floor(Math.random() * 100) + 1);
-                x--;
-            }
-            domData = dummyData;
-        }).catch((error) => {
-            console.log(error);
-        });*/
-
     const domains = axios
-      .get("http://localhost:3001/api/readerArticle/count-by-domain")
+      .get(`${urls.BASE_URL_ARTICLE}count-by-domain`)
       .then((res) => {
         let temp = [];
         let countData = [];
@@ -249,7 +231,7 @@ function Reports() {
 
     //get writer count for the month
     const writersCountForMonth = axios
-      .get("http://localhost:3001/api/user-util/get-user-count-by-month/Writer")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Writer`)
       .then((res) => {
         let count = res.data;
         if (count < 10) {
@@ -263,7 +245,7 @@ function Reports() {
 
     //get reader count for the month
     const readersCountForMonth = axios
-      .get("http://localhost:3001/api/user-util/get-user-count-by-month/Reader")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Reader`)
       .then((res) => {
         let count = res.data;
         if (count < 10) {
@@ -278,7 +260,7 @@ function Reports() {
     //get all articles by domain
     const articleData = axios
       .get(
-        `http://localhost:3001/api/readerArticle/articles-by-domain/${domain}`
+        `${urls.BASE_URL_ARTICLE}articles-by-domain/${domain}`
       )
       .then((res) => {
         setArticles(res.data);
@@ -289,7 +271,7 @@ function Reports() {
 
     //get writer popularity on number of articles they have written
     const writerPopularityData = axios
-      .get(`http://localhost:3001/api/readerArticle/writer-popularity`)
+      .get(`${urls.BASE_URL_ARTICLE}writer-popularity`)
       .then((res) => {
         popularityResData = res.data;
         popularityData = [];
@@ -309,7 +291,7 @@ function Reports() {
     if (event.target.value === "") {
       setWriterSearchTerm(event.target.value);
       const writerRes = axios
-        .get("http://localhost:3001/api/user-util/get-writers")
+        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
         .then((res) => {
           setWriters(res.data);
           return;
@@ -323,7 +305,7 @@ function Reports() {
       let type = "Writer";
       const nameResult = axios
         .get(
-          `http://localhost:3001/api/user-util/get-user-by-name/${type}/${writerSearchTerm}`
+          `${urls.BASE_URL_USER_UTILITY}get-user-by-name/${type}/${writerSearchTerm}`
         )
         .then((res) => {
           setWriters(res.data);
@@ -332,20 +314,13 @@ function Reports() {
           console.log(error);
         });
     }
-    // setSearchTerm(event.target.value);
-    // console.log(searchTerm);
-    // const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${searchTerm}`).then((res) => {
-    //     setWriters(res.data);
-    // }).catch((error) => {
-    //     console.log(error);
-    // });
   };
 
   const handleReaderSearch = (event) => {
     if (event.target.value === "") {
       setReaderSearchTerm(event.target.value);
       const result = axios
-        .get("http://localhost:3001/api/user-util/get-writers")
+        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
         .then((res) => {
           setWriters(res.data);
           return;
@@ -358,7 +333,7 @@ function Reports() {
       let type = "Reader";
       const nameResult = axios
         .get(
-          `http://localhost:3001/api/user-util/get-user-by-name/${type}/${readerSearchTerm}`
+          `${urls.BASE_URL_USER_UTILITY}get-user-by-name/${type}/${readerSearchTerm}`
         )
         .then((res) => {
           setReaders(res.data);

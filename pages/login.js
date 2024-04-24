@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import setAuthtoken from "./api/auth/axios-set-token";
 import HomeNav from "../pages/HomePage/homeNav";
+import urls from "../enums/url";
 
 export default function Login() {
 
@@ -34,7 +35,7 @@ export default function Login() {
 
   };
   async function sendLoginReqest() {
-    const response = axios.post("http://localhost:3001/api/auth/login", {
+    const response = axios.post(`${urls.BASE_URL_AUTH}login`, {
       username: values.username,
       email: values.email,
       password: values.password,
@@ -88,14 +89,9 @@ export default function Login() {
             Welcome back! please enter your details.
           </p>
         </div>
-        {/*form*/}
+
         <form className={styles.form} onSubmit={handleSubmit}>
-          {/* <input
-              className={styles.email}
-              type="email"
-              name="email"
-              placeholder="Email"
-            /> */}
+
             <TextField
             onChange={handleChange}
             name="username"
@@ -115,15 +111,6 @@ export default function Login() {
             margin="dense"
           />
 
-          {/* <div className={styles.input2}>
-            <input
-              className={styles.password}
-              type="Password"
-              name="Password"
-              placeholder="Password"
-              value={values.password}
-            /> */}
-
             <TextField
               onChange={handleChange}
               name="password"
@@ -134,11 +121,10 @@ export default function Login() {
             />
 
           <div className={styles.raw}>
-            {/* <div className={styles.keep}>keep me log in</div> */}
+
             <div className={styles.forgot}><Link href={"/forgotPassword/forgotPassword"}>Forgot Password?</Link></div>
           </div>
-          {/* </div> */}
-          {/*login buttons */}
+
           <div className={styles.raw2}>
             <div className="inputbutton">
               <button type="submit" className={styles.submit}>
@@ -154,7 +140,6 @@ export default function Login() {
           </div>
         </form>
 
-        {/*bottom*/}
         <p className={styles.footer}>
           Don&apos;t have an account?
           <Link href={"/register"} className={styles.last}>

@@ -4,6 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import HomeNav from "../pages/HomePage/homeNav";
+import urls from "../enums/url";
 
 export default function ContactUs() {
   const [values, setValues] = useState({
@@ -63,7 +64,7 @@ export default function ContactUs() {
     const messageId = "#message-" + uuidv4();
     const timestamp = new Date();
 
-    const response = axios.post("http://localhost:3001/api/contactMessage/add", {
+    const response = axios.post(`${urls.BASE_URL_CONTACT_MESSAGE}add`, {
       messageId: messageId,
       name: values.name,
       email: values.email,
