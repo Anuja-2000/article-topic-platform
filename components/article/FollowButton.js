@@ -1,16 +1,93 @@
-// FollowButton.js
-import { useState } from 'react';
-//import { followWriter, unfollowWriter } from '../utils/api';
+import { useState,useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
-const FollowButton = ({ writerId, isFollowing }) => {
+const FollowButton = ({ writerId}) => {
+  const [readerId, setReaderId] = useState("");
+  const [isFollowing, setIsFollowing] = useState(false);
+  const followId = "follow" + uuidv4();
+
+  useEffect(()=>{
+    const readerId = localStorage.getItem("userId");
+    setReaderId(readerId);
+  },[]);
+
+  const getFollow = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/follow/get`, {
+        method: 'GET',
+        body: JSON.stringify(
+          {
+            readerId: readerId,
+            writerId:writerId,
+          }
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if(response > 0){
+        setIsFollowing(true);
+      }else{
+        setIsFollowing(false);
+      }
+      // Handle response as needed
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const [following, setFollowing] = useState(isFollowing);
+
+const followWriter = async () => {
+  try {
+    const response = await fetch(`http://localhost:3001/api/follow/save`, {
+      method: 'POST',
+      body: JSON.stringify(
+        {
+          id:followId,
+          readerId: readerId,
+          writerId:writerId,
+        }
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    // Handle response as needed
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
+const unfollowWriter = async() => {
+  try {
+    const response = await fetch(`http://localhost:3001/api/follow/delete`, {
+      method: 'DELETE',
+      body: JSON.stringify(
+        {
+          readerId: readerId,
+          writerId:writerId,
+        }
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(response);
+    // Handle response as needed
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+  
+};
 
   const handleFollowToggle = async () => {
     if (following) {
-      //await unfollowWriter(writerId);
+      await unfollowWriter();
       setFollowing(false);
     } else {
-      //await followWriter(writerId);
+      await followWriter();
       setFollowing(true);
     }
   };
