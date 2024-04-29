@@ -156,9 +156,7 @@ function Reports() {
     setDomain(newValue);
 
     const result = axios
-      .get(
-        `${urls.BASE_URL_ARTICLE}articles-by-domain/${newValue}`
-      )
+      .get(`${urls.BASE_URL_ARTICLE}articles-by-domain/${newValue}`)
       .then((res) => {
         console.log(res.data);
         setArticles(res.data);
@@ -259,9 +257,7 @@ function Reports() {
 
     //get all articles by domain
     const articleData = axios
-      .get(
-        `${urls.BASE_URL_ARTICLE}articles-by-domain/${domain}`
-      )
+      .get(`${urls.BASE_URL_ARTICLE}articles-by-domain/${domain}`)
       .then((res) => {
         setArticles(res.data);
       })
@@ -344,7 +340,6 @@ function Reports() {
     }
   };
 
-
   return (
     <>
       <Navbar>
@@ -381,7 +376,6 @@ function Reports() {
                 >
                   Download
                 </Button>
-                
               </Box>
               <Divider />
               <Box sx={{ display: "flex" }}>
@@ -415,7 +409,7 @@ function Reports() {
                 <Paper
                   elevation={3}
                   style={{
-                    width: 600,
+                    width: 650,
                     padding: "20px",
                     marginTop: "20px",
                     marginRight: "40px",
@@ -425,7 +419,7 @@ function Reports() {
                     Domain Popularity
                   </Typography>
                   <BarChart
-                    width={600}
+                    width={650}
                     height={300}
                     series={[
                       {
@@ -474,7 +468,6 @@ function Reports() {
                         cy: 130,
                       },
                     ]}
-                    // slotProps={{ legend: { hidden: true } }}
                   />
                 </Paper>
 
@@ -578,14 +571,6 @@ function Reports() {
                               tabIndex={-1}
                               key={row.userId}
                             >
-                              {/* {columns.map((column) => {
-                                                            const value = row[column.id];
-                                                            return (
-                                                                <TableCell key={column.id} align={column.align}>
-                                                                    {typeof value === 'Date' ? column.format(value.toDateString()) : value}
-                                                                </TableCell>
-                                                            );
-                                                        })} */}
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
                               <TableCell>
@@ -664,14 +649,6 @@ function Reports() {
                               tabIndex={-1}
                               key={row.userId}
                             >
-                              {/* {columns.map((column) => {
-                                                            const value = row[column.id];
-                                                            return (
-                                                                <TableCell key={column.id} align={column.align}>
-                                                                    {typeof value === 'Date' ? column.format(value.toDateString()) : value}
-                                                                </TableCell>
-                                                            );
-                                                        })} */}
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
                               <TableCell>
@@ -769,14 +746,6 @@ function Reports() {
                                     tabIndex={-1}
                                     key={row.id}
                                   >
-                                    {/* {columns.map((column) => {
-                                                            const value = row[column.id];
-                                                            return (
-                                                                <TableCell key={column.id} align={column.align}>
-                                                                    {typeof value === 'Date' ? column.format(value.toDateString()) : value}
-                                                                </TableCell>
-                                                            );
-                                                        })} */}
                                     <TableCell>{row.title}</TableCell>
                                     <TableCell>
                                       {row.userData[0].name}

@@ -6,10 +6,6 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import FormControl from "@mui/material/FormControl";
 import HomeNav from "./HomePage/homeNav";
 import urls from "../enums/url";
 
@@ -57,9 +53,7 @@ export default function Register() {
 
   const submit = (event) => {
     event.preventDefault();
-    //console.log(values);
     if (validateForm()) {
-      //console.log("Form is valid");
       saveUser();
     }
   };
@@ -72,7 +66,6 @@ export default function Register() {
         userId: userId,
         email: values.email,
         name: values.username,
-        // type: values.usertype,
         type: "Reader",
         password: values.password,
       })
