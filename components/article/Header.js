@@ -1,9 +1,18 @@
 // components/article/Header.js
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import { Avatar, Typography, Box, Divider } from '@mui/material';
 import FollowButton from '../../components/article/FollowButton';
 
 const Header = ({ writerId,writer, date, time, title, profilePic }) => {
+  const [userId, setUserId] = useState("");
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if(userId!==null){
+      setUserId(userId);
+    }else{
+      setUserId("");
+    }
+  }, []);
   return (
     <>
       <Box display="flex" flexDirection="column" alignItems="flex-start" >
@@ -18,7 +27,7 @@ const Header = ({ writerId,writer, date, time, title, profilePic }) => {
             </Box>
           </Box>
           <Box display="flex"  alignItems="center" width="500px" justifyContent="right">
-           <FollowButton writerId={writerId}/>
+          {userId!=="" &&  <FollowButton writerId={writerId}/>}
           </Box>
         </Box>
         <Box >
