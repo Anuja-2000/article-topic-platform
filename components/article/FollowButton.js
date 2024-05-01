@@ -1,44 +1,40 @@
 import { useState,useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const FollowButton = ({ writerId}) => {
+const FollowButton = ({ writerId }) => {
   const [readerId, setReaderId] = useState("");
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [following, setFollowing] = useState(false);
   const followId = "follow" + uuidv4();
 
   useEffect(()=>{
     const readerId = localStorage.getItem("userId");
     setReaderId(readerId);
-  },[]);
-
-  const getFollow = async () => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/follow/get`, {
-        method: 'GET',
-        body: JSON.stringify(
-          {
+    const getFollow = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/follow/get`, {
+          method: 'POST',
+          body:JSON.stringify({
             readerId: readerId,
             writerId:writerId,
-          }
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if(response > 0){
-        setIsFollowing(true);
-      }else{
-        setIsFollowing(false);
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.status == 200) {  
+          setFollowing(true);
+        } 
+    
+        // Handle response as needed
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
-      // Handle response as needed
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+    };
+    getFollow();
+  },[writerId]);
 
-  const [following, setFollowing] = useState(isFollowing);
-
+console.log(following);
 const followWriter = async () => {
   try {
     const response = await fetch(`http://localhost:3001/api/follow/save`, {
