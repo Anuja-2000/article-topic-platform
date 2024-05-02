@@ -23,9 +23,6 @@ export default function WriterLogin() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // if (validateForm()) {
-    //   Submit the form data
-    // }
     console.log(values);
     sendLoginReqest();
   };
@@ -111,14 +108,6 @@ export default function WriterLogin() {
             margin="dense"
           />
 
-          {/* <div className={styles.input2}>
-            <input
-              className={styles.password}
-              type="Password"
-              name="Password"
-              placeholder="Password"
-              value={values.password}
-            /> */}
 
           <TextField
             onChange={handleChange}

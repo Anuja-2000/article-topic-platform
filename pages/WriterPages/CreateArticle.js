@@ -33,13 +33,13 @@ function CreateArticles() {
   }, []);
 
   const handleEditorChange = (value) => {
-    // Handle editor content changes
+    // Handling editor content changes
     console.log(value);
     setEditorValue(value);
   };
   return (
     <div>
-      <Navbar /> {/* Add WriterNavbar here */}
+      <Navbar /> {/* WriterNavbar here */}
       <div className="App" style={{ marginTop: "60px" }}>
         <Stack spacing={3}>
           <Stack direction="row" justifyContent="center" spacing={4}>
@@ -58,7 +58,7 @@ function CreateArticles() {
                   marginBottom: "30px",
                 }}
               >
-                Write Article
+                Write Article h
               </Typography>
               <Stack alignItems="center" direction="row" spacing={1}></Stack>
             </Stack>
