@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Style from '../../styles/changePassword.module.css';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -17,7 +18,7 @@ const RestButton = styled(Button)({
   width: '450px',
   height: '55px',
   borderRadius: '20px',
-  backgroundColor: '#060606',
+  backgroundColor: '#0080FE',
   fontSize: '25px',
   fontFamily: 'sans-serif',
 });
@@ -39,12 +40,13 @@ function ChangePassword() {
     reset,
   } = useForm({ mode: 'onChange' });
 
+  const router = useRouter();
   const password = watch('newPass', '');
   const confirmPassword = watch('confPass', '');
   const [showPassword, setShowPassword] = useState(false);
   const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
-
+  const userId = router.query.id;
   const handleSuccessAlertClose = () => {
     setOpenSuccessAlert(false);
   };
@@ -53,16 +55,21 @@ function ChangePassword() {
     setOpenErrorAlert(false);
   };
   const onSubmit = async (formData) => {
-    const { newPass, confPass, email } = formData;
+    const { newPass, confPass} = formData;
 
     if (newPass !== confPass) {
       return;
     }
+    console.log(userId);
+    const requestBody = {
+      userId: userId,
+      newPass: newPass
+    };
 
     try {
-      const response = await fetch(`/api/auth/reset-password`, {
-        method: 'POST',
-        body: JSON.stringify({ email }),
+      const response = await fetch(`http://localhost:3001/api/user/updatePassword`, {
+        method: 'PATCH',
+        body: JSON.stringify(requestBody),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -91,7 +98,7 @@ function ChangePassword() {
   return (
     <div className={Style.box}>
       <div className={Style.pic}>
-        <Image src="/../public/reset.jpg" width="700" height="500" alt="Reset Password" />
+        <Image src="/reset.jpg" width="700" height="500" alt="Reset Password" />
       </div>
       <div className={Style.box1}>
         <div className={Style.innerBox}>

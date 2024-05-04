@@ -10,7 +10,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
-
+import HomeNav from "./HomePage/homeNav";
 
 export default function Register() {
 
@@ -30,7 +30,7 @@ export default function Register() {
   };
 
   const validateForm = () => {
-    if (values.username == "" || values.email == "" || values.usertype == "" || values.password == "" || values.confirmPassword == "") {
+    if (values.username == "" || values.email == "" || values.password == "" || values.confirmPassword == "") {
       alert("All fields must be filled out");
       return false;
     } else if (values.password != values.confirmPassword) {
@@ -66,7 +66,7 @@ export default function Register() {
 
     const userId = values.username + "-" + uuidv4();
 
-    const response = axios.post("http://localhost:3001/api/user/signup", {
+    const response = axios.post("http://localhost:3001/api/auth/signup", {
       userId: userId,
       email: values.email,
       name: values.username,
@@ -91,6 +91,8 @@ export default function Register() {
   };
 
   return (
+    <>
+    <HomeNav />
     <LoginLayout>
 
       <Head>
@@ -184,5 +186,6 @@ export default function Register() {
         </p>
       </section>
     </LoginLayout>
+    </>
   )
 }
