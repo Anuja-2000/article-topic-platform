@@ -156,7 +156,7 @@ function Reports() {
     setDomain(newValue);
 
     const result = axios
-      .get(`${urls.BASE_URL_ARTICLE}articles-by-domain/${newValue}`)
+      .get(`${urls.BASE_URL_READER_ARTICLE}articles-by-domain/${newValue}`)
       .then((res) => {
         console.log(res.data);
         setArticles(res.data);
@@ -209,7 +209,7 @@ function Reports() {
       });
 
     const domains = axios
-      .get(`${urls.BASE_URL_ARTICLE}count-by-domain`)
+      .get(`${urls.BASE_URL_READER_ARTICLE}count-by-domain`)
       .then((res) => {
         let temp = [];
         let countData = [];
@@ -257,7 +257,7 @@ function Reports() {
 
     //get all articles by domain
     const articleData = axios
-      .get(`${urls.BASE_URL_ARTICLE}articles-by-domain/${domain}`)
+      .get(`${urls.BASE_URL_READER_ARTICLE}articles-by-domain/${domain}`)
       .then((res) => {
         setArticles(res.data);
       })
@@ -267,7 +267,7 @@ function Reports() {
 
     //get writer popularity on number of articles they have written
     const writerPopularityData = axios
-      .get(`${urls.BASE_URL_ARTICLE}writer-popularity`)
+      .get(`${urls.BASE_URL_READER_ARTICLE}writer-popularity`)
       .then((res) => {
         popularityResData = res.data;
         popularityData = [];
