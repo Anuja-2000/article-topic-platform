@@ -5,6 +5,10 @@ const nextConfig = {
   images: {
     domains: ["img.freepik.com"],
   },
+  experimental: {
+    // …
+    serverComponentsExternalPackages: ['@react-pdf/renderer'],
+  },
 };
 
 
