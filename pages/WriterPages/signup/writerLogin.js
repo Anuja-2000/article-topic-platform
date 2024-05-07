@@ -28,7 +28,7 @@ export default function WriterLogin() {
   };
   async function sendLoginReqest() {
     const response = axios
-      .post("http://localhost:3001/api/auth/login", {
+    .post("http://localhost:3001/api/user/login", {
         username: values.username,
         email: values.email,
         password: values.password,
