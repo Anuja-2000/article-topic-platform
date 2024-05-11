@@ -37,16 +37,9 @@ function SearchArticleBox({keyword}) {
               <Grid sx={{ flexGrow: 1 }}>
                 <Grid item xs={12}>
                   <Grid container justifyContent="center" spacing={3}>
-                        {/*articleData.map((article) => (
-                            <Grid key={item.articleId} article>
-                                 {<Link href={`/article?id=${item.id}`} passHref>
-                                    <ArticleCard {...article}  />
-                        </Link>}
-                    </Grid>
-                        ))*/}
                             {articleData.map((article) => (
-                               <Grid key={article.id} article style={{marginTop:'20px'}}>
-                                  <Link href={`/article/${article.id}`} passHref>
+                               <Grid key={article.articleId} article style={{marginTop:'20px'}}>
+                                  <Link href={`/article/${article.articleId}`} passHref>
                                         <ArticleCard {...article}  />
                                   </Link>
                                 </Grid>

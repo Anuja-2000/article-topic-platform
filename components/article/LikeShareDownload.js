@@ -28,6 +28,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
 
   useEffect(() => {
     setLikes(initialLikes);
+    console.log(initialLikes);
   }, [initialLikes]);
   const handleShareClick = async () => {
     try {
@@ -54,7 +55,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
   
     const updateData = async () => {
       try {
-        await fetch(`http://localhost:3001/api/readerArticle/update`, {
+        await fetch(`http://localhost:3001/api/readerArticle/updateLikes`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json', // Adjust the content type if needed
@@ -80,7 +81,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
 
     // Update the number of likes based on the current state
     setLikes((prevLikes) => (isLiked ? prevLikes - 1 : prevLikes + 1));
-    
+    console.log(prevLikes);
   };
 
   const handleMoreVertIconClick = () => {
