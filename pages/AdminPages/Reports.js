@@ -1,4 +1,5 @@
 import {
+  Button,
   Container,
   Divider,
   Grid,
@@ -31,7 +32,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Iconbutton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { set } from "react-hook-form";
+import urls from "../../enums/url";
 
 const columns = [
   { id: "name", label: "User Name", minWidth: 135 },
@@ -155,9 +156,7 @@ function Reports() {
     setDomain(newValue);
 
     const result = axios
-      .get(
-        `http://localhost:3001/api/readerArticle/articles-by-domain/${newValue}`
-      )
+      .get(`${urls.BASE_URL_ARTICLE}articles-by-domain/${newValue}`)
       .then((res) => {
         console.log(res.data);
         setArticles(res.data);
@@ -181,7 +180,7 @@ function Reports() {
   React.useEffect(() => {
     //get users count
     const userRes = axios
-      .get("http://localhost:3001/api/user-util/count")
+      .get(`${urls.BASE_URL_USER_UTILITY}count`)
       .then((res) => {
         setUsersCount(res.data);
       })
@@ -191,10 +190,9 @@ function Reports() {
 
     //get all writers details
     const writerRes = axios
-      .get("http://localhost:3001/api/user-util/get-writers")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
       .then((res) => {
         setWriters(res.data);
-        //setWriterNames(writers.map((writer) => writer.name));
       })
       .catch((error) => {
         console.log(error);
@@ -202,7 +200,7 @@ function Reports() {
 
     //get all readers details
     const readerRes = axios
-      .get("http://localhost:3001/api/user-util/get-readers")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-readers`)
       .then((res) => {
         setReaders(res.data);
       })
@@ -210,26 +208,8 @@ function Reports() {
         console.log(error);
       });
 
-    //get all topic domains
-    /*const domainss = axios.get('http://localhost:3001/api/topicDomains/get').then((res) => {
-            let temp = [];
-            let dummyData = [];
-            res.data.forEach((domain) => {
-                temp.push(domain.topicDomainName);
-            });
-            //xLabelsDomain = temp;
-            let x = temp.length;
-            while (x > 0) {
-                dummyData.push(Math.floor(Math.random() * 100) + 1);
-                x--;
-            }
-            domData = dummyData;
-        }).catch((error) => {
-            console.log(error);
-        });*/
-
     const domains = axios
-      .get("http://localhost:3001/api/readerArticle/count-by-domain")
+      .get(`${urls.BASE_URL_ARTICLE}count-by-domain`)
       .then((res) => {
         let temp = [];
         let countData = [];
@@ -249,7 +229,7 @@ function Reports() {
 
     //get writer count for the month
     const writersCountForMonth = axios
-      .get("http://localhost:3001/api/user-util/get-user-count-by-month/Writer")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Writer`)
       .then((res) => {
         let count = res.data;
         if (count < 10) {
@@ -263,7 +243,7 @@ function Reports() {
 
     //get reader count for the month
     const readersCountForMonth = axios
-      .get("http://localhost:3001/api/user-util/get-user-count-by-month/Reader")
+      .get(`${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Reader`)
       .then((res) => {
         let count = res.data;
         if (count < 10) {
@@ -277,9 +257,7 @@ function Reports() {
 
     //get all articles by domain
     const articleData = axios
-      .get(
-        `http://localhost:3001/api/readerArticle/articles-by-domain/${domain}`
-      )
+      .get(`${urls.BASE_URL_ARTICLE}articles-by-domain/${domain}`)
       .then((res) => {
         setArticles(res.data);
       })
@@ -289,12 +267,15 @@ function Reports() {
 
     //get writer popularity on number of articles they have written
     const writerPopularityData = axios
-      .get(`http://localhost:3001/api/readerArticle/writer-popularity`)
+      .get(`${urls.BASE_URL_ARTICLE}writer-popularity`)
       .then((res) => {
         popularityResData = res.data;
         popularityData = [];
         for (let user of popularityResData) {
-          popularityData.push({ label: user.userData[0].name, value: user.count });
+          popularityData.push({
+            label: user.userData[0].name,
+            value: user.count,
+          });
         }
       })
       .catch((error) => {
@@ -302,13 +283,11 @@ function Reports() {
       });
   }, []);
 
-  //console.log(writers);
-
   const handleWriterSearch = (event) => {
     if (event.target.value === "") {
       setWriterSearchTerm(event.target.value);
       const writerRes = axios
-        .get("http://localhost:3001/api/user-util/get-writers")
+        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
         .then((res) => {
           setWriters(res.data);
           return;
@@ -322,7 +301,7 @@ function Reports() {
       let type = "Writer";
       const nameResult = axios
         .get(
-          `http://localhost:3001/api/user-util/get-user-by-name/${type}/${writerSearchTerm}`
+          `${urls.BASE_URL_USER_UTILITY}get-user-by-name/${type}/${writerSearchTerm}`
         )
         .then((res) => {
           setWriters(res.data);
@@ -331,20 +310,13 @@ function Reports() {
           console.log(error);
         });
     }
-    // setSearchTerm(event.target.value);
-    // console.log(searchTerm);
-    // const nameResult = axios.get(`http://localhost:3001/api/user/get-user-by-name/${type}/${searchTerm}`).then((res) => {
-    //     setWriters(res.data);
-    // }).catch((error) => {
-    //     console.log(error);
-    // });
   };
 
   const handleReaderSearch = (event) => {
     if (event.target.value === "") {
       setReaderSearchTerm(event.target.value);
       const result = axios
-        .get("http://localhost:3001/api/user-util/get-writers")
+        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
         .then((res) => {
           setWriters(res.data);
           return;
@@ -357,7 +329,7 @@ function Reports() {
       let type = "Reader";
       const nameResult = axios
         .get(
-          `http://localhost:3001/api/user-util/get-user-by-name/${type}/${readerSearchTerm}`
+          `${urls.BASE_URL_USER_UTILITY}get-user-by-name/${type}/${readerSearchTerm}`
         )
         .then((res) => {
           setReaders(res.data);
@@ -379,144 +351,160 @@ function Reports() {
               aria-label="basic tabs example"
             >
               <Tab label="Graphs" {...a11yProps(0)} />
-              <Tab label="Tabular Reports" {...a11yProps(1)} />
+              <Tab label="User Details" {...a11yProps(1)} />
               <Tab label="Article details" {...a11yProps(2)} />
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            <Container maxWidth="lg" >
-            <Typography variant="h4" marginBottom={1} color={"primary.dark"}>
-                Graphs
-              </Typography>
+            <Container maxWidth="lg">
+              <Box display={"flex"}>
+                <Typography
+                  variant="h4"
+                  marginBottom={1}
+                  color={"primary.dark"}
+                >
+                  Graphs
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  style={{
+                    marginBottom: "8px",
+                    marginLeft: "auto",
+                    paddingY: "8px",
+                  }}
+                >
+                  Download
+                </Button>
+              </Box>
               <Divider />
               <Box sx={{ display: "flex" }}>
-              <Paper
-                elevation={3}
-                style={{
-                  width: 300,
-                  padding: "20px",
-                  marginTop: "20px",
-                  marginRight: "40px",
-                }}
-              >
-                <Typography variant="h5" gutterBottom fontStyle={"bold"}>
-                  User Details
-                </Typography>
-                <BarChart
-                  width={250}
-                  height={300}
-                  series={[
-                    {
-                      data: usersCount,
-                      label: "No of users",
-                      id: "pvId",
-                      yAxisKey: "leftAxisId",
-                    },
-                  ]}
-                  xAxis={[{ data: xLabelsUser, scaleType: "band" }]}
-                  yAxis={[{ id: "leftAxisId" }]}
-                />
-              </Paper>
-              <Paper
-                elevation={3}
-                style={{
-                  width: 600,
-                  padding: "20px",
-                  marginTop: "20px",
-                  marginRight: "40px",
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Domain Popularity
-                </Typography>
-                <BarChart
-                  width={600}
-                  height={300}
-                  series={[
-                    {
-                      data: domData,
-                      label: "No of Articles",
-                      id: "pvId",
-                      yAxisKey: "leftAxisId",
-                      color: "#3f51b5",
-                    },
-                  ]}
-                  xAxis={[
-                    {
-                      data: xLabelsDomain,
-                      scaleType: "band",
-                      tickLabelStyle: {
-                        angle: 20,
-                        textAnchor: "start",
-                        fontSize: 12,
-                        fontWeight: 400,
+                <Paper
+                  elevation={3}
+                  style={{
+                    width: 300,
+                    padding: "20px",
+                    marginTop: "20px",
+                    marginRight: "40px",
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom fontStyle={"bold"}>
+                    User Details
+                  </Typography>
+                  <BarChart
+                    width={250}
+                    height={300}
+                    series={[
+                      {
+                        data: usersCount,
+                        label: "No of users",
+                        id: "pvId",
+                        yAxisKey: "leftAxisId",
                       },
-                    },
-                  ]}
-                  yAxis={[{ id: "leftAxisId" }]}
-                />
-              </Paper>
+                    ]}
+                    xAxis={[{ data: xLabelsUser, scaleType: "band" }]}
+                    yAxis={[{ id: "leftAxisId" }]}
+                  />
+                </Paper>
+                <Paper
+                  elevation={3}
+                  style={{
+                    width: 650,
+                    padding: "20px",
+                    marginTop: "20px",
+                    marginRight: "40px",
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom>
+                    Domain Popularity
+                  </Typography>
+                  <BarChart
+                    width={650}
+                    height={300}
+                    series={[
+                      {
+                        data: domData,
+                        label: "No of Articles",
+                        id: "pvId",
+                        yAxisKey: "leftAxisId",
+                        color: "#3f51b5",
+                      },
+                    ]}
+                    xAxis={[
+                      {
+                        data: xLabelsDomain,
+                        scaleType: "band",
+                        tickLabelStyle: {
+                          angle: 20,
+                          textAnchor: "start",
+                          fontSize: 12,
+                          fontWeight: 400,
+                        },
+                      },
+                    ]}
+                    yAxis={[{ id: "leftAxisId" }]}
+                  />
+                </Paper>
               </Box>
               <Box sx={{ display: "flex", marginTop: "30px" }}>
-              <Paper
-                elevation={3}
-                style={{ height: 350, width: 500, padding: "20px" }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Writer Popularity
-                </Typography>
-                <PieChart
-                  series={[
-                    {
-                      data: popularityData,
-                      innerRadius: 50,
-                      outerRadius: 95,
-                      paddingAngle: 4,
-                      cornerRadius: 8,
-                      startAngle: -180,
-                      endAngle: 180,
-                      cx: 125,
-                      cy: 130,
-                    },
-                  ]}
-                  // slotProps={{ legend: { hidden: true } }}
-                />
-              </Paper>
-
-              <Paper
-                elevation={3}
-                style={{
-                  height: 350,
-                  width: 450,
-                  padding: "20px",
-                  marginLeft: "40px",
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  New Users for {month[new Date().getMonth()]}
-                </Typography>
-                <Box
-                  display={"flex"}
-                  sx={{ justifyContent: "space-evenly", marginTop: "50px" }}
+                <Paper
+                  elevation={3}
+                  style={{ height: 350, width: 500, padding: "20px" }}
                 >
-                  <Paper elevation={3} sx={{ borderRadius: "10px" }}>
-                    <Box padding={2} color={"primary.main"}>
-                      <Typography variant="h2">
-                        {writerCountForMonth}
-                      </Typography>
-                      <Typography variant="h4">Writers</Typography>
-                    </Box>
-                  </Paper>
-                  <Paper elevation={3} sx={{ borderRadius: "10px" }}>
-                    <Box padding={2} color={"primary.dark"}>
-                      <Typography variant="h2">
-                        {readerCountForMonth}
-                      </Typography>
-                      <Typography variant="h4">Readers</Typography>
-                    </Box>
-                  </Paper>
-                </Box>
-              </Paper>
+                  <Typography variant="h5" gutterBottom>
+                    Writer Popularity
+                  </Typography>
+                  <PieChart
+                    series={[
+                      {
+                        data: popularityData,
+                        innerRadius: 50,
+                        outerRadius: 95,
+                        paddingAngle: 4,
+                        cornerRadius: 8,
+                        startAngle: -180,
+                        endAngle: 180,
+                        cx: 125,
+                        cy: 130,
+                      },
+                    ]}
+                  />
+                </Paper>
+
+                <Paper
+                  elevation={3}
+                  style={{
+                    height: 350,
+                    width: 450,
+                    padding: "20px",
+                    marginLeft: "40px",
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom>
+                    New Users for {month[new Date().getMonth()]}
+                  </Typography>
+                  <Box
+                    display={"flex"}
+                    sx={{ justifyContent: "space-evenly", marginTop: "50px" }}
+                  >
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.main"}>
+                        <Typography variant="h2">
+                          {writerCountForMonth}
+                        </Typography>
+                        <Typography variant="h4">Writers</Typography>
+                      </Box>
+                    </Paper>
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.dark"}>
+                        <Typography variant="h2">
+                          {readerCountForMonth}
+                        </Typography>
+                        <Typography variant="h4">Readers</Typography>
+                      </Box>
+                    </Paper>
+                  </Box>
+                </Paper>
               </Box>
             </Container>
           </CustomTabPanel>
@@ -583,14 +571,6 @@ function Reports() {
                               tabIndex={-1}
                               key={row.userId}
                             >
-                              {/* {columns.map((column) => {
-                                                            const value = row[column.id];
-                                                            return (
-                                                                <TableCell key={column.id} align={column.align}>
-                                                                    {typeof value === 'Date' ? column.format(value.toDateString()) : value}
-                                                                </TableCell>
-                                                            );
-                                                        })} */}
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
                               <TableCell>
@@ -669,14 +649,6 @@ function Reports() {
                               tabIndex={-1}
                               key={row.userId}
                             >
-                              {/* {columns.map((column) => {
-                                                            const value = row[column.id];
-                                                            return (
-                                                                <TableCell key={column.id} align={column.align}>
-                                                                    {typeof value === 'Date' ? column.format(value.toDateString()) : value}
-                                                                </TableCell>
-                                                            );
-                                                        })} */}
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
                               <TableCell>
@@ -774,14 +746,6 @@ function Reports() {
                                     tabIndex={-1}
                                     key={row.id}
                                   >
-                                    {/* {columns.map((column) => {
-                                                            const value = row[column.id];
-                                                            return (
-                                                                <TableCell key={column.id} align={column.align}>
-                                                                    {typeof value === 'Date' ? column.format(value.toDateString()) : value}
-                                                                </TableCell>
-                                                            );
-                                                        })} */}
                                     <TableCell>{row.title}</TableCell>
                                     <TableCell>
                                       {row.userData[0].name}

@@ -11,6 +11,7 @@ import Paper from '@mui/material/Paper';
 import Chip from '@mui/material/Chip';
 import { Container, Typography } from '@mui/material';
 import axios from 'axios';
+import urls from '../../enums/url';
 
 function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
@@ -41,7 +42,7 @@ export default function ApproveArticles() {
         setPage(0);
     };
     React.useEffect(() => {
-        const data = axios.get('http://localhost:3001/api/readerArticle/getAll').then((response) => {
+        const data = axios.get(`${urls.BASE_URL_ARTICLE}getAll`).then((response) => {
             setArticles(response.data);
         }).catch((error) => {
             console.log(error);

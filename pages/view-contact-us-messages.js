@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import NavBar from "../components/Navbar";
 import axios from "axios";
 import { set } from "react-hook-form";
+import urls from "../enums/url";
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -97,26 +98,26 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-
-
 export default function ViewContactUsMessages() {
   let [messages, setMessages] = React.useState([]);
   const [isLoading, setLoading] = React.useState(true);
   React.useEffect(() => {
-      const response = axios.get('http://localhost:3001/api/contactMessage/getAll',{
+    const response = axios
+      .get(`${urls.BASE_URL_CONTACT_MESSAGE}getAll`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        }
-      }).then((res) => {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
         console.log(res.data);
         const messages = res.data;
         setMessages(messages);
         setLoading(false);
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.log(error);
       });
-  },[]);
-
+  }, []);
 
   let msgs = sort_by_key(messages, "savedAt");
   const rows = msgs;
@@ -133,13 +134,14 @@ export default function ViewContactUsMessages() {
 
   const router = useRouter();
   function getMessage(data) {
-    router.push({
-      pathname: '/view-contact-us-message',
-      query: { id: data.messageId }
-    },
+    router.push(
+      {
+        pathname: "/view-contact-us-message",
+        query: { id: data.messageId },
+      },
       undefined,
       { shallow: true }
-    )
+    );
   }
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -158,83 +160,87 @@ export default function ViewContactUsMessages() {
   return (
     <div>
       <NavBar>
-      <Container maxWidth="lg" >
-        <TableContainer component={Paper} elevation={4}>
-          <Table sx={{ minWidth: 650 }} stickyHeader aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="center" colSpan={3}>
-                  <Typography variant="h5" color="primary">
-                    View Messages
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableHead sx={{backgroundColor:'primary.main'}}>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Message</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(rowsPerPage > 0
-                ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                : rows
-              ).map((row) => (
-                <TableRow
-                  key={row.messageId}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>
-                    <Button variant="contained" onClick={() => getMessage(row)}>
-
-                      {/* <Link
-                      href={{
-                        pathname: "viewContactUsMessage",
-                        query: {
-                          itemMessageId: row.messageId,
-                          itemEmail: row.email,
-                        },
-                      }}
-                    > */}
-                      View Message
-                      {/* </Link> */}
-                    </Button>
+        <Container maxWidth="lg">
+          <TableContainer component={Paper} elevation={4}>
+            <Table
+              sx={{ minWidth: 650 }}
+              stickyHeader
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>
+                    <Typography variant="h5" color="primary">
+                      View Messages
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              ))}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 53 * emptyRows }}>
-                  <TableCell colSpan={6} />
+              </TableHead>
+              <TableHead sx={{ backgroundColor: "primary.main" }}>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Message</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={3}
-                  count={rows.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  SelectProps={{
-                    inputProps: {
-                      "aria-label": "rows per page",
-                    },
-                    native: true,
-                  }}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  ActionsComponent={TablePaginationActions}
-                />
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </TableContainer>
-      </Container>
+              </TableHead>
+              <TableBody>
+                {(rowsPerPage > 0
+                  ? rows.slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
+                  : rows
+                ).map((row) => (
+                  <TableRow
+                    key={row.messageId}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>{row.email}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        onClick={() => getMessage(row)}
+                      >
+                        View Message
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[
+                      5,
+                      10,
+                      25,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan={3}
+                    count={rows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    }}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                  />
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
+        </Container>
       </NavBar>
     </div>
   );
