@@ -35,6 +35,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { set } from "react-hook-form";
 import { v4 as uuidv4 } from 'uuid';
+import urls from "../../enums/url";
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -130,7 +131,7 @@ export default function UserRoles() {
 
   React.useEffect(() => {
     const response = axios
-      .get("http://localhost:3001/api/user/getAll")
+      .get(`${urls.BASE_URL_USER}getAll`)
       .then((res) => {
         
         const filteredAdmins = res.data.filter((user) => user.type === "Admin");
@@ -171,7 +172,7 @@ export default function UserRoles() {
     if (event.target.value === "") {
       setUserSearchTerm(event.target.value);
       const result = axios
-        .get("http://localhost:3001/api/user-util/get-others")
+        .get(`${urls.BASE_URL_USER_UTILITY}get-others`)
         .then((res) => {
           setOtherUsers(res.data);
           console.log(res.data);
@@ -184,7 +185,7 @@ export default function UserRoles() {
       setUserSearchTerm(event.target.value);
       let type = "Reader";
       const nameResult = axios
-        .get(`http://localhost:3001/api/user-util/search/${userSearchTerm}`)
+        .get(`${urls.BASE_URL_USER_UTILITY}search/${userSearchTerm}`)
         .then((res) => {
           setOtherUsers(res.data);
         })
@@ -197,7 +198,7 @@ export default function UserRoles() {
   const sendEmail = () => {
     handleClose();
     const response = axios
-      .post("http://localhost:3001/api/user-util/assign-admin", {
+      .post(`${urls.BASE_URL_USER_UTILITY}assign-admin`, {
         userId: uuidv4(),
         email: assignUser.email,
         name: assignUser.name,

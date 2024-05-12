@@ -3,7 +3,11 @@ const nextConfig = {
   reactStrictMode: true, 
   transpilePackages: ['@mui/x-charts'],
   images: {
-    domains: ["img.freepik.com"],
+    domains: ["img.freepik.com","picsum.photos"],
+  },
+  experimental: {
+    // …
+    serverComponentsExternalPackages: ['@react-pdf/renderer'],
   },
 };
 

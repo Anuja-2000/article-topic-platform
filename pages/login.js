@@ -7,14 +7,14 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import setAuthtoken from "./api/auth/axios-set-token";
 import HomeNav from "../pages/HomePage/homeNav";
+import urls from "../enums/url";
 
 export default function Login() {
-
-  const [values, setValues] = useState({ 
+  const [values, setValues] = useState({
     username: "",
     email: "",
-    password: "" 
-    });
+    password: "",
+  });
 
   const handleChange = (event) => {
     setValues({
@@ -23,107 +23,86 @@ export default function Login() {
     });
   };
 
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    // if (validateForm()) {
-    //   Submit the form data
-    // }
     console.log(values);
     sendLoginReqest();
-
   };
   async function sendLoginReqest() {
-    const response = axios.post("http://localhost:3001/api/auth/login", {
-      username: values.username,
-      email: values.email,
-      password: values.password,
-    }).then((response) => {
-      if (response.status == 200) {
-        const token = response.data.data.token;
-        const type = response.data.data.type;
-        const username = response.data.data.username;
-        const email = response.data.data.email;
-        const userId = response.data.data.userId;
-        const imgUrl = response.data.data.imgUrl;
-        localStorage.setItem("token", token);
-        localStorage.setItem("type", type);
-        localStorage.setItem("username", username);
-        localStorage.setItem("email", email);
-        localStorage.setItem("userId", userId);
-        localStorage.setItem("imgUrl", imgUrl);
-        setAuthtoken(token);
-        if(type == "Admin"){
-          window.location.href = "/AdminPages/Dashboard";
-        }else if (type == "Reader"){
-          window.location.href = "/searchArticle/search";
-        }else if (type == "Writer"){
-          window.location.href = "/WriterPages/Dashboard";
+    const response = axios
+      .post(`${urls.BASE_URL_AUTH}login`, {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      })
+      .then((response) => {
+        if (response.status == 200) {
+          const token = response.data.data.token;
+          const type = response.data.data.type;
+          const username = response.data.data.username;
+          const email = response.data.data.email;
+          const userId = response.data.data.userId;
+          const imgUrl = response.data.data.imgUrl;
+          localStorage.setItem("token", token);
+          localStorage.setItem("type", type);
+          localStorage.setItem("username", username);
+          localStorage.setItem("email", email);
+          localStorage.setItem("userId", userId);
+          localStorage.setItem("imgUrl", imgUrl);
+          setAuthtoken(token);
+          if (type == "Admin") {
+            window.location.href = "/AdminPages/Dashboard";
+          } else if (type == "Reader") {
+            window.location.href = "/searchArticle/search";
+          } else if (type == "Writer") {
+            window.location.href = "/WriterPages/Dashboard";
+          }
         }
-      }
-     
-    }).catch((error) => {
-      console.log(error);
-      if (error.response.status == 404) {
-        alert("User not found! Please register first.");
-      }else{
-        alert("Invalid Login");
-      }
-      
-    });
-    console.log(response.data.data.userId);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.response.status == 404) {
+          alert("User not found! Please register first.");
+        } else {
+          alert("Invalid Login");
+        }
+      });
   }
 
   return (
-  <>
-  
-    <HomeNav />  
-    <LoginLayout>    
-      <Head>
-        <title>Login</title>
-      </Head>
-      <section className={styles.section}>
-        <div className={styles.title}>
-          <h1 className={styles.title1}>Login</h1>
-          <p className={styles.word}>
-            Welcome back! please enter your details.
-          </p>
-        </div>
-        {/*form*/}
-        <form className={styles.form} onSubmit={handleSubmit}>
-          {/* <input
-              className={styles.email}
-              type="email"
-              name="email"
-              placeholder="Email"
-            /> */}
-            <TextField
-            onChange={handleChange}
-            name="username"
-            label="User Name"
-            type="text"
-            variant="outlined"
-            required
-            margin="dense"
-          />
-          <TextField
-            onChange={handleChange}
-            name="email"
-            label="Email"
-            type="email"
-            variant="outlined"
-            required
-            margin="dense"
-          />
+    <>
+      <HomeNav />
+      <LoginLayout>
+        <Head>
+          <title>Login</title>
+        </Head>
+        <section className={styles.section}>
+          <div className={styles.title}>
+            <h1 className={styles.title1}>Login</h1>
+            <p className={styles.word}>
+              Welcome back! please enter your details.
+            </p>
+          </div>
 
-          {/* <div className={styles.input2}>
-            <input
-              className={styles.password}
-              type="Password"
-              name="Password"
-              placeholder="Password"
-              value={values.password}
-            /> */}
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <TextField
+              onChange={handleChange}
+              name="username"
+              label="User Name"
+              type="text"
+              variant="outlined"
+              required
+              margin="dense"
+            />
+            <TextField
+              onChange={handleChange}
+              name="email"
+              label="Email"
+              type="email"
+              variant="outlined"
+              required
+              margin="dense"
+            />
 
             <TextField
               onChange={handleChange}
@@ -134,36 +113,37 @@ export default function Login() {
               margin="dense"
             />
 
-          <div className={styles.raw}>
-            {/* <div className={styles.keep}>keep me log in</div> */}
-            <div className={styles.forgot}><Link href={"/forgotPassword/forgotPassword"}>Forgot Password?</Link></div>
-          </div>
-          {/* </div> */}
-          {/*login buttons */}
-          <div className={styles.raw2}>
-            <div className="inputbutton">
-              <button type="submit" className={styles.submit}>
-                Log in
-              </button>
+            <div className={styles.raw}>
+              <div className={styles.forgot}>
+                <Link href={"/forgotPassword/forgotPassword"}>
+                  Forgot Password?
+                </Link>
+              </div>
             </div>
-            <div className={styles.or}>OR</div>
-            <div className={styles.inputbutton2}>
-              <button type="submit" className={styles.submit2}>
-                Log in with Google
-              </button>
-            </div>
-          </div>
-        </form>
 
-        {/*bottom*/}
-        <p className={styles.footer}>
-          Don&apos;t have an account?
-          <Link href={"/register"} className={styles.last}>
-            Sign Up
-          </Link>
-        </p>
-      </section>
-    </LoginLayout>
-  </>
+            <div className={styles.raw2}>
+              <div className="inputbutton">
+                <button type="submit" className={styles.submit}>
+                  Log in
+                </button>
+              </div>
+              <div className={styles.or}>OR</div>
+              <div className={styles.inputbutton2}>
+                <button type="submit" className={styles.submit2}>
+                  Log in with Google
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <p className={styles.footer}>
+            Don&apos;t have an account?
+            <Link href={"/register"} className={styles.last}>
+              Sign Up
+            </Link>
+          </p>
+        </section>
+      </LoginLayout>
+    </>
   );
 }
