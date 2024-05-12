@@ -1,20 +1,36 @@
 // pages/article/[article].js
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Container, Button, Typography, Divider, Box } from '@mui/material';  // Updated import
+import { Container, Button, Typography, Box, Stack } from '@mui/material';  // Updated import
 import ArticleBody from '../../../components/article/ArticleBody';
 import styles from '../../../styles/article.module.css';
 import Navbar from '../../../components/Navbar';
 import Image from 'next/image';
 import url from '../../../enums/url';
 import axios from 'axios';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const reviewArticlePage = () => {
   const router = useRouter();
   const [articleData, setArticleData] = useState([]);
   const articleId = router.query.article ?? null;
 
-  
+  const [approveOpen, setApproveOpen] = React.useState(false);
+
+  const handleApproveOpen = () => {
+    setApproveOpen(true);
+  };
+
+  const handleApproveClose = () => {
+    setApproveOpen(false);
+  };
+
+  const updateArticle = async () => {
+  };
   useEffect(() => {
     const fetchData = async () => {
       if (!articleId) return;
@@ -52,8 +68,28 @@ const reviewArticlePage = () => {
         </div>
         <ArticleBody content={articleData.content} className={styles.content} />
         <Box display="flex" justifyContent="end">
-        <Button varient="contained" color="success">Approve</Button>
+        <Stack direction="row" spacing={2}>
+        <Button varient="outlined" sx={{backgroundColor:"green", color:"white", ":hover":{color:"green"}}} onClick={handleApproveOpen}>Approve</Button>
+        <Button varient="outlined" sx={{backgroundColor:"red", color:"white", ":hover":{color:"red"}}}>Reject</Button>
+        </Stack>
         </Box>
+        <React.Fragment>
+      <Dialog
+        open={approveOpen}
+        onClose={handleApproveClose}
+      >
+        <DialogTitle>Approve Article</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to approve this article to publish?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleApproveClose}>Cancel</Button>
+          <Button type="submit" color="success" variant="contained" onClick={updateArticle}>Approve</Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
     </Container>
     </Navbar>
   );
