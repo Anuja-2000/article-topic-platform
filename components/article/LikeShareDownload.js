@@ -14,7 +14,7 @@ import ReportDialog from './reportDialog';
 
 
 
-const LikeShareDownload = ({ articleTitle, initialLikes}) => {
+const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) => {
  
   const router = useRouter();
   const { article } = router.query;
@@ -84,7 +84,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
     setIsMoreOptionsOpen(!isMoreOptionsOpen);
   };
 
-  const handleReportAuthorClick = () => {
+  const handleReportArticleClick = () => {
     setIsReportDialogOpen(true);
     setIsMoreOptionsOpen(false); // Close MoreOptionsCard
   };
@@ -114,9 +114,9 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
         </IconButton>
       </Box>
 
-      {isMoreOptionsOpen && <MoreOptionsCard onReportAuthorClick={handleReportAuthorClick} />}
+      {isMoreOptionsOpen && <MoreOptionsCard onReportArticleClick={handleReportArticleClick} />}
 
-      <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} />
+      <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} writerId={writerId} articleId={articleId} />
    
       {/*isShareClicked && (
         <Head>

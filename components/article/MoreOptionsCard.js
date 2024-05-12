@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Button, Card, CardContent, Typography } from '@mui/material';
 import ReportDialog from './reportDialog';
 
-const MoreOptionsCard = ({ onReportAuthorClick }) => {
+const MoreOptionsCard = ({ onReportArticleClick }) => {
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
 
-  const handleReportAuthorButtonClick = () => {
+  const handleReportArticleButtonClick = () => {
     setIsReportDialogOpen(true);
     // Close MoreOptionsCard
-    onReportAuthorClick();
+    onReportArticleClick();
   };
 
   return (
@@ -16,10 +16,10 @@ const MoreOptionsCard = ({ onReportAuthorClick }) => {
       <CardContent>
         <Typography variant="h5">Options</Typography>
         <div>
-          <Button onClick={handleReportAuthorButtonClick}>Report Author</Button>
+          <Button onClick={handleReportArticleButtonClick}>Report Article</Button>
         </div>
         <div>
-          <Button>Report Article</Button>
+          <Button>Report Author</Button>
         </div>
       </CardContent>
       <ReportDialog isOpen={isReportDialogOpen} onClose={() => setIsReportDialogOpen(false)} />
