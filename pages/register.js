@@ -59,7 +59,7 @@ export default function Register() {
   };
 
   const saveUser = async () => {
-    const userId = values.username + "-" + uuidv4();
+    const userId =  uuidv4();
 
     const response = axios
       .post(`${urls.BASE_URL_AUTH}signup`, {

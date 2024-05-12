@@ -104,7 +104,16 @@ function Dashboard({ }) {
           console.log(error);
         });
 
-      setUserName(localStorage.getItem('username'));
+      const userId = localStorage.getItem('userId');
+      let displayName = '';
+
+      axios.get(`http://localhost:3001/api/user/${userId}`).then((res) => {
+        displayName = res.data.displayName;
+        displayName = displayName.split(' ')[0];
+        setUserName(displayName);
+      }).catch((error) => {
+        console.log(error);
+      });
 
       setLoading(false);
     }

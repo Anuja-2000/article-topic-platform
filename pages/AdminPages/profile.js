@@ -23,12 +23,18 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function Profile() {
+
   const [name, setName] = useState(" ");
   const [displayName, setDisplayName] = useState(" ");
   const [email, setEmail] = useState(" ");
   const [imgFile, setImgFile] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
   const [disabled, setDisabled] = useState(true);
+  const [whatChanged, setWhatChanged] = useState({
+    displayName:false,
+    imgFile:false
+  });
+  const [initialDisplayName, setInitialDisplayName] = useState(" ");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +42,7 @@ export default function Profile() {
         const userId = localStorage.getItem("userId");
         const res = await axios.get(`${urls.BASE_URL_USER}${userId}`);
         setDisplayName(res.data.displayName);
+        setInitialDisplayName(res.data.displayName);
 
         const name = localStorage.getItem("username");
         const email = localStorage.getItem("email");
@@ -51,25 +58,48 @@ export default function Profile() {
       }
     };
     fetchData();
-  });
+  },[]);
 
   const handleChange = (event) => {
     setImgFile(event.target.files?.[0]);
     setDisabled(false);
+    setWhatChanged({...whatChanged, imgFile:true});
   };
 
   const handleChangeName = (event) => {
-    setDisplayName({
-      ...displayName,
-      [event.target.name]: event.target.value,
-    });
+    setDisplayName(event.target.value);
     setDisabled(false);
-    if (event.target.value == "") {
+    setWhatChanged({...whatChanged, displayName:true});
+    if (event.target.value === initialDisplayName) {
       setDisabled(true);
     }
   };
 
   let base64String = "";
+
+  const handleSubmit = async () => {
+    if (whatChanged.displayName) {
+      updateDisplayName();
+    }
+    if (whatChanged.imgFile) {
+      sendFileToServer();
+    }
+    setDisabled(true);
+  };
+
+  const updateDisplayName = async () => {
+    await axios
+      .patch(`${urls.BASE_URL_USER}updateName`, {
+        userId: localStorage.getItem("userId"),
+        name: displayName,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const sendFileToServer = async () => {
     const formData = new FormData();
@@ -185,7 +215,7 @@ export default function Profile() {
                 id="submitBtn"
                 variant="contained"
                 sx={{ marginTop: 2 }}
-                onClick={sendFileToServer}
+                onClick={handleSubmit}
                 disabled={disabled}
               >
                 Submit

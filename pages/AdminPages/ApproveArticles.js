@@ -42,8 +42,8 @@ export default function ApproveArticles() {
         setPage(0);
     };
     React.useEffect(() => {
-        const data = axios.get(`${urls.BASE_URL_ARTICLE}getAll`).then((response) => {
-            setArticles(response.data);
+        const data = axios.get(`${urls.BASE_URL_ARTICLE}pending`).then((response) => {
+            setArticles(response.data.articles);
         }).catch((error) => {
             console.log(error);
         });
@@ -75,10 +75,10 @@ export default function ApproveArticles() {
                                             <TableCell component="th" scope="row">
                                                 {article.title}
                                             </TableCell>
-                                            <TableCell>{article.writer}</TableCell>
-                                            <TableCell>{new Date(article.date).toDateString()}</TableCell>
+                                            <TableCell>{article.userData[0].name}</TableCell>
+                                            <TableCell>{new Date(article.updatedAt).toDateString()}</TableCell>
                                             <TableCell align='center'>
-                                                <Chip label="View" component="a" href="#basic-chip" color='primary' clickable />
+                                                <Chip label="View" component="a" href={"reviewArticle/"+article.articleId} color='primary' clickable />
                                             </TableCell>
                                         </TableRow>
                                     ))}

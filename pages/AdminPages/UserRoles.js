@@ -116,9 +116,11 @@ export default function UserRoles() {
   const [otherUsers, setOtherUsers] = React.useState([]);
   const [userSearchTerm, setUserSearchTerm] = React.useState(" ");
   const [assignUser, setAssignUser] = React.useState(null);
+  const [otherUser, setOtherUser] = React.useState({name: "", email: ""});
 
 
   const [open, setOpen] = React.useState(false);
+  const [openOther, setOpenOther] = React.useState(false);
 
   const handleClickOpen = (user) => {
     setOpen(true);
@@ -127,6 +129,10 @@ export default function UserRoles() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleCloseOther = () => {
+    setOpenOther(false);
   };
 
   React.useEffect(() => {
@@ -211,13 +217,37 @@ export default function UserRoles() {
       });
   };
 
+  const sendEmailToNewUser = () => {
+    handleCloseOther();
+    const response = axios
+      .post(`${urls.BASE_URL_USER_UTILITY}assign-new-admin`, {
+        email: otherUser.email,
+        name: otherUser.name,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <div>
       <NavBar>
         <Container maxWidth="lg">
+          <Box sx={{display:"flex", justifyContent:"space-between"}}>
           <Typography variant="h4" marginBottom={2} color={"primary.dark"}>
             Assign User Roles
           </Typography>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={()=>{setOpenOther(true)}}            
+          >
+            Assign Admin for a new user
+          </Button>
+          </Box>
           <Divider />
           <Typography variant="h5" marginY={3} color={"primary.dark"}>
             Administators
@@ -432,6 +462,41 @@ export default function UserRoles() {
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit" color="warning" variant="contained" onClick={sendEmail}>Assign</Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+
+    <React.Fragment>
+      <Dialog
+        open={openOther}
+        onClose={handleCloseOther}
+      >
+        <DialogTitle>Assign Admin to a new user</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please provide detials of the new user
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            type="text"
+            fullWidth
+            onChange={(e)=>setOtherUser({...otherUser, name: e.target.value})}
+          />
+          <TextField
+            margin="dense"
+            id="email"
+            label="Email Address"
+            type="email"
+            fullWidth
+            onChange={(e)=>setOtherUser({...otherUser, email: e.target.value})}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseOther}>Cancel</Button>
+          <Button type="submit" color="warning" variant="contained" onClick={sendEmailToNewUser}>Assign</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
