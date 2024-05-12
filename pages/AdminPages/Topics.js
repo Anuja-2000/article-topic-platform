@@ -20,10 +20,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from "@mui/material/Select"
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from "@mui/material/InputLabel"
-
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -31,7 +29,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePaginationActions from '../../components/TablePaginationActions';
 import Paper from '@mui/material/Paper';
-
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
@@ -50,8 +47,6 @@ function Topics() {
   const [filterSelectedTopicDomain, setFilterSelectedTopicDomain] = useState('');
   const [filterSelectedKeyword, setFilterSelectedKeyword] = useState('');
   const [filteredTopicDomainKeywords, setFilteredTopicDomainKeywords] = useState([]);
-
-
 
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -120,8 +115,8 @@ function Topics() {
     fetchTopicDomains();
     fetchKeywords();
 
-
   }, []);
+
   // Fetch keywords associated with the selected topic domain
   useEffect(() => {
     const fetchKeywordsByTopicDomain = async () => {
@@ -154,9 +149,9 @@ function Topics() {
           console.log(response.data);
 
         } else {
-          // If no topic domain is selected
+          // If no keyword is selected
           const response = await axios.get(`http://localhost:3001/api/keywords/get`);
-          setFilteredTopicDomainKeywords(response.data); // Assuming response.data is the array of keywords
+          setFilteredTopicDomainKeywords(response.data); 
         }
       } catch (error) {
         console.error('Error fetching keywords by topic domain:', error);
@@ -166,9 +161,6 @@ function Topics() {
     fetchFilteredTopicDomainKeywords();
 
   }, [filterSelectedTopicDomain]);
-
-
-
 
 
   const handleChangePage = (event, newPage) => {
@@ -184,7 +176,6 @@ function Topics() {
   };
 
   const bothDropdownsSelected = filterSelectedTopicDomain !== '' && filterSelectedKeyword !== '';
-
 
   const handleFilterChange = async (event) => {
     const selectedValue = event.target.value;
@@ -257,21 +248,18 @@ function Topics() {
       const newItemWithIds = { ...newItem, topicDomainId: selectedTopicDomain, keywordId: selectedKeyword };
       console.log(newItemWithIds);
       //console.log(selectedTopicDomain);
-
       const response = await api.post("/addTopic", newItemWithIds);
 
       setData([...data, response.data]); // Update data array with the new item
       setNewItem({ keywordName: '', description: '' }); // Clear newItem state
-      setShowAddConfirmation(false); // Hide the confirmation dialog
-      setShowAddForm(false); // Close the add form
-      setSelectedTopicDomain(''); // Clear selectedTopicDomain state
+      setShowAddConfirmation(false); 
+      setShowAddForm(false); 
+      setSelectedTopicDomain(''); 
       setSelectedKeyword('');
       setTopicName('');
       setDescription('');
 
       setAddSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setAddSuccessfulAlertOpen(false);
       }, 20000);
@@ -291,8 +279,6 @@ function Topics() {
     setSelectedTopicDomain('');
     setSelectedKeyword('');
   };
-
-
 
 
   // Update the handleEditClick function to set the editingRow state
@@ -317,11 +303,7 @@ function Topics() {
       setShowEditConfirmation(false);
       const response = filterSelectedTopicDomain === 'all' ? await api.get("/get") : await api.get(`/get/${filterSelectedTopicDomain}`);
       setData(response.data);
-
-      // Show success message
       setEditSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setEditSuccessfulAlertOpen(false);
       }, 20000);
@@ -354,14 +336,10 @@ function Topics() {
 
       // Delete the topic
       await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
-
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.topicId !== deleteTargetId));
       setShowDeleteConfirmation(false);
-      // Show success message
       setDeleteSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setDeleteSuccessfulAlertOpen(false);
       }, 20000);

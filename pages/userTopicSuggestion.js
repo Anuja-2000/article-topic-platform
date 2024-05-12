@@ -93,7 +93,6 @@ const UserTopicSuggestion = () => {
         setCopiedTopic(topicName);
         setShowAlert(true);
 
-        // Automatically hide the alert after 3 seconds
         setTimeout(() => {
           setShowAlert(false);
           setCopiedTopic('');
@@ -103,9 +102,7 @@ const UserTopicSuggestion = () => {
   };
 
 
-
   const handleFeedback = () => {
-    
     // Pass searchResults to feedback page
     router.push({
       pathname: '/UserTopicSuggestionFeedback',
@@ -118,11 +115,7 @@ const UserTopicSuggestion = () => {
     <><div>
       <WriterNavbar />
     </div>
-
       <div className="App" style={{ marginTop: '120px', backgroundColor: '#669999', minHeight: '100vh', padding: '20px' }}>
-
-
-
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <div style={{ marginRight: '20px' }}>

@@ -1,7 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import { Card, CardContent, Typography, CardActions, Button, CardMedia, Avatar, Box, Chip } from '@mui/material';
 
-const ArticleCard = ({ title, date, writer, profilePic,image, tags }) => {
+
+const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
+  const [imgUrl, setImgUrl] = useState("");
+  const [writer, setWriter] = useState("");
+ 
+  useEffect(() => {
+     const fetchData = async () => {
+      if (!userId) return;
+      try {
+         const response = await fetch(`http://localhost:3001/api/user/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', 
+
+        },
+      });
+      const jsonData = await response.json();
+
+      console.log(jsonData);
+      const {name,displayName,imgUrl} = jsonData;
+      if (name != null) {
+          setWriter(name);
+          consloe.log(writer);
+      } else {
+          setWriter("!user");
+          consloe.log("!user");
+      }
+      setImgUrl(imgUrl);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, [userId]);
+  
+  
   return (
     <Card style={{ border: '1px solid #ddd', borderRadius: '8px', width: 300, height: '100%', backgroundColor: '#f5f5f5', margin: '10px' }}>
       <CardContent>
@@ -9,7 +45,7 @@ const ArticleCard = ({ title, date, writer, profilePic,image, tags }) => {
           <Box display="flex" alignItems="center">
             <Avatar
               alt={writer}
-              src={profilePic}
+              src={imgUrl}
               style={{ width: '30px', height: '30px', marginRight: '8px' }}
             />
             <Typography color="text.primary" variant="subtitle1" style={{ fontWeight: 600, fontSize: 12 }}>
@@ -17,7 +53,7 @@ const ArticleCard = ({ title, date, writer, profilePic,image, tags }) => {
             </Typography>
           </Box>
           <Typography color="text.secondary" variant="body2" style={{ fontSize: 10 }}>
-            {date}
+            {updatedAt}
           </Typography>
         </Box>
         <Typography variant="h6" component="div" style={{ marginTop: '12px', fontWeight: 700,fontSize: 20 }}>
@@ -29,7 +65,7 @@ const ArticleCard = ({ title, date, writer, profilePic,image, tags }) => {
           ))}
         </Box>
       </CardContent>
-      <CardMedia component="img" height="160" src={image} alt={title} style={{marginBottom: '0px',borderRadius: '4px' }} />
+      <CardMedia component="img" height="160" src={coverImage} alt={title} style={{marginBottom: '0px',borderRadius: '4px' }} />
     </Card>
   );
 };

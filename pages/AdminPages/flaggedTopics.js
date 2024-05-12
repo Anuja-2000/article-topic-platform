@@ -30,7 +30,6 @@ const FlaggedTopics = () => {
                 // Iterate over flagged topics and fetch details
                 const topicsWithDetails = await Promise.all(response.data.map(async (topic) => {
                     console.log(topic.topicId, topic.topicName); // Access topicId, topicName directly from flagged topics
-
                     // Fetch topic details by topicId
                     const topicResponse = await axios.get(`http://localhost:3001/api/topics/getByTopic/${topic.topicId}`);
                     const { keywordId, topicDomainId } = topicResponse.data; // Destructure response.data
@@ -83,11 +82,7 @@ const FlaggedTopics = () => {
             // Update the state to remove the deleted topic from the UI
             setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
             setShowDeleteConfirmation(false);
-
-            // Show success message
             setDeleteSuccessfulAlertOpen(true);
-
-            // Hide the message after 20 seconds
             setTimeout(() => {
                 setDeleteSuccessfulAlertOpen(false);
             }, 20000);
@@ -95,8 +90,6 @@ const FlaggedTopics = () => {
             console.error("Error deleting data:", error);
         }
     };
-
-
 
     const handleCloseDeleteSuccessfulAlertOpen = () => {
         setDeleteSuccessfulAlertOpen(false);
@@ -110,11 +103,7 @@ const FlaggedTopics = () => {
             // Update the state to remove the ignored topic from the UI
             setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
             setShowDeleteIgnoreConfirmation(false);
-
-            // Show success message
             setDeleteSuccessfulAlertOpen(true);
-
-            // Hide the message after 20 seconds
             setTimeout(() => {
                 setDeleteSuccessfulAlertOpen(false);
             }, 20000);

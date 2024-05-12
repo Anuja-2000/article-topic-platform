@@ -1,9 +1,3 @@
-/*import React from 'react';
-
-
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box } from '@mui/material';
-*/
-
 import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
@@ -21,24 +15,17 @@ import Select from "@mui/material/Select";
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from "@mui/material/InputLabel";
 import Paper from '@mui/material/Paper';
-
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePaginationActions from '../../components/TablePaginationActions';
-
-
-
-
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/keywords`
@@ -53,8 +40,6 @@ function Keywords() {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-
 
   const [editingRowId, setEditingRowId] = useState(null);
   const [keywordName, setKeywordName] = useState('');
@@ -107,9 +92,7 @@ function Keywords() {
 
     fetchData();
     fetchTopicDomains();
-
-    // Set 'all' as the default selected topic domain
-    setSelectedTopicDomain('all');
+    setSelectedTopicDomain('all'); // Set 'all' as the default selected topic domain
   }, []);
 
 
@@ -120,9 +103,10 @@ function Keywords() {
     try {
       if (selectedValue === 'all') {
         const responseData = await api.get("/get");
-        setData(responseData.data); // Show all data
+        setData(responseData.data); 
       } else {
         const response = await api.get(`/get/${selectedValue}`);
+        console.log(`${selectedValue}`);
         setData(response.data); // Show data filtered by the selected topic domain
       }
     } catch (error) {
@@ -157,17 +141,13 @@ function Keywords() {
     } else {
       setDescriptionError(false);
     }
-
     // Update newItem state with latest values
     setNewItem({ keywordName, description });
-
-    // Show the confirmation dialog
     setShowAddConfirmation(true);
   };
 
-
   const handleConfirmAdd = async () => {
-    console.log("handleConfirmAdd function called"); // Add this line for debugging
+    console.log("handleConfirmAdd function called");
     console.log(newItem);
     try {
       // Ensure that selectedTopicDomain is not empty
@@ -175,28 +155,19 @@ function Keywords() {
         console.error("No topic domain selected");
         return;
       }
-
       const newItemWithTopicDomainId = { ...newItem, topicDomainId: selectedTopicDomainAddForm };
       console.log(newItemWithTopicDomainId);
-      //console.log(selectedTopicDomain);
-
+      
       const response = await api.post("/add", newItemWithTopicDomainId);
-
-
-
-
       setData([...data, response.data]); // Update data array with the new item
-      setNewItem({ keywordName: '', description: '' }); // Clear newItem state
-      setShowAddConfirmation(false); // Hide the confirmation dialog
-      setShowAddForm(false); // Close the add form
+      setNewItem({ keywordName: '', description: '' });
+      setShowAddConfirmation(false); 
+      setShowAddForm(false);
 
-      setSelectedTopicDomainAddForm(''); // Clear selectedTopicDomain state
+      setSelectedTopicDomainAddForm(''); 
       setKeywordName('');
       setDescription('');
-
       setAddSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setAddSuccessfulAlertOpen(false);
       }, 20000);
@@ -206,16 +177,13 @@ function Keywords() {
     }
   };
 
-
   const handleCancelAdd = () => {
     setShowAddConfirmation(false);
     setNewItem({ keywordName: '', description: '' });
-    setShowAddForm(false); // Close the form after adding data
+    setShowAddForm(false); 
     setKeywordName('');
     setDescription('');
   };
-
-
 
 
   // Update the handleEditClick function to set the editingRow state
@@ -226,7 +194,7 @@ function Keywords() {
 
   const handleSaveClick = async (row) => {
     try {
-      setShowEditConfirmation(true); // Show confirmation dialog before making the API call
+      setShowEditConfirmation(true); 
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -240,11 +208,7 @@ function Keywords() {
       setShowEditConfirmation(false);
       const response = selectedTopicDomain === 'all' ? await api.get("/get") : await api.get(`/get/${selectedTopicDomain}`);
       setData(response.data);
-
-      // Show success message
       setEditSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setEditSuccessfulAlertOpen(false);
       }, 20000);
@@ -256,7 +220,6 @@ function Keywords() {
   const handleCancelSave = () => {
     setShowEditConfirmation(false);
     setEditingRowId(null); // Reset editing row ID
-    // Revert the changes made to the edited row using the editingRow state
     const updatedData = data.map(item => {
       if (item.keywordId === editingRow.keywordId) {
         return editingRow;
@@ -273,8 +236,6 @@ function Keywords() {
 
   const handleConfirmDelete = async () => {
     try {
-
-
       // Fetch topics associated with the keywords
       const topicsResponse = await axios.get(`http://localhost:3001/api/topics/${deleteTargetId}`);
       const topicsToDelete = topicsResponse.data;
@@ -293,10 +254,7 @@ function Keywords() {
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.keywordId !== deleteTargetId));
       setShowDeleteConfirmation(false);
-      // Show success message
       setDeleteSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setDeleteSuccessfulAlertOpen(false);
       }, 20000);
@@ -526,10 +484,6 @@ function Keywords() {
               Keyword edited successfully!
             </MuiAlert>
           </Snackbar>
-
-
-
-
         </div>
       </Navbar >
     </div >
