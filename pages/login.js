@@ -61,6 +61,7 @@ export default function Login() {
           window.location.href = "/WriterPages/Dashboard";
         }
       }
+     
     }).catch((error) => {
       console.log(error);
       if (error.response.status == 404) {
@@ -70,7 +71,7 @@ export default function Login() {
       }
       
     });
-
+    console.log(response.data.data.userId);
   }
 
   return (
