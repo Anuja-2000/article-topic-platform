@@ -109,6 +109,12 @@ const month = [
 ];
 
 function Reports() {
+  const [axiosConfig, setAxiosConfig] = React.useState({
+    headers: {
+      Authorization: "",
+    },
+  });
+
   const [writerPage, setWriterPage] = React.useState(0);
   const [rowsPerWriterPage, setRowsPerWriterPage] = React.useState(10);
 
@@ -177,10 +183,29 @@ function Reports() {
   const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
   const [writerPopularity, setWriterPopularity] = React.useState([]);
 
+
   React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setAxiosConfig({
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
+  }, []);
+
+  React.useEffect(() => {
+      if (axiosConfig.headers.Authorization !== '') {
+        // Call your fetchData function here
+        fetchData();
+      }
+  }, [axiosConfig]);
+
+  async function fetchData() {
     //get users count
     const userRes = axios
-      .get(`${urls.BASE_URL_USER_UTILITY}count`)
+      .get(`${urls.BASE_URL_USER_UTILITY}count`, axiosConfig)
       .then((res) => {
         setUsersCount(res.data);
       })
@@ -190,7 +215,7 @@ function Reports() {
 
     //get all writers details
     const writerRes = axios
-      .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
+      .get(`${urls.BASE_URL_USER_UTILITY}get-writers`, axiosConfig)
       .then((res) => {
         setWriters(res.data);
       })
@@ -200,7 +225,7 @@ function Reports() {
 
     //get all readers details
     const readerRes = axios
-      .get(`${urls.BASE_URL_USER_UTILITY}get-readers`)
+      .get(`${urls.BASE_URL_USER_UTILITY}get-readers`, axiosConfig)
       .then((res) => {
         setReaders(res.data);
       })
@@ -209,7 +234,7 @@ function Reports() {
       });
 
     const domains = axios
-      .get(`${urls.BASE_URL_READER_ARTICLE}count-by-domain`)
+      .get(`${urls.BASE_URL_READER_ARTICLE}count-by-domain`, axiosConfig)
       .then((res) => {
         let temp = [];
         let countData = [];
@@ -229,7 +254,10 @@ function Reports() {
 
     //get writer count for the month
     const writersCountForMonth = axios
-      .get(`${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Writer`)
+      .get(
+        `${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Writer`,
+        axiosConfig
+      )
       .then((res) => {
         let count = res.data;
         if (count < 10) {
@@ -243,7 +271,10 @@ function Reports() {
 
     //get reader count for the month
     const readersCountForMonth = axios
-      .get(`${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Reader`)
+      .get(
+        `${urls.BASE_URL_USER_UTILITY}get-user-count-by-month/Reader`,
+        axiosConfig
+      )
       .then((res) => {
         let count = res.data;
         if (count < 10) {
@@ -257,7 +288,7 @@ function Reports() {
 
     //get all articles by domain
     const articleData = axios
-      .get(`${urls.BASE_URL_READER_ARTICLE}articles-by-domain/${domain}`)
+      .get(`${urls.BASE_URL_READER_ARTICLE}articles-by-domain/${domain}`, axiosConfig)
       .then((res) => {
         setArticles(res.data);
       })
@@ -267,7 +298,7 @@ function Reports() {
 
     //get writer popularity on number of articles they have written
     const writerPopularityData = axios
-      .get(`${urls.BASE_URL_READER_ARTICLE}writer-popularity`)
+      .get(`${urls.BASE_URL_READER_ARTICLE}writer-popularity`, axiosConfig)
       .then((res) => {
         popularityResData = res.data;
         popularityData = [];
@@ -281,13 +312,13 @@ function Reports() {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }
 
   const handleWriterSearch = (event) => {
     if (event.target.value === "") {
       setWriterSearchTerm(event.target.value);
       const writerRes = axios
-        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
+        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`, axiosConfig)
         .then((res) => {
           setWriters(res.data);
           return;
@@ -316,7 +347,7 @@ function Reports() {
     if (event.target.value === "") {
       setReaderSearchTerm(event.target.value);
       const result = axios
-        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`)
+        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`,axiosConfig)
         .then((res) => {
           setWriters(res.data);
           return;
@@ -329,7 +360,8 @@ function Reports() {
       let type = "Reader";
       const nameResult = axios
         .get(
-          `${urls.BASE_URL_USER_UTILITY}get-user-by-name/${type}/${readerSearchTerm}`
+          `${urls.BASE_URL_USER_UTILITY}get-user-by-name/${type}/${readerSearchTerm}`,
+          axiosConfig
         )
         .then((res) => {
           setReaders(res.data);
@@ -754,7 +786,7 @@ function Reports() {
                                       {row.userData[0].email}
                                     </TableCell>
                                     <TableCell>
-                                      {new Date(row.date).toDateString()}
+                                      {new Date(row.updatedAt).toDateString()}
                                     </TableCell>
                                   </TableRow>
                                 );
