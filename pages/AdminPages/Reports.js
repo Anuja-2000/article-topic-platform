@@ -193,7 +193,7 @@ function Reports() {
         }
       });
     }
-  }, []);
+  },[]);
 
   React.useEffect(() => {
       if (axiosConfig.headers.Authorization !== '') {

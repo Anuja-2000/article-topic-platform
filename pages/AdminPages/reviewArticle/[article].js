@@ -20,6 +20,7 @@ const reviewArticlePage = () => {
   const articleId = router.query.article ?? null;
 
   const [approveOpen, setApproveOpen] = React.useState(false);
+  const [rejectOpen, setRejectOpen] = React.useState(false);
 
   const handleApproveOpen = () => {
     setApproveOpen(true);
@@ -29,7 +30,29 @@ const reviewArticlePage = () => {
     setApproveOpen(false);
   };
 
+  const handleRejectOpen = () => {
+    setRejectOpen(true);
+  };
+
+  const handleRejectClose = () => {
+    setRejectOpen(false);
+  };
+
   const updateArticle = async () => {
+    handleApproveClose();
+    try {
+      const response = await axios.patch(`${url.BASE_URL_ARTICLE}${articleId}`, {
+        status: 'approved',
+      }
+      );
+      if (response.data.success === true && response.status === 200) {
+        alert('Article approved successfully');
+        router.push('/AdminPages/ApproveArticles');
+      }
+      console.log(response);
+    } catch (error) {
+      console.error('Error updating article:', error);
+    }
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +93,7 @@ const reviewArticlePage = () => {
         <Box display="flex" justifyContent="end">
         <Stack direction="row" spacing={2}>
         <Button varient="outlined" sx={{backgroundColor:"green", color:"white", ":hover":{color:"green"}}} onClick={handleApproveOpen}>Approve</Button>
-        <Button varient="outlined" sx={{backgroundColor:"red", color:"white", ":hover":{color:"red"}}}>Reject</Button>
+        <Button varient="outlined" sx={{backgroundColor:"red", color:"white", ":hover":{color:"red"}}} onClick={handleRejectOpen}>Reject</Button>
         </Stack>
         </Box>
         <React.Fragment>
@@ -87,6 +110,24 @@ const reviewArticlePage = () => {
         <DialogActions>
           <Button onClick={handleApproveClose}>Cancel</Button>
           <Button type="submit" color="success" variant="contained" onClick={updateArticle}>Approve</Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+
+    <React.Fragment>
+      <Dialog
+        open={rejectOpen}
+        onClose={handleRejectClose}
+      >
+        <DialogTitle>Reject Article</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to Reject this article to publish?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRejectClose}>Cancel</Button>
+          <Button type="submit" color="error" variant="contained" onClick={handleRejectClose}>Reject</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
