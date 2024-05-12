@@ -25,7 +25,6 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
  
-
   useEffect(() => {
     setLikes(initialLikes);
     console.log(initialLikes);
@@ -51,37 +50,34 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
       setIsShareClicked(false);
     }
   };
-  useEffect(() => {
-  
-    const updateData = async () => {
-      try {
-        await fetch(`http://localhost:3001/api/readerArticle/updateLikes`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json', // Adjust the content type if needed
-          },
-          body: JSON.stringify({ 
-            id: article,
-            likes: likes 
-          }),
-          
-      });
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    updateData();
-  }, [likes]);
-   
-
+  const updateData = async (newLikes) => {
+    try {
+      await fetch(`http://localhost:3001/api/readerArticle/updateLikes`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json', // Adjust the content type if needed
+        },
+        body: JSON.stringify({ 
+          id: article,
+          likes: newLikes 
+        }),
+        
+    });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   
   const handleLikeClick = () => {
-    // Toggle the like state
+
+    const newLikes = isLiked ? likes - 1 : likes + 1;
+
     setIsLiked(!isLiked);
 
     // Update the number of likes based on the current state
-    setLikes((prevLikes) => (isLiked ? prevLikes - 1 : prevLikes + 1));
-    console.log(prevLikes);
+    setLikes(newLikes)
+    updateData(newLikes);
+    console.log(newLikes);
   };
 
   const handleMoreVertIconClick = () => {

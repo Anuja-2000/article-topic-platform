@@ -29,6 +29,7 @@ const ArticlePage = () => {
       });
         const jsonData = await response.json();
         setData(jsonData);
+        console.log(jsonData.likes);
 
       } catch (error) {
         console.error('Error fetching data:', error);
