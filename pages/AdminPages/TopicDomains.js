@@ -1,9 +1,3 @@
-/*import React from 'react';
-
-
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box } from '@mui/material';
-*/
-
 import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
@@ -18,7 +12,6 @@ import AddTopicDomainConfirmationDialog from '../../components/AddTopicDomainCon
 import AlertDialog from '../../components/AlertDialog';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -26,13 +19,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePaginationActions from '../../components/TablePaginationActions';
 import Paper from '@mui/material/Paper';
-
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-
-
-
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/topicDomains`
@@ -61,22 +50,20 @@ function TopicDomains() {
 
   const [showAddConfirmation, setShowAddConfirmation] = useState(false);
   const [newItem, setNewItem] = useState({ topicDomainName: '', description: '' });
-
-  // State variables to track whether the fields are empty
-  const [topicDomainNameError, setTopicDomainNameError] = useState(false);
+// State variables to track whether the fields are empty
+  const [topicDomainNameError, setTopicDomainNameError] = useState(false); 
   const [descriptionError, setDescriptionError] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
 
-  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = React.useState(false);
-  const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
-  const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
+  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
+  const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = useState(false);
+  const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await api.get("/get");
         setData(response.data);
-
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -84,7 +71,6 @@ function TopicDomains() {
         setIsLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -101,8 +87,6 @@ function TopicDomains() {
     console.log('New page:', 0);
   };
   
-  
-
   const handleAddClick = () => {
     if (topicDomainName.trim() === "") {
       setTopicDomainNameError(true);
@@ -119,54 +103,41 @@ function TopicDomains() {
     } else {
       setDescriptionError(false);
     }
-
-    // Update newItem state with latest values
     setNewItem({ topicDomainName, description });
-
-    // Show the confirmation dialog
     setShowAddConfirmation(true);
   };
  
-
   const handleConfirmAdd = async () => {
-    console.log("handleConfirmAdd function called"); // Add this line for debugging
+    console.log("handleConfirmAdd function called"); 
     console.log(newItem);
     try {
       const response = await api.post("/add", newItem);
-
-      setData([...data, response.data]); // Update data array with the new item
+      setData([...data, response.data]); 
       setNewItem({ topicDomainName: '', description: '' }); // Clear newItem state
       setShowAddConfirmation(false); // Hide the confirmation dialog
       setShowAddForm(false); // Close the add form
-
-      // Show success message
       setAddSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
+      // Hide the message after 20 seconds
       setTimeout(() => {
         setAddSuccessfulAlertOpen(false);
       }, 20000);
 
-      setTopicDomainName(''); // Clear topicDomainName state
-      setDescription(''); // Clear description state
+      setTopicDomainName(''); 
+      setDescription(''); 
     } catch (error) {
       console.error("Error adding data:", error);
     }
   };
 
-
   const handleCancelAdd = () => {
     setShowAddConfirmation(false);
     setNewItem({ topicDomainName: '', description: '' });
-    setShowAddForm(false); // Close the form after adding data
+    setShowAddForm(false);
     setTopicDomainName('');
     setDescription('');
   };
 
-
-
-
-  // Update the handleEditClick function to set the editingRow state
+  // To set the editingRow state
   const handleEditClick = (row) => {
     setEditingRow(row);
     setEditingRowId(row.topicDomainId);
@@ -174,26 +145,23 @@ function TopicDomains() {
 
   const handleSaveClick = async (row) => {
     try {
-      setShowEditConfirmation(true); // Show confirmation dialog before making the API call
+      setShowEditConfirmation(true);
     } catch (error) {
       console.error("Error updating data:", error);
     }
   };
-
+  
+// To handle confirming the save operation after editing a row
   const handleConfirmSave = async () => {
     try {
       const updatedRow = data.find(item => item.topicDomainId === editingRowId);
       await api.patch(`/edit/${editingRowId}`, updatedRow);
       setEditingRowId(null); // Reset editing row ID
       setShowEditConfirmation(false);
-      //get data
+      //get data after patch
       const response = await api.get("/get");
       setData(response.data);
-
-      // Show success message
       setEditSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setEditSuccessfulAlertOpen(false);
       }, 20000);
@@ -204,7 +172,7 @@ function TopicDomains() {
 
   const handleCancelSave = () => {
     setShowEditConfirmation(false);
-    setEditingRowId(null); // Reset editing row ID
+    setEditingRowId(null); 
     // Revert the changes made to the edited row using the editingRow state
     const updatedData = data.map(item => {
       if (item.topicDomainId === editingRow.topicDomainId) {
@@ -253,10 +221,7 @@ function TopicDomains() {
       // Update the state to remove the deleted topic domain from the UI
       setData(data.filter(item => item.topicDomainId !== deleteTargetId));
       setShowDeleteConfirmation(false);
-      // Show success message
       setDeleteSuccessfulAlertOpen(true);
-
-      // Hide the message after 30 seconds
       setTimeout(() => {
         setDeleteSuccessfulAlertOpen(false);
       }, 20000);
@@ -450,9 +415,6 @@ function TopicDomains() {
               Topic Domain edited successfully!
             </MuiAlert>
           </Snackbar>
-
-
-
         </div>
       </Navbar>
     </div>
