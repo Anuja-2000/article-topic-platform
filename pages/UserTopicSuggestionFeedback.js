@@ -1,16 +1,12 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Button, TextField } from '@mui/material';
-import { useUserId } from './UserIdContext'; // Import useUserId hook
 
 const UserTopicSuggestionFeedback = () => {
   const router = useRouter();
   const [searchResults, setSearchResults] = useState([]);
-  //const { userId } = useUserId(); // Get userId from context
   const [showFeedbackSuccessfulAlert, setShowFeedbackSuccessfulAlert] = useState(false);
   
-
-  /*.........Enable this if don't use session storage..........*/
   
   useEffect(() => {
     const { searchResults } = router.query;
@@ -18,8 +14,8 @@ const UserTopicSuggestionFeedback = () => {
       setSearchResults(
         JSON.parse(searchResults).map((result) => ({
           ...result,
-          relevant: false, // Initialize relevant property
-          irrelevant: false, // Initialize irrelevant property
+          relevant: false,
+          irrelevant: false, 
           reason: '' // Initialize reason property
          
         }))
@@ -91,11 +87,9 @@ const UserTopicSuggestionFeedback = () => {
   const handleSubmit = async () => {
     try {
       const irrelevantTopics = searchResults.filter((result) => result.irrelevant);
-
       // Check if reason is provided for irrelevant topics
       const invalidTopics = irrelevantTopics.filter((topic) => topic.irrelevant && !topic.reason);
       if (invalidTopics.length > 0) {
-        // Alert the user to fill in the reason for all irrelevant topics
         alert('Please provide a reason for all irrelevant topics.');
         return;
       }
@@ -107,11 +101,11 @@ const UserTopicSuggestionFeedback = () => {
           const flaggedTopic = {
             topicId,
             topicName,
-            flaggedBy: "sampleUser",  // You can specify the user who flagged the topic here
-            reason, // You can specify the reason for flagging here
+            flaggedBy: "sampleUser",  //need to change further
+            reason, 
 
           };
-          console.log('Flagged Topic:', flaggedTopic); // Log flagged topic before fetch
+          console.log('Flagged Topic:', flaggedTopic); 
 
           await fetch('http://localhost:3001/api/flaggedTopics/add', {
             method: 'POST',
@@ -132,15 +126,12 @@ const UserTopicSuggestionFeedback = () => {
         })
       );
       setShowFeedbackSuccessfulAlert(true);
-
-      // Set a timeout to hide the happy alert and redirect after 3 seconds
       setTimeout(() => {
         setShowFeedbackSuccessfulAlert(false);
         router.push('/WriterPages/CreateArticle');
       }, 3000);
     } catch (error) {
       console.error('Error submitting flagged topics:', error);
-      // Handle error
     }
   };
 
@@ -166,7 +157,7 @@ const UserTopicSuggestionFeedback = () => {
                 <TableCell>
                   <Checkbox
                     color="success"
-                    checked={result.relevant || false} // Ensure consistent controlled state
+                    checked={result.relevant || false} 
                     onChange={() => handleRelevanceChange(result.topicId)}
                   />
 
@@ -175,7 +166,7 @@ const UserTopicSuggestionFeedback = () => {
                   
                 <Checkbox
                     color="error"
-                    checked={result.irrelevant || false} // Ensure consistent controlled state
+                    checked={result.irrelevant || false} 
                     onChange={() => handleIrrelevanceChange(result.topicId)}
                   />
 
@@ -185,7 +176,7 @@ const UserTopicSuggestionFeedback = () => {
                     variant="outlined"
                     size="small"
                     disabled={!result.irrelevant}
-                    value={result.reason || ''} // Ensure consistent controlled state
+                    value={result.reason || ''} 
                     onChange={(e) => handleReasonChange(result.topicId, e.target.value)}
                   />
 

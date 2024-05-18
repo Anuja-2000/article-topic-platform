@@ -11,11 +11,14 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from '@mui/material/DialogActions';
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import TablePaginationActions from '../../components/TablePaginationActions';
 
-
-
-const FlaggedTopics = () => {
-    const [uniqueTopics, setUniqueTopics] = useState([]);
+const DeactivateArticles = () => {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [uniqueReportedArticles, setUniqueReportedArticles] = useState([]);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState(null);
     const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
@@ -24,38 +27,53 @@ const FlaggedTopics = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/flaggedTopics/get');
+                const response = await axios.get('http://localhost:3001/api/reportArticle/get');
                 console.log(response.data);
 
-                // Iterate over flagged topics and fetch details
-                const topicsWithDetails = await Promise.all(response.data.map(async (topic) => {
-                    console.log(topic.topicId, topic.topicName); // Access topicId, topicName directly from flagged topics
-                    // Fetch topic details by topicId
-                    const topicResponse = await axios.get(`http://localhost:3001/api/topics/getByTopic/${topic.topicId}`);
-                    const { keywordId, topicDomainId } = topicResponse.data; // Destructure response.data
-                    console.log(topicResponse);
+                // Iterate over reported articles and fetch details
+                const reportedArticlesWithDetails = await Promise.all(response.data.map(async (article) => {
+                    console.log(article);
+                    console.log("articleId", article.articleId); // Access topicId, topicName directly from flagged topics
+                    // Fetch article details by articleId
+                    const reportedArticleResponse = await axios.get(`http://localhost:3001/api/readerArticle/getById/${article.articleId}`);
+                    const { title, userId } = reportedArticleResponse.data; // Destructure response.data
+                    console.log("for test", reportedArticleResponse.data)
+                    console.log(title);
 
-                    // Fetch keyword name
-                    const keywordResponse = await axios.get(`http://localhost:3001/api/keywords/get/GetByKeyword/${keywordId}`);
-                    const keywordName = keywordResponse.data.keywordName;
+                    const articleWriterResponse = await axios.get(`http://localhost:3001/api/user/${userId}`);
+                    console.log(userId);
+                    const { name } = articleWriterResponse.data; // Destructure response.data
+                    console.log("for user test", articleWriterResponse.data)
+                    console.log(name);
 
-                    // Fetch topic domain name
-                    const topicDomainResponse = await axios.get(`http://localhost:3001/api/topicDomains/get/${topicDomainId}`);
-                    const topicDomainName = topicDomainResponse.data.topicDomainName;
+                    // Count unique reasons
+                    const reasonCounts = {};
+                    article.reasons.forEach(reason => {
+                        if (reasonCounts[reason]) {
+                            reasonCounts[reason]++;
+                        } else {
+                            reasonCounts[reason] = 1;
+                        }
+                    });
+                    const uniqueReasonsWithCounts = Object.entries(reasonCounts).map(([reason, count]) => ({ reason, count }));
 
-                    // Return topic details with additional data
+                    // Return article details with additional data
                     return {
-                        topicId: topic.topicId, // Include topicId in the returned object
-                        topicName: topic.topicName,
-                        keywordName,
-                        topicDomainName,
-                        reasons: topic.reasons,
-                        count: topic.count
+                        writerName: name, // Include topicId in the returned object
+                        title: title,
+                        userId: userId,
+                        reasons: uniqueReasonsWithCounts,
+                        count: article.count
                     };
                 }));
-
-                // Update state with topics including additional details
-                setUniqueTopics(topicsWithDetails);
+                console.log(reportedArticlesWithDetails);
+                // Sort reported articles in descending alphabetical order based on title
+                const sortedArticles = reportedArticlesWithDetails.slice().sort((a, b) => {
+                    return a.title.localeCompare(b.title);
+                });
+                // Update state with reportedArticles including additional details
+                setUniqueReportedArticles(sortedArticles);
+                
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -71,6 +89,17 @@ const FlaggedTopics = () => {
         setDeleteTargetId(topicId);
         setShowDeleteIgnoreConfirmation(true);
     };
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        const newRowsPerPage = parseInt(event.target.value, 10);
+        console.log('New rows per page:', newRowsPerPage);
+        setRowsPerPage(newRowsPerPage);
+        setPage(0);
+        console.log('New page:', 0);
+    };
     const handleConfirmDelete = async () => {
         try {
             // Delete the topic
@@ -80,7 +109,7 @@ const FlaggedTopics = () => {
             await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
 
             // Update the state to remove the deleted topic from the UI
-            setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
+            setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.topicId !== deleteTargetId));
             setShowDeleteConfirmation(false);
             setDeleteSuccessfulAlertOpen(true);
             setTimeout(() => {
@@ -101,7 +130,7 @@ const FlaggedTopics = () => {
             await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
 
             // Update the state to remove the ignored topic from the UI
-            setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
+            setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.topicId !== deleteTargetId));
             setShowDeleteIgnoreConfirmation(false);
             setDeleteSuccessfulAlertOpen(true);
             setTimeout(() => {
@@ -123,7 +152,7 @@ const FlaggedTopics = () => {
             <div>
                 <Navbar>
                     <div className="App" style={{ marginTop: "60px" }}>
-                        <h2 style={{ textAlign: "center" }}>Flagged Topics</h2>
+                        <h2 style={{ textAlign: "center" }}>Reported Articles</h2>
 
                         <Grid container spacing={1}>
                             <Grid item xs={1}></Grid>
@@ -133,13 +162,10 @@ const FlaggedTopics = () => {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>
-                                                    <h4 style={{ color: 'white' }}>Topic Name</h4>
+                                                    <h4 style={{ color: 'white' }}>Article Title</h4>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <h4 style={{ color: 'white' }}>Keyword</h4>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <h4 style={{ color: 'white' }}>Topic Domain</h4>
+                                                    <h4 style={{ color: 'white' }}>Writer</h4>
                                                 </TableCell>
                                                 <TableCell>
                                                     <h4 style={{ color: 'white' }}>Reasons</h4>
@@ -153,29 +179,50 @@ const FlaggedTopics = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
+                                            {uniqueReportedArticles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((article) => (
 
-                                            {uniqueTopics.map(topic => (
-                                                <TableRow key={topic.topicId}>
-                                                    <TableCell>{topic.topicName}</TableCell>
-                                                    <TableCell>{topic.keywordName}</TableCell>
-                                                    <TableCell>{topic.topicDomainName}</TableCell>
+                                                <TableRow key={article.articleIdId}>
+                                                    <TableCell>{article.title}</TableCell>
+                                                    <TableCell>{article.writerName}</TableCell>
                                                     <TableCell>
-                                                        <ul>
-                                                            {topic.reasons?.map((reason, index) => (
-                                                                <li key={index}>{reason}</li>
-                                                            ))}
-                                                        </ul>
+                                                        {article.reasons.map((reasonObj, index) => (
+                                                            <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                                <span style={{ textAlign: 'left' }}>{reasonObj.reason}</span>
+                                                                <span style={{ textAlign: 'right' }}>{reasonObj.count}</span>
+                                                            </div>
+                                                        ))}
                                                     </TableCell>
-                                                    <TableCell>{topic.count}</TableCell>
+                                                    <TableCell>{article.count}</TableCell>
                                                     <TableCell>
                                                         <Box sx={{ display: 'flex', gap: '8px' }}>
-                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Delete</Button>
-                                                            <Button variant="contained" color="primary" onClick={() => handleIgnoreClick(topic.topicId)}>Ignore</Button>
+                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Deactivate</Button>
+                                                            <Button variant="contained" color="success" onClick={() => handleIgnoreClick(topic.topicId)}>Reject</Button>
                                                         </Box>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
+                                        <TableFooter>
+                                            <TableRow>
+                                                <TablePagination
+                                                    style={{ marginLeft: "auto" }} // Aligns pagination to the right
+                                                    rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                                                    colSpan={3}
+                                                    count={uniqueReportedArticles.length}
+                                                    rowsPerPage={rowsPerPage}
+                                                    page={page}
+                                                    SelectProps={{
+                                                        inputProps: {
+                                                            "aria-label": "rows per page",
+                                                        },
+                                                        native: true,
+                                                    }}
+                                                    onPageChange={handleChangePage}
+                                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                                    ActionsComponent={TablePaginationActions}
+                                                />
+                                            </TableRow>
+                                        </TableFooter>
                                     </Table>
                                 </TableContainer>
                             </Grid>
@@ -209,4 +256,4 @@ const FlaggedTopics = () => {
     );
 };
 
-export default FlaggedTopics;
+export default DeactivateArticles;

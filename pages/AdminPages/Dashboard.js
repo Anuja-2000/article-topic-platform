@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
 import { PickersActionBar } from '@mui/x-date-pickers';
+import urls from '../../enums/url';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -65,7 +66,7 @@ function Dashboard({ }) {
 
   useEffect(() => {
     if (isLoading) {
-      axios.get('http://localhost:3001/api/contactMessage/get-count')
+      axios.get(`${urls.BASE_URL_CONTACT_MESSAGE}get-count`)
         .then((res) => {
           const data = res.data;
           setMsgCount(data);
@@ -103,7 +104,16 @@ function Dashboard({ }) {
           console.log(error);
         });
 
-      setUserName(localStorage.getItem('username'));
+      const userId = localStorage.getItem('userId');
+      let displayName = '';
+
+      axios.get(`http://localhost:3001/api/user/${userId}`).then((res) => {
+        displayName = res.data.displayName;
+        displayName = displayName.split(' ')[0];
+        setUserName(displayName);
+      }).catch((error) => {
+        console.log(error);
+      });
 
       setLoading(false);
     }

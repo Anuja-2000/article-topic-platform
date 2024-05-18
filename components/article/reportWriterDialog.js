@@ -8,13 +8,14 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
-import { v4 as uuidv4 } from 'uuid'; // Import uuidv4 for generating reportId
+import { v4 as uuidv4 } from 'uuid';
 
-const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
+const ReportWriterDialog = ({ isOpen, onClose, writerId }) => {
   const [selectedReason, setSelectedReason] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [username, setUsername] = useState("");
   const [customReason, setCustomReason] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,21 +34,19 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
 
   const handleReport = async () => {
     let reason = selectedReason;
-    // If "Other" is selected, use custom reason
     if (selectedReason === 'Other' && customReason.trim() !== '') {
       reason = customReason.trim();
     }
     if (reason) {
-      const reportId = 'report' + uuidv4(); // Generate reportId
+      const reportId = 'report' + uuidv4();
       const reportData = {
         reportId: reportId,
         reporterName: username,
         reportedReason: reason,
-        articleId: articleId,
         writerId: writerId,
       };
       try {
-        const response = await fetch('http://localhost:3001/api/reportArticle/save', {
+        const response = await fetch('http://localhost:3001/api/reportedWriter/save', {
           method: 'POST',
           body: JSON.stringify(reportData),
           headers: {
@@ -56,25 +55,28 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
         });
         if (response.ok) {
           console.log('Reported for:', reason);
-          setSuccessMessage('Article reported successfully!');
+          setSuccessMessage('Writer reported successfully!');
           setTimeout(() => {
             setSuccessMessage('');
             onClose();
           }, 3000);
         } else {
-          console.error('Failed to report article');
+          console.error('Failed to report writer');
         }
       } catch (error) {
-        console.error('Error reporting article:', error);
+        console.error('Error reporting writer:', error);
       }
     }
   };
+
   const handleChange = (event) => {
     setSelectedReason(event.target.value);
   };
+
   const handleCustomReasonChange = (event) => {
     setCustomReason(event.target.value);
   };
+
   const handleClose = () => {
     onClose();
     setSuccessMessage('');
@@ -82,16 +84,15 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
 
   return (
     <Dialog open={isOpen} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Report Article</DialogTitle>
+      <DialogTitle>Report Writer</DialogTitle>
       <DialogContent dividers>
         <RadioGroup value={selectedReason} onChange={handleChange}>
-          <FormControlLabel value="Harassment" control={<Radio />} label="Harassment" />
-          <FormControlLabel value="Rules Violation" control={<Radio />} label="Rules Violation" />
-          <FormControlLabel value="Spam" control={<Radio />} label="Spam" />
+          <FormControlLabel value="Plagiarism" control={<Radio />} label="Plagiarism" />
+          <FormControlLabel value="Inappropriate Content Writer" control={<Radio />} label="Inappropriate Content Writer" />
+          <FormControlLabel value="Misinformation Provider" control={<Radio />} label="Misinformation Provider" />
           <FormControlLabel value="Other" control={<Radio />} label="Other" />
         </RadioGroup>
-     {/* Display TextField for custom reason if "Other" is selected */}
-     {selectedReason === 'Other' && (
+        {selectedReason === 'Other' && (
           <TextField
             label="Custom Reason"
             variant="outlined"
@@ -122,4 +123,4 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
   );
 };
 
-export default ReportDialog;
+export default ReportWriterDialog;

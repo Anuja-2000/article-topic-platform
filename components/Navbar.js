@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import * as React from 'react';
 import { useState, useEffect } from "react";
 import { styled, useTheme } from '@mui/material/styles';
@@ -23,6 +23,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import AvatarIcon from '../components/avatar';
 import CustomNotificationIcon from "../components/customNotificationIcon";
 import Tooltip from '@mui/material/Tooltip';
+import ReportIcon from '@mui/icons-material/Report';
 
 
 import { useRouter } from 'next/router';
@@ -114,6 +115,7 @@ export default function Navbar({children}) {
         'Topics': < ArticleIcon sx={{ color: 'white' }} />,
         'Flagged Topics': <FlagIcon sx={{ color: 'white' }} />,
         'Approve Articles': <GradingIcon sx={{ color: 'white' }} />,
+        'Deactivate Articles': <ReportIcon sx={{ color: 'white' }} />,
         'Deactivate Writers': <CheckIcon sx={{ color: 'white' }} />,
         'User Roles': <GroupIcon sx={{ color: 'white' }} />,
         'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
@@ -121,11 +123,14 @@ export default function Navbar({children}) {
     const router = useRouter();
 const [selectedIndex, setSelectedIndex] = useState(0);
 
+let openValue = false;
+
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'ApproveArticles','DeactivateWriters', 'UserRoles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'ApproveArticles','DeactivateArticles', 'DeactivateWriters', 'UserRoles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
+  openValue = localStorage.getItem('open') === 'true' ? true : false;
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
 
@@ -135,7 +140,6 @@ const handleListItemClick = (event, index) => {
 
 
   const theme = useTheme();
-  let openValue = false;
   if (typeof window !== 'undefined') {
     openValue = localStorage.getItem('open') === 'true' ? true : false;
   }
@@ -214,7 +218,7 @@ const handleListItemClick = (event, index) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Topic Domains', 'Keywords','Topics', 'Flagged Topics', 'Approve Articles','Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Topic Domains', 'Keywords','Topics', 'Flagged Topics', 'Approve Articles', 'Deactivate Articles', 'Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton

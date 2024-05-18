@@ -10,11 +10,12 @@ import CardContent from '@mui/material';
 import Button from '@mui/material';
 import MoreOptionsCard from './MoreOptionsCard';
 import ReportDialog from './reportDialog';
+import ReportWriterDialog from './reportWriterDialog';
 
 
 
 
-const LikeShareDownload = ({ articleTitle, initialLikes}) => {
+const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) => {
  
   const router = useRouter();
   const { article } = router.query;
@@ -24,10 +25,11 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
   
   const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isReportWriterDialogOpen, setIsReportWriterDialogOpen] = useState(false);
  
-
   useEffect(() => {
     setLikes(initialLikes);
+    console.log(initialLikes);
   }, [initialLikes]);
   const handleShareClick = async () => {
     try {
@@ -50,44 +52,41 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
       setIsShareClicked(false);
     }
   };
-  useEffect(() => {
-  
-    const updateData = async () => {
-      try {
-        await fetch(`http://localhost:3001/api/readerArticle/update`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json', // Adjust the content type if needed
-          },
-          body: JSON.stringify({ 
-            id: article,
-            likes: likes 
-          }),
-          
-      });
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    updateData();
-  }, [likes]);
-   
-
+  const updateData = async (newLikes) => {
+    try {
+      await fetch(`http://localhost:3001/api/readerArticle/updateLikes`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json', // Adjust the content type if needed
+        },
+        body: JSON.stringify({ 
+          id: article,
+          likes: newLikes 
+        }),
+        
+    });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   
   const handleLikeClick = () => {
-    // Toggle the like state
+
+    const newLikes = isLiked ? likes - 1 : likes + 1;
+
     setIsLiked(!isLiked);
 
     // Update the number of likes based on the current state
-    setLikes((prevLikes) => (isLiked ? prevLikes - 1 : prevLikes + 1));
-    
+    setLikes(newLikes)
+    updateData(newLikes);
+    console.log(newLikes);
   };
 
   const handleMoreVertIconClick = () => {
     setIsMoreOptionsOpen(!isMoreOptionsOpen);
   };
 
-  const handleReportAuthorClick = () => {
+  const handleReportArticleClick = () => {
     setIsReportDialogOpen(true);
     setIsMoreOptionsOpen(false); // Close MoreOptionsCard
   };
@@ -95,6 +94,13 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
   const handleCloseReportDialog = () => {
     setIsReportDialogOpen(false);
 
+  };
+  const handleReportWriterClick = () => {
+    setIsReportWriterDialogOpen(true);
+  };
+
+  const handleCloseReportWriterDialog = () => {
+    setIsReportWriterDialogOpen(false);
   };
 
   return (
@@ -117,9 +123,11 @@ const LikeShareDownload = ({ articleTitle, initialLikes}) => {
         </IconButton>
       </Box>
 
-      {isMoreOptionsOpen && <MoreOptionsCard onReportAuthorClick={handleReportAuthorClick} />}
+      {isMoreOptionsOpen && <MoreOptionsCard onReportArticleClick={handleReportArticleClick}  onReportWriterClick={handleReportWriterClick}/>}
 
-      <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} />
+      <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} writerId={writerId} articleId={articleId} />
+      <ReportWriterDialog isOpen={isReportWriterDialogOpen} onClose={handleCloseReportWriterDialog} writerId={writerId}
+      />
    
       {/*isShareClicked && (
         <Head>

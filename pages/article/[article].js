@@ -30,6 +30,7 @@ const ArticlePage = () => {
       });
         const jsonData = await response.json();
         setData(jsonData);
+        console.log(jsonData.likes);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -51,20 +52,17 @@ const ArticlePage = () => {
       <div className={styles.articleContainer}>
         <Header
           writerId = {articleData.userId}
-          writer={articleData.writer}
-          date={articleData.date}
-          time={articleData.time}
+          date={articleData.updatedAt}
           title={articleData.title}
-          profilePic={articleData.profilePic}
         />
         <div className={styles.imageContainer} >
-          <Image  src={articleData.image} alt="Article Image" className={articleData.image} 
+          <img  src={articleData.coverImage} alt="Article Image" className="Cover Image" 
           width="1000" height="500" style={{ borderRadius: '10px' }}/>
         </div>
         <ArticleBody content={articleData.content} className={styles.content} />
-        <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} />
+        <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} writerId={articleData.userId} articleId={articleId} />
         <Divider sx={{ marginY: 2 }}/>
-        <CommentSection articleId={articleData.id}/>
+        <CommentSection articleId={articleData.articleId}/>
       </div>
     </Container>
   );

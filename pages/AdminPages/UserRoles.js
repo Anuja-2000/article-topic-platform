@@ -35,6 +35,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { set } from "react-hook-form";
 import { v4 as uuidv4 } from 'uuid';
+import urls from "../../enums/url";
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -115,9 +116,11 @@ export default function UserRoles() {
   const [otherUsers, setOtherUsers] = React.useState([]);
   const [userSearchTerm, setUserSearchTerm] = React.useState(" ");
   const [assignUser, setAssignUser] = React.useState(null);
+  const [otherUser, setOtherUser] = React.useState({name: "", email: ""});
 
 
   const [open, setOpen] = React.useState(false);
+  const [openOther, setOpenOther] = React.useState(false);
 
   const handleClickOpen = (user) => {
     setOpen(true);
@@ -128,9 +131,13 @@ export default function UserRoles() {
     setOpen(false);
   };
 
+  const handleCloseOther = () => {
+    setOpenOther(false);
+  };
+
   React.useEffect(() => {
     const response = axios
-      .get("http://localhost:3001/api/user/getAll")
+      .get(`${urls.BASE_URL_USER}getAll`)
       .then((res) => {
         
         const filteredAdmins = res.data.filter((user) => user.type === "Admin");
@@ -171,7 +178,7 @@ export default function UserRoles() {
     if (event.target.value === "") {
       setUserSearchTerm(event.target.value);
       const result = axios
-        .get("http://localhost:3001/api/user-util/get-others")
+        .get(`${urls.BASE_URL_USER_UTILITY}get-others`)
         .then((res) => {
           setOtherUsers(res.data);
           console.log(res.data);
@@ -184,7 +191,7 @@ export default function UserRoles() {
       setUserSearchTerm(event.target.value);
       let type = "Reader";
       const nameResult = axios
-        .get(`http://localhost:3001/api/user-util/search/${userSearchTerm}`)
+        .get(`${urls.BASE_URL_USER_UTILITY}search/${userSearchTerm}`)
         .then((res) => {
           setOtherUsers(res.data);
         })
@@ -197,7 +204,7 @@ export default function UserRoles() {
   const sendEmail = () => {
     handleClose();
     const response = axios
-      .post("http://localhost:3001/api/user-util/assign-admin", {
+      .post(`${urls.BASE_URL_USER_UTILITY}assign-admin`, {
         userId: uuidv4(),
         email: assignUser.email,
         name: assignUser.name,
@@ -210,13 +217,37 @@ export default function UserRoles() {
       });
   };
 
+  const sendEmailToNewUser = () => {
+    handleCloseOther();
+    const response = axios
+      .post(`${urls.BASE_URL_USER_UTILITY}assign-new-admin`, {
+        email: otherUser.email,
+        name: otherUser.name,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <div>
       <NavBar>
         <Container maxWidth="lg">
+          <Box sx={{display:"flex", justifyContent:"space-between"}}>
           <Typography variant="h4" marginBottom={2} color={"primary.dark"}>
             Assign User Roles
           </Typography>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={()=>{setOpenOther(true)}}            
+          >
+            Assign Admin for a new user
+          </Button>
+          </Box>
           <Divider />
           <Typography variant="h5" marginY={3} color={"primary.dark"}>
             Administators
@@ -431,6 +462,41 @@ export default function UserRoles() {
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit" color="warning" variant="contained" onClick={sendEmail}>Assign</Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+
+    <React.Fragment>
+      <Dialog
+        open={openOther}
+        onClose={handleCloseOther}
+      >
+        <DialogTitle>Assign Admin to a new user</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please provide detials of the new user
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            type="text"
+            fullWidth
+            onChange={(e)=>setOtherUser({...otherUser, name: e.target.value})}
+          />
+          <TextField
+            margin="dense"
+            id="email"
+            label="Email Address"
+            type="email"
+            fullWidth
+            onChange={(e)=>setOtherUser({...otherUser, email: e.target.value})}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseOther}>Cancel</Button>
+          <Button type="submit" color="warning" variant="contained" onClick={sendEmailToNewUser}>Assign</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

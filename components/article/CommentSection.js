@@ -154,6 +154,7 @@ const CommentSection = ({ articleId }) => {
     } else {
       // Handle new comment submission
       await addComment();
+      console.log(commentText);
     }
     await fetchData();
     setCommentText('');

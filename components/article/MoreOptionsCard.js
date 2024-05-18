@@ -1,28 +1,34 @@
 import React, { useState } from 'react';
 import { Button, Card, CardContent, Typography } from '@mui/material';
 import ReportDialog from './reportDialog';
+import ReportWriterDialog from './reportWriterDialog';
 
-const MoreOptionsCard = ({ onReportAuthorClick }) => {
+const MoreOptionsCard = ({ onReportArticleClick, onReportWriterClick}) => {
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isReportWriterDialogOpen, setIsReportWriterDialogOpen] = useState(false);
 
-  const handleReportAuthorButtonClick = () => {
+  const handleReportArticleButtonClick = () => {
     setIsReportDialogOpen(true);
-    // Close MoreOptionsCard
-    onReportAuthorClick();
+    onReportArticleClick();
   };
-
+  const handleReportWriterButtonClick = () => {
+    setIsReportDialogOpen(true);
+    onReportWriterClick();
+  };
   return (
     <Card>
       <CardContent>
         <Typography variant="h5">Options</Typography>
         <div>
-          <Button onClick={handleReportAuthorButtonClick}>Report Author</Button>
+          <Button onClick={handleReportArticleButtonClick}>Report Article</Button>
         </div>
         <div>
-          <Button>Report Article</Button>
+          <Button onClick={handleReportWriterButtonClick}>Report Author</Button>
         </div>
       </CardContent>
       <ReportDialog isOpen={isReportDialogOpen} onClose={() => setIsReportDialogOpen(false)} />
+      <ReportWriterDialog isOpen={isReportWriterDialogOpen} onClose={() => setIsReportWriterDialogOpen(false)}
+        />
     </Card>
   );
 };
