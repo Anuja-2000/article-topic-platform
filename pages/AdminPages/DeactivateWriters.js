@@ -1,196 +1,253 @@
-/*
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import TableContainer from "@mui/material/TableContainer";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
 import Navbar from '../../components/Navbar';
+import axios from 'axios';
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from '@mui/material/DialogActions';
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
 import TablePaginationActions from '../../components/TablePaginationActions';
 
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableHead from '@mui/material/TableHead';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+const DeactivateWriters = () => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [uniqueReportedWriters, setUniqueReportedWriters] = useState([]);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
+  const [showDeleteIgnoreConfirmation, setShowDeleteIgnoreConfirmation] = useState(false);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/reportedWriter/get');
+        console.log("response.data", response.data);
 
-function createData(id, name) {
-  return { id, name };
-}
+        // Iterate over reported articles and fetch details
+        const reportedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+          console.log("writer", reportedWriter.writerId);
+          console.log(reportedWriter); // Access topicId, topicName directly from flagged topics
 
-//Flagged Topics
-export default function DeactivateWriters() {
-  const [rows, setRows] = useState([
-    
-    createData(1, '1st flagged topic'),
-    createData(2, '2nd flagged topic'),
-    createData(3, '3rd flagged topic'),
-    createData(4, '4th flagged topic'),
-    createData(5, '5th flagged topic'),
-    createData(6, 'Third flagged topic'),
-    createData(7, 'First flagged topic'),
-    createData(8, 'Second flagged topic'),
-    createData(9, 'Third flagged topic'),
-    createData(10, 'First flagged topic'),
-    createData(11, 'Second flagged topic'),
-    createData(12, 'Third flagged topic'),
+          // Fetch writer details by writerId
+          const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+          const { name, email } = reportedWriterResponse.data; // Destructure response.data
+          console.log("for user test", reportedWriterResponse.data);
+          console.log(name);
 
-  ]);
+          // Count unique reasons
+          const reasonCounts = {};
+          reportedWriter.reasons.forEach(reason => {
+            if (reasonCounts[reason]) {
+              reasonCounts[reason]++;
+            } else {
+              reasonCounts[reason] = 1;
+            }
+          });
+          const uniqueReasonsWithCounts = Object.entries(reasonCounts).map(([reason, count]) => ({ reason, count }));
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [showClearAlert, setClearAlert] = React.useState(false);
-  const [deletedRowId, setDeletedRowId] = useState(null);
-  const [showKeepAlert, setKeepAlert] = React.useState(false);
-  const [keepRowId, setKeepRowId] = useState(null);
+          // Return writer details with additional data
+          return {
+            writerName: name,
+            email: email,
+            writerId: reportedWriter.writerId,
+            reasons: uniqueReasonsWithCounts,
+            count: reportedWriter.count
+          };
+        }));
+        console.log("reportedWritersWithDetails", reportedWritersWithDetails);
+        const sortedArticles = reportedWritersWithDetails.slice().sort((a, b) => {
+          return a.writerName.localeCompare(b.writerName);
+      });
+        // Update state with reported writers including additional details
+        setUniqueReportedWriters(sortedArticles);
+        
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
+  const handleDeleteClick = (topicId) => {
+    setDeleteTargetId(topicId);
+    setShowDeleteConfirmation(true);
+  };
+  const handleIgnoreClick = (topicId) => {
+    setDeleteTargetId(topicId);
+    setShowDeleteIgnoreConfirmation(true);
+  };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    console.log('New rows per page:', newRowsPerPage);
+    setRowsPerPage(newRowsPerPage);
     setPage(0);
+    console.log('New page:', 0);
+  };
+  const handleConfirmDelete = async () => {
+    try {
+      // Delete the topic
+      await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
+
+      // Delete flagged topics related to the deleted topic
+      await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+
+      // Update the state to remove the deleted topic from the UI
+      setUniqueReportedWriters(uniqueReportedWriters.filter(item => item.topicId !== deleteTargetId));
+      setShowDeleteConfirmation(false);
+      setDeleteSuccessfulAlertOpen(true);
+      setTimeout(() => {
+        setDeleteSuccessfulAlertOpen(false);
+      }, 20000);
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+  };
+
+  const handleCloseDeleteSuccessfulAlertOpen = () => {
+    setDeleteSuccessfulAlertOpen(false);
+  };
+
+  const handleConfirmIgnore = async () => {
+    try {
+      // Delete flagged topics related to the topic ID
+      await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+
+      // Update the state to remove the ignored topic from the UI
+      setUniqueReportedWriters(uniqueReportedWriters.filter(item => item.topicId !== deleteTargetId));
+      setShowDeleteIgnoreConfirmation(false);
+      setDeleteSuccessfulAlertOpen(true);
+      setTimeout(() => {
+        setDeleteSuccessfulAlertOpen(false);
+      }, 20000);
+    } catch (error) {
+      console.error("Error ignoring flagged topic:", error);
+    }
   };
 
 
 
-  const handleClearButtonClick = (id) => {
-    const newRows = rows.filter(row => row.id !== id);
-    setRows(newRows);
-    const deletedRowId = id; // Define deletedRowId here
-
-    //console.log('deletedRowId:', deletedRowId); // log the deletedRowId state
-    setDeletedRowId(deletedRowId); // set the deletedRowId state
-    setClearAlert(true); // set the showClearAlert state to true
-
-    //console.log('showClearAlert:', showClearAlert);
-
+  const handleCloseIgnoreConfirmation = () => {
+    setShowDeleteIgnoreConfirmation(false);
   };
-  const handleKeepButtonClick = (id) => {
-    const newRows = rows.filter(row => row.id !== id);
-    setRows(newRows);
-    const keepRowId = id; // Define keepRowId here
-
-  
-    setKeepRowId(keepRowId); // set the keepRowId state
-    setKeepAlert(true); // set the keepClearAlert state to true
-
-    console.log('showKeepAlert:', showKeepAlert);
-
-  };
-
 
   return (
-    
-    <div>
-      <Navbar>
-     
-      <TablePaginationActions/>
-      <Box
-        sx={{
-          padding: '20px',
-          marginTop: '2px',
-          marginLeft: '300px',
-          marginRight: '260px',
-          backgroundColor: 'white',
-          color: 'white',
-        }}
-      >
-      
-        {showClearAlert && deletedRowId !== null && (
-          <Alert severity="success" onClose={() => setClearAlert(false)}>
-            <AlertTitle>Success</AlertTitle>
-            Row {deletedRowId} deleted successfully.
-          </Alert>
-        )}
-        {showKeepAlert && keepRowId !== null && (
-          <Alert severity="success" onClose={() => setKeepAlert(false)}>
-            <AlertTitle>Success</AlertTitle>
-            Row {keepRowId} keep successfully.
-          </Alert>
-        )}
-          
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 600 }} aria-label="custom pagination table">
-            <TableHead >
+    <>
+      <div>
+        <Navbar>
+          <div className="App" style={{ marginTop: "60px" }}>
+            <h2 style={{ textAlign: "center" }}>Reported Writers</h2>
 
-              <TableRow sx={{ backgroundColor: '#0e0e42',fontWeight: 700 }}>
-                <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Topic Id</TableCell>
-                <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Topic</TableCell>
-                <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Remove Topic</TableCell>
-                <TableCell sx={{ fontSize: '1rem', color: 'white' }}>Keep Topic</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(rowsPerPage > 0
-               // ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                : rows
-              ).map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
-                    {row.id}
-                  </TableCell>
-                  <TableCell style={{ width: 250 }} >
-                    {row.name}
-                  </TableCell>
-                  <TableCell>
+            <Grid container spacing={1}>
+              <Grid item xs={1}></Grid>
+              <Grid item xs={10}>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Name</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Email</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Reasons</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Count</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Actions</h4>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) =>(
+                      
+                        <TableRow key={writer.writerId}>
+                          <TableCell>{writer.writerName}</TableCell>
+                          <TableCell>{writer.email}</TableCell>
+                          <TableCell>
+                            {writer.reasons.map((reasonObj, index) => (
+                              <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ textAlign: 'left' }}>{reasonObj.reason}</span>
+                                <span style={{ textAlign: 'right' }}>{reasonObj.count}</span>
+                              </div>
+                            ))}
+                          </TableCell>
+                          <TableCell>{writer.count}</TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', gap: '8px' }}>
+                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Deactivate</Button>
+                              <Button variant="contained" color="success" onClick={() => handleIgnoreClick(topic.topicId)}>Reject</Button>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TablePagination
+                          style={{ marginLeft: "auto" }} // Aligns pagination to the right
+                          rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                          colSpan={3}
+                          count={uniqueReportedWriters.length}
+                          rowsPerPage={rowsPerPage}
+                          page={page}
+                          SelectProps={{
+                            inputProps: {
+                              "aria-label": "rows per page",
+                            },
+                            native: true,
+                          }}
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={handleChangeRowsPerPage}
+                          ActionsComponent={TablePaginationActions}
+                        />
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                </TableContainer>
+              </Grid>
+            </Grid>
+            {deleteSuccessfulAlertOpen && (
+              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                Topic deleted successfully.
+              </div>
+            )}
+          </div>
+        </Navbar>
+      </div>
+      <Dialog open={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>Are you sure you want to delete this topic?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDeleteConfirmation(false)} color="primary">Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={showDeleteIgnoreConfirmation} onClose={handleCloseIgnoreConfirmation}>
+        <DialogTitle>Confirm Ignore</DialogTitle>
+        <DialogContent>Are you sure you want to ignore this flagged topic?</DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseIgnoreConfirmation} color="primary">Cancel</Button>
+          <Button onClick={handleConfirmIgnore} color="primary">Ignore</Button>
+        </DialogActions>
+      </Dialog>
 
-                    <Button variant="contained" color="primary" onClick={() => handleClearButtonClick(row.id)}>
-                      Clear
-                    </Button>
-
-
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="contained" color="primary" onClick={() => handleKeepButtonClick(row.id)} >
-                      Keep
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 53 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                  colSpan={3}
-                  count={rows.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  SelectProps={{
-                    inputProps: {
-                      'aria-label': 'rows per page',
-                    },
-                    native: true,
-                  }}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  ActionsComponent={TablePaginationActions}
-                />
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </TableContainer>
-      </Box>
-      </Navbar>
-    </div>
+    </>
   );
-}
-*/
+};
+
+export default DeactivateWriters;
