@@ -14,7 +14,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-const reviewArticlePage = () => {
+const ReviewArticlePage = () => {
   const router = useRouter();
   const [articleData, setArticleData] = useState([]);
   const articleId = router.query.article ?? null;
@@ -183,4 +183,4 @@ const reviewArticlePage = () => {
   );
 };
 
-export default reviewArticlePage;
+export default ReviewArticlePage;

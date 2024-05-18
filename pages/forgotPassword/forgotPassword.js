@@ -19,7 +19,7 @@ const RestButton = styled(Button)({
 });
 
 
-function forgotPassword() {
+function ForgotPassword() {
   const { handleSubmit, register, formState: { errors } } = useForm();
   const [message, setMessage] = React.useState('');
 
@@ -83,4 +83,4 @@ function forgotPassword() {
   );
 }
 
-export default forgotPassword;
+export default ForgotPassword;
