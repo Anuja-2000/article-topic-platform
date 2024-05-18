@@ -298,13 +298,13 @@ function Reports() {
 
     //get writer popularity on number of articles they have written
     const writerPopularityData = axios
-      .get(`${urls.BASE_URL_READER_ARTICLE}writer-popularity`, axiosConfig)
+      .get(`${urls.BASE_URL_FOLLOW}popular-writers`, axiosConfig)
       .then((res) => {
         popularityResData = res.data;
         popularityData = [];
         for (let user of popularityResData) {
           popularityData.push({
-            label: user.userData[0].name,
+            label: user.userName,
             value: user.count,
           });
         }
@@ -547,7 +547,7 @@ function Reports() {
               </Typography>
               <Divider />
               <Box display="flex" justifyContent="space-between" marginY={2}>
-                <Typography marginY={2}>Writer Details</Typography>
+                <Typography variant="h5" marginY={2} color={"primary.dark"}>Writer Details</Typography>
                 <FormControl sx={{ m: 1, width: "35ch" }} variant="outlined">
                   <InputLabel htmlFor="outlined-adornment-search">
                     Search User Name
@@ -625,7 +625,7 @@ function Reports() {
                 />
               </Paper>
               <Box display="flex" justifyContent="space-between" marginY={2}>
-                <Typography marginY={2}>Reader Details</Typography>
+                <Typography variant="h5" marginY={2} color={"primary.dark"}>Reader Details</Typography>
                 <FormControl sx={{ m: 1, width: "35ch" }} variant="outlined">
                   <InputLabel htmlFor="outlined-adornment-search">
                     Search User Name
