@@ -5,7 +5,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../components/theme";
 import setAuthToken from "./api/auth/axios-set-token";
 import { useEffect, useState } from "react";
-import { UserIdProvider } from "./UserIdContext"; // Update the path
 
 export default function App({ Component, pageProps }) {
   useEffect(() => {
@@ -18,9 +17,7 @@ export default function App({ Component, pageProps }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <UserIdProvider>
         <Component {...pageProps} />
-      </UserIdProvider>
     </ThemeProvider>
   );
 }

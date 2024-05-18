@@ -28,7 +28,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePaginationActions from '../../components/TablePaginationActions';
 
 const api = axios.create({
-  baseURL: `http://localhost:3001/api/keywords`
+  baseURL: `https://article-writing-backend.onrender.com/api/keywords`
 });
 
 function Keywords() {
@@ -83,7 +83,7 @@ function Keywords() {
 
     const fetchTopicDomains = async () => {
       try {
-        const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
+        const topicDomainsResponse = await axios.get('https://article-writing-backend.onrender.com/api/topicDomains/get');
         setTopicDomains(topicDomainsResponse.data);
       } catch (error) {
         console.error('Error fetching topic domains:', error);
