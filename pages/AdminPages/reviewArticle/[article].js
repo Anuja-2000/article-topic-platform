@@ -48,8 +48,17 @@ const reviewArticlePage = () => {
         }
       );
       if (response.data.success === true && response.status === 200) {
-        alert("Article " + status + " successfully");
-        router.push("/AdminPages/ApproveArticles");
+          const response = await axios.post(`${url.BASE_URL_APPROVAL}save`, {
+            articleId: articleId,
+            adminId: localStorage.getItem("userId"),
+            status: status,
+          });
+          if (response.status === 201) {
+            alert("Article " + status + " successfully");
+            router.push("/AdminPages/ApproveArticles");
+          }
+      }else{
+        alert("Article " + status + " failed");
       }
       console.log(response);
     } catch (error) {

@@ -20,7 +20,6 @@
     "@mui/x-data-grid": "^6.0.4",
     "@mui/x-data-grid-generator": "^6.0.4",
     "@mui/x-date-pickers": "^6.19.5",
-    "@next/font": "13.1.1",
     "@react-pdf/renderer": "^3.4.2",
     "apexcharts": "^3.45.2",
     "aws-sdk": "^2.1336.0",
