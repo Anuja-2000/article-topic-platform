@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3001/api/';
+const BASE_URL = 'https://article-writing-backend.onrender.com/api/';
 const urls = {
     BASE_URL_USER : `${BASE_URL}user/`,
     BASE_URL_FILE : `${BASE_URL}file/`,
