@@ -19,6 +19,7 @@ const FollowButton = ({ writerId }) => {
           }),
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token') || '',
           },
         });
         
@@ -48,6 +49,7 @@ const followWriter = async () => {
       ),
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token') || '',
       },
     });
     // Handle response as needed
@@ -68,6 +70,7 @@ const unfollowWriter = async() => {
       ),
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token') || '',
       },
     });
     console.log(response);
