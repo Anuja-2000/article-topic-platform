@@ -56,9 +56,10 @@ function SavedArticles() {
             filteredArticles.map((article, index) => ({
               id: article._id,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
+
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
               description: article.content,
-              logo: article.coverImage || "https://picsum.photos/600/600", // Use cover image or a random image
+              logo: article.coverImage || "https://picsum.photos/600/600", // Random image for cover 
               title: article.title,
               coverImage: `https://picsum.photos/500/300?random=${index}`,
               status: article.status,

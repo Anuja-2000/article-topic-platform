@@ -11,6 +11,7 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import SendIcon from '@mui/icons-material/Send';
 
 import { Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 
@@ -131,9 +132,9 @@ const ArticlePopup = ({ article, open, onClose }) => {
             Duplicate
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={handleClose} disableRipple>
-            <ArchiveIcon />
-            Archive
+           <MenuItem onClick={handleClose} disableRipple>
+           <FileCopyIcon />
+            Send to Admin
           </MenuItem>
         </StyledMenu>
       </DialogContent>
