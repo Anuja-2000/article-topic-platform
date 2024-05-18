@@ -71,7 +71,7 @@ export default function WriterRegister() {
     }).then((response) => {
       if (response.status == 201) {
         alert("User created successfully");
-        window.location.href = "/login";
+        window.location.href = "/login"; 
       }
     }).catch((error) => {
       console.log(error.response.status);

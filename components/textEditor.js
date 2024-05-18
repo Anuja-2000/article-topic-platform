@@ -49,9 +49,39 @@ const TextEditor = () => {
     axios(config)
       .then((response) => {
         alert("Article saved successfully");
+        // Reload the page to clear the editor
+        window.location.reload();
       })
       .catch((error) => {
         alert("Failed to save article: " + error.message);
+      });
+  };
+
+  const handleSaveAsDraft = () => {
+    const articleId = articleName + "-" + uuidv4();
+    const articleData = {
+      articleId: articleId,
+      userId: userId,
+      title: articleName,
+      content: text,
+      savedType: "draft",
+    };
+
+    const config = {
+      method: "post",
+      url: ARTICLE_ROUTES.CREATE,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: articleData,
+    };
+
+    axios(config)
+      .then((response) => {
+        alert("Draft saved successfully");
+      })
+      .catch((error) => {
+        alert("Failed to save draft: " + error.message);
       });
   };
 
@@ -88,7 +118,7 @@ const TextEditor = () => {
       <Button variant="contained" color="primary" onClick={handleSave}>
         Save Article
       </Button>{" "}
-      <Button variant="contained" color="secondary" onClick={handleSave}> {/* partiallly complted articles*/}
+      <Button variant="contained" color="secondary" onClick={handleSaveAsDraft}>
         Save As Draft
       </Button>{" "}
       <br />
@@ -107,4 +137,3 @@ const TextEditor = () => {
 };
 
 export default TextEditor;
-
