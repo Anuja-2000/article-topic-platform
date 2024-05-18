@@ -76,7 +76,7 @@ function Dashboard({ }) {
         });
 
 
-      axios.get('http://localhost:3001/api/topicDomains/count')
+      axios.get('https://article-writing-backend.onrender.com/api/topicDomains/count')
         .then((res) => {
           const data = res.data;
           setTopicDomainCount(data);
@@ -85,7 +85,7 @@ function Dashboard({ }) {
           console.log(error);
         });
 
-      axios.get('http://localhost:3001/api/keywords/count')
+      axios.get('https://article-writing-backend.onrender.com/api/keywords/count')
         .then((res) => {
           const data = res.data;
           setKeywordCount(data);
@@ -95,7 +95,7 @@ function Dashboard({ }) {
         });
 
 
-      axios.get('http://localhost:3001/api/topics/count')
+      axios.get('https://article-writing-backend.onrender.com/api/topics/count')
         .then((res) => {
           const data = res.data;
           setTopicCount(data);
@@ -107,7 +107,7 @@ function Dashboard({ }) {
       const userId = localStorage.getItem('userId');
       let displayName = '';
 
-      axios.get(`http://localhost:3001/api/user/${userId}`).then((res) => {
+      axios.get(`https://article-writing-backend.onrender.com/api/user/${userId}`).then((res) => {
         displayName = res.data.displayName;
         displayName = displayName.split(' ')[0];
         setUserName(displayName);
