@@ -19,7 +19,7 @@ export const getStaticProps = async () => {
     props: { templates: data.templates }
   };
 };
-function createTemplates({ templates }) {
+function CreateTemplates({ templates }) {
 
   //console.log(templates);
   const topicDomains = [...new Set(templates.map(template => template.topicDomain))];
@@ -151,6 +151,6 @@ function createTemplates({ templates }) {
     </div>
   )
 }
-export default createTemplates;
+export default CreateTemplates;
 
 
