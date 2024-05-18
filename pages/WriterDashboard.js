@@ -205,9 +205,7 @@ const WriterDashboard = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
-
               </div>
-
             </Paper>
 
 
@@ -219,9 +217,6 @@ const WriterDashboard = () => {
                 <span>Log out</span>
                 <ArrowForwardIosIcon />
               </div>
-
-
-
 
               <div style={{ padding: "20px" }}> </div>
               <div style={{ padding: "20px" }}> </div>
@@ -241,13 +236,3 @@ const WriterDashboard = () => {
 };
 
 export default WriterDashboard;
-
-// export default function WriterDashboard(){
-//     return(
-//     <>
-//     <div>
-//       <p>Writer dashboard</p>
-//     </div>
-//     </>
-//     )
-// }

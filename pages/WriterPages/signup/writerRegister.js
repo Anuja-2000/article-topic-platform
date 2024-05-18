@@ -6,7 +6,6 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
-import Button from '@mui/material/Button';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 
@@ -40,16 +39,14 @@ export default function WriterRegister() {
 
   };
 
-  const resetFields = (event) => {
-    setValues({
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: ""
-    });
-  };
-
-
+  // const resetFields = (event) => {
+  //   setValues({
+  //     username: "",
+  //     email: "",
+  //     password: "",
+  //     confirmPassword: ""
+  //   });
+  // };
 
   const submit = (event) => {
     event.preventDefault();
@@ -64,7 +61,8 @@ export default function WriterRegister() {
 
     const userId = values.username + "-" + uuidv4();
 
-    const response = axios.post("http://localhost:3001/api/auth/signup", {
+    //Sending user details
+    const response = axios.post("http://localhost:3001/api/user/signup", {
       userId: userId,
       email: values.email,
       name: values.username,
@@ -73,7 +71,7 @@ export default function WriterRegister() {
     }).then((response) => {
       if (response.status == 201) {
         alert("User created successfully");
-        window.location.href = "/login";
+        window.location.href = "/login"; 
       }
     }).catch((error) => {
       console.log(error.response.status);
