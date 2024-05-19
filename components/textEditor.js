@@ -6,6 +6,7 @@ import styles from "../styles/EditingArea.module.css";
 import { ARTICLE_ROUTES } from "../public/constants/routes";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import ArticleCoverImageUploader from './ArticleCoverImageUploader';
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -22,17 +23,8 @@ const TextEditor = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const quillStyle = document.createElement("link");
-    quillStyle.href = "https://cdn.quilljs.com/1.3.6/quill.snow.css";
-    quillStyle.rel = "stylesheet";
-    quillStyle.type = "text/css";
-    document.querySelector("head").appendChild(quillStyle);
-  }, []);
-
   const handleChange = (value) => {
     setText(value);
-    console.log(value);
   };
 
   const handleSave = () => {
@@ -54,20 +46,18 @@ const TextEditor = () => {
       data: articleData,
     };
 
-    console.log(articleData);
-
     axios(config)
       .then((response) => {
-        console.log(response.data);
-        alert("Success", "Article saved successfully");
+        alert("Article saved successfully");
+        // Reload the page to clear the editor
+        window.location.reload();
       })
       .catch((error) => {
-        console.error(error);
-        alert("Failed", error.message);
+        alert("Failed to save article: " + error.message);
       });
   };
 
-  const handleDraftSave = () => {
+  const handleSaveAsDraft = () => {
     const articleId = articleName + "-" + uuidv4();
     const articleData = {
       articleId: articleId,
@@ -86,56 +76,13 @@ const TextEditor = () => {
       data: articleData,
     };
 
-    console.log(articleData);
-
     axios(config)
       .then((response) => {
-        console.log(response.data);
-        alert("Success", "Article saved successfully");
+        alert("Draft saved successfully");
       })
       .catch((error) => {
-        console.error(error);
-        alert("Failed", error.message);
+        alert("Failed to save draft: " + error.message);
       });
-  };
-
-  const handleArticleNameChange = (e) => {
-    setArticleName(e.target.value);
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const img = new Image();
-      img.src = reader.result;
-
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const maxWidth = 500; // Maximum width for resizing
-        let newWidth = img.width;
-        let newHeight = img.height;
-
-        if (img.width > maxWidth) {
-          newWidth = maxWidth;
-          newHeight = (img.height * maxWidth) / img.width;
-        }
-
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-        const resizedDataURL = canvas.toDataURL(file.type);
-        const resizedImg = `<img src="${resizedDataURL}" alt="Uploaded Image" />`;
-        const updatedText = text + resizedImg;
-        setText(updatedText);
-      };
-    };
-
-    reader.readAsDataURL(file);
   };
 
   const modules = {
@@ -143,56 +90,37 @@ const TextEditor = () => {
       [{ header: "1" }, { header: "2" }, { font: [] }],
       [{ size: [] }],
       ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ color: [] }],
-      [{ script: "super" }, { script: "sub" }],
+      [{ list: "ordered" }, { list: "bullet" }],
       ["link", "image", "video"],
-      ["clean"],
-    ],
+      ["clean"]
+    ]
   };
 
   const formats = [
-    "header",
-    "font",
-    "size",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "color",
-    "background",
-    "script",
-    "link",
-    "image",
-    "video",
-    "formula",
-    "list",
+    "header", "font", "size",
+    "bold", "italic", "underline", "strike", "blockquote",
+    "list", "bullet",
+    "link", "image", "video"
   ];
-
-  const editorStyle = {
-    height: "530px", //height of cursor area
-    width: "1000px",
-  };
 
   return (
     <div className={styles.textEditorArea}>
+      <ArticleCoverImageUploader /> {/* cover image uploader */}
       <input
         type="text"
         placeholder="Name of Article"
         value={articleName}
-        onChange={handleArticleNameChange}
-        className={styles.articleNameInput} // Apply a CSS class to style the input field
+        onChange={(e) => setArticleName(e.target.value)}
+        className={styles.articleNameInput}
       />
       <br />
       <br />
       <Button variant="contained" color="primary" onClick={handleSave}>
         Save Article
       </Button>{" "}
-      
-      <Button variant="contained" color="secondary" onClick={handleDraftSave}>
-        Save AS DRAFT
+      <Button variant="contained" color="secondary" onClick={handleSaveAsDraft}>
+        Save As Draft
       </Button>{" "}
-      {/* Apply a CSS class to style the button */}
       <br />
       <br />
       {typeof window !== "undefined" && (
@@ -201,7 +129,7 @@ const TextEditor = () => {
           onChange={handleChange}
           modules={modules}
           formats={formats}
-          style={editorStyle}
+          style={{ height: "530px", width: "1000px" }}
         />
       )}
     </div>

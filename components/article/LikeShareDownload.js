@@ -10,6 +10,7 @@ import CardContent from '@mui/material';
 import Button from '@mui/material';
 import MoreOptionsCard from './MoreOptionsCard';
 import ReportDialog from './reportDialog';
+import ReportWriterDialog from './reportWriterDialog';
 
 
 
@@ -24,6 +25,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   
   const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isReportWriterDialogOpen, setIsReportWriterDialogOpen] = useState(false);
  
   useEffect(() => {
     setLikes(initialLikes);
@@ -93,6 +95,13 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
     setIsReportDialogOpen(false);
 
   };
+  const handleReportWriterClick = () => {
+    setIsReportWriterDialogOpen(true);
+  };
+
+  const handleCloseReportWriterDialog = () => {
+    setIsReportWriterDialogOpen(false);
+  };
 
   return (
     <>
@@ -114,9 +123,11 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
         </IconButton>
       </Box>
 
-      {isMoreOptionsOpen && <MoreOptionsCard onReportArticleClick={handleReportArticleClick} />}
+      {isMoreOptionsOpen && <MoreOptionsCard onReportArticleClick={handleReportArticleClick}  onReportWriterClick={handleReportWriterClick}/>}
 
       <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} writerId={writerId} articleId={articleId} />
+      <ReportWriterDialog isOpen={isReportWriterDialogOpen} onClose={handleCloseReportWriterDialog} writerId={writerId}
+      />
    
       {/*isShareClicked && (
         <Head>

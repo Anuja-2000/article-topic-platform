@@ -23,15 +23,12 @@ export default function WriterLogin() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // if (validateForm()) {
-    //   Submit the form data
-    // }
     console.log(values);
     sendLoginReqest();
   };
   async function sendLoginReqest() {
     const response = axios
-      .post("http://localhost:3001/api/auth/login", {
+    .post("http://localhost:3001/api/user/login", {
         username: values.username,
         email: values.email,
         password: values.password,
@@ -111,14 +108,6 @@ export default function WriterLogin() {
             margin="dense"
           />
 
-          {/* <div className={styles.input2}>
-            <input
-              className={styles.password}
-              type="Password"
-              name="Password"
-              placeholder="Password"
-              value={values.password}
-            /> */}
 
           <TextField
             onChange={handleChange}
