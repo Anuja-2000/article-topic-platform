@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import ArticleCard from '../../components/article/articleCard';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import urls from '../../enums/url';
 
 
 function SearchArticleBox({keyword}) {
@@ -13,7 +14,7 @@ function SearchArticleBox({keyword}) {
         useEffect(() => {
           const fetchData = async () => {
             try {
-              const response = await fetch(`http://localhost:3001/api/readerArticle/search`, {
+              const response = await fetch(`${urls.BASE_URL_READER_ARTICLE}search`, {
                 headers: {
                   'Content-Type': 'application/json', // Adjust the content type if needed
                   'text':keyword, // Add your custom data in headers

@@ -9,6 +9,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useForm } from 'react-hook-form';
+import urls from '../../enums/url';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -64,7 +65,7 @@ const Profile = () => {
         const fetchData = async () => {
             try {
                 const userId = localStorage.getItem("userId");
-                const response = await axios.get(`http://localhost:3001/api/user/${userId}`);
+                const response = await axios.get(`${urls.BASE_URL_USER}${userId}`);
                 const {name,displayName,email,imgUrl } = response.data;
                 if (name != null && email != null) {
                     setUserName(name);
@@ -89,7 +90,7 @@ const Profile = () => {
         if(changePassword()=="password does not match"){
             return;
         };
-        await axios.post('http://localhost:3001/api/file/setUserId', {
+        await axios.post(`${urls.BASE_URL_FILE}setUserId`, {
             userId: localStorage.getItem("userId"),
         }).then((response) => {
             console.log(response);
@@ -97,7 +98,7 @@ const Profile = () => {
             console.log(error);
         });
 
-        await axios.put('http://localhost:3001/api/user/updateName', {
+        await axios.put(`${urls.BASE_URL_USER}updateName`, {
                 userId: localStorage.getItem("userId"),
                 name: name,
         }).then((response) => {
@@ -106,7 +107,7 @@ const Profile = () => {
             console.log(error);
         });
 
-        await axios.post('http://localhost:3001/api/file/upload',formData,{
+        await axios.post(`${urls.BASE_URL_FILE}upload`,formData,{
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -156,7 +157,7 @@ const Profile = () => {
           };
       
           try {
-            const response = await fetch(`http://localhost:3001/api/user/updatePassword`, {
+            const response = await fetch(`${urls.BASE_URL_USER}updatePassword`, {
               method: 'PATCH',
               body: JSON.stringify(requestBody),
               headers: {

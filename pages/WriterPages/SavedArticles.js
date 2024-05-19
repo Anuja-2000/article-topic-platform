@@ -15,6 +15,7 @@ import {
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../components/createArticleNavbar";
+import urls from "../../enums/url";
 
 function SavedArticles() {
   const [articles, setArticles] = useState([]);
@@ -41,7 +42,7 @@ function SavedArticles() {
         }
 
         const response = await axios.get(
-          `http://localhost:3001/api/article/writer/${userid}`
+          `${urls.BASE_URL_ARTICLE}writer/${userid}`
         );
 
         console.log("Response: ", response.data);

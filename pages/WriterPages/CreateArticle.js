@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import dynamic from "next/dynamic";
 import Navbar from "../../components/createArticleNavbar";
+
 const TextEditor = dynamic(() => import("../../components/textEditor"), {
   ssr: false,
 });
