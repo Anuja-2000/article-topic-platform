@@ -24,7 +24,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
 const api = axios.create({
-  baseURL: `http://localhost:3001/api/topicDomains`
+  baseURL: `https://article-writing-backend.onrender.com/api/topicDomains`
 });
 
 function TopicDomains() {
@@ -191,7 +191,7 @@ function TopicDomains() {
   const handleConfirmDelete = async () => {
     try {
       // Fetch keywords associated with the topic domain
-      const keywordsResponse = await axios.get(`http://localhost:3001/api/keywords/get/${deleteTargetId}`);
+      const keywordsResponse = await axios.get(`https://article-writing-backend.onrender.com/api/keywords/get/${deleteTargetId}`);
       const keywordsToDelete = keywordsResponse.data;
       console.log("Keywords to delete:", keywordsToDelete);
 
@@ -199,12 +199,12 @@ function TopicDomains() {
       await Promise.all(keywordsToDelete.map(async keyword => {
         console.log("Deleting keyword:", keyword); // Log the keyword being deleted
         console.log(`Deleting keyword with ID: ${keyword.keywordId}`);
-        await axios.delete(`http://localhost:3001/api/keywords/delete/${keyword.keywordId}`);
+        await axios.delete(`https://article-writing-backend.onrender.com/api/keywords/delete/${keyword.keywordId}`);
       }));
 
 
       // Fetch topics associated with the topic domain
-      const topicsResponse = await axios.get(`http://localhost:3001/api/topics/${deleteTargetId}`);
+      const topicsResponse = await axios.get(`https://article-writing-backend.onrender.com/api/topics/${deleteTargetId}`);
       const topicsToDelete = topicsResponse.data;
       console.log("Topics to delete:", topicsToDelete);
 
@@ -212,11 +212,11 @@ function TopicDomains() {
       for (const topic of topicsToDelete) {
         console.log("Deleting topic:", topic);
         console.log(`Deleting topic with ID: ${topic.topicId}`);
-        await axios.delete(`http://localhost:3001/api/topics/delete/${topic.topicId}`);
+        await axios.delete(`https://article-writing-backend.onrender.com/api/topics/delete/${topic.topicId}`);
       }
 
       // Delete the topic domain itself
-      await axios.delete(`http://localhost:3001/api/topicDomains/${deleteTargetId}`);
+      await axios.delete(`https://article-writing-backend.onrender.com/api/topicDomains/${deleteTargetId}`);
 
       // Update the state to remove the deleted topic domain from the UI
       setData(data.filter(item => item.topicDomainId !== deleteTargetId));

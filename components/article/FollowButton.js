@@ -11,7 +11,7 @@ const FollowButton = ({ writerId }) => {
     setReaderId(readerId);
     const getFollow = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/follow/get`, {
+        const response = await fetch(`https://article-writing-backend.onrender.com/api/follow/get`, {
           method: 'POST',
           body:JSON.stringify({
             readerId: readerId,
@@ -38,7 +38,7 @@ const FollowButton = ({ writerId }) => {
 console.log(following);
 const followWriter = async () => {
   try {
-    const response = await fetch(`http://localhost:3001/api/follow/save`, {
+    const response = await fetch(`https://article-writing-backend.onrender.com/api/follow/save`, {
       method: 'POST',
       body: JSON.stringify(
         {
@@ -60,7 +60,7 @@ const followWriter = async () => {
 
 const unfollowWriter = async() => {
   try {
-    const response = await fetch(`http://localhost:3001/api/follow/delete`, {
+    const response = await fetch(`https://article-writing-backend.onrender.com/api/follow/delete`, {
       method: 'DELETE',
       body: JSON.stringify(
         {

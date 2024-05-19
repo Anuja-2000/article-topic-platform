@@ -46,7 +46,7 @@ const ReportWriterDialog = ({ isOpen, onClose, writerId }) => {
         writerId: writerId,
       };
       try {
-        const response = await fetch('http://localhost:3001/api/reportedWriter/save', {
+        const response = await fetch('https://article-writing-backend.onrender.com/api/reportedWriter/save', {
           method: 'POST',
           body: JSON.stringify(reportData),
           headers: {

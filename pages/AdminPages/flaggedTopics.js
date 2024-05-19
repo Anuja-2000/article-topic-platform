@@ -24,23 +24,23 @@ const FlaggedTopics = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/flaggedTopics/get');
+                const response = await axios.get('https://article-writing-backend.onrender.com/api/flaggedTopics/get');
                 console.log(response.data);
 
                 // Iterate over flagged topics and fetch details
                 const topicsWithDetails = await Promise.all(response.data.map(async (topic) => {
                     console.log(topic.topicId, topic.topicName); // Access topicId, topicName directly from flagged topics
                     // Fetch topic details by topicId
-                    const topicResponse = await axios.get(`http://localhost:3001/api/topics/getByTopic/${topic.topicId}`);
+                    const topicResponse = await axios.get(`https://article-writing-backend.onrender.com/api/topics/getByTopic/${topic.topicId}`);
                     const { keywordId, topicDomainId } = topicResponse.data; // Destructure response.data
                     console.log(topicResponse);
 
                     // Fetch keyword name
-                    const keywordResponse = await axios.get(`http://localhost:3001/api/keywords/get/GetByKeyword/${keywordId}`);
+                    const keywordResponse = await axios.get(`https://article-writing-backend.onrender.com/api/keywords/get/GetByKeyword/${keywordId}`);
                     const keywordName = keywordResponse.data.keywordName;
 
                     // Fetch topic domain name
-                    const topicDomainResponse = await axios.get(`http://localhost:3001/api/topicDomains/get/${topicDomainId}`);
+                    const topicDomainResponse = await axios.get(`https://article-writing-backend.onrender.com/api/topicDomains/get/${topicDomainId}`);
                     const topicDomainName = topicDomainResponse.data.topicDomainName;
 
                     // Return topic details with additional data
@@ -74,10 +74,10 @@ const FlaggedTopics = () => {
     const handleConfirmDelete = async () => {
         try {
             // Delete the topic
-            await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
+            await axios.delete(`https://article-writing-backend.onrender.com/api/topics/delete/${deleteTargetId}`);
 
             // Delete flagged topics related to the deleted topic
-            await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+            await axios.delete(`https://article-writing-backend.onrender.com/api/flaggedTopics/delete/${deleteTargetId}`);
 
             // Update the state to remove the deleted topic from the UI
             setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
@@ -98,7 +98,7 @@ const FlaggedTopics = () => {
     const handleConfirmIgnore = async () => {
         try {
             // Delete flagged topics related to the topic ID
-            await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+            await axios.delete(`https://article-writing-backend.onrender.com/api/flaggedTopics/delete/${deleteTargetId}`);
 
             // Update the state to remove the ignored topic from the UI
             setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));

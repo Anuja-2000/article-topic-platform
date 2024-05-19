@@ -67,7 +67,7 @@ function ChangePassword() {
     };
 
     try {
-      const response = await fetch(`http://localhost:3001/api/user/updatePassword`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/user/updatePassword`, {
         method: 'PATCH',
         body: JSON.stringify(requestBody),
         headers: {

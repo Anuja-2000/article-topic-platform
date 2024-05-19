@@ -13,7 +13,7 @@ const Header = ({ writerId, date, title }) => {
     const fetchData = async () => {
       if (!writerId) return;
       try {
-         const response = await fetch(`http://localhost:3001/api/user/${writerId}`, {
+         const response = await fetch(`https://article-writing-backend.onrender.com/api/user/${writerId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json', 

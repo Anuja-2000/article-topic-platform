@@ -28,7 +28,7 @@ const DeactivateWriters = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/reportedWriter/get');
+        const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/get');
         console.log("response.data", response.data);
 
         // Iterate over reported writers and fetch details
@@ -37,7 +37,7 @@ const DeactivateWriters = () => {
           console.log(reportedWriter); // Access topicId, topicName directly from flagged topics
 
           // Fetch writer details by writerId
-          const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+          const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
           const { name, email } = reportedWriterResponse.data; // Destructure response.data
           console.log("for user test", reportedWriterResponse.data);
           console.log(name);
@@ -98,8 +98,8 @@ const DeactivateWriters = () => {
   
   const handleConfirmDeactivate = async () => {
     try {
-      await axios.patch(`http://localhost:3001/api/user/deactivateUser/${deleteTargetId}`);
-      await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
+      await axios.patch(`https://article-writing-backend.onrender.com/api/user/deactivateUser/${deleteTargetId}`);
+      await axios.delete(`https://article-writing-backend.onrender.com/api/reportedWriter/delete/${deleteTargetId}`);
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
       setDeactivateSuccessfulAlertOpen(true);

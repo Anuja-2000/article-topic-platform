@@ -39,7 +39,7 @@ const UserTopicSuggestion = () => {
   useEffect(() => {
     const fetchTopicDomains = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/topicDomains/get');
+        const response = await axios.get('https://article-writing-backend.onrender.com/api/topicDomains/get');
         setTopicDomains(response.data);
       } catch (error) {
         console.error('Error fetching topic domains:', error);
@@ -55,7 +55,7 @@ const UserTopicSuggestion = () => {
     const selectedDomain = event.target.value;
     setSelectedTopicDomain(selectedDomain);
     try {
-      const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedDomain}`);
+      const response = await axios.get(`https://article-writing-backend.onrender.com/api/keywords/get/${selectedDomain}`);
       setKeywords(response.data);
     } catch (error) {
       console.error('Error fetching keywords:', error);
@@ -75,7 +75,7 @@ const UserTopicSuggestion = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/topics/get/${selectedTopicDomain}/${selectedKeywords}`);
+      const response = await axios.get(`https://article-writing-backend.onrender.com/api/topics/get/${selectedTopicDomain}/${selectedKeywords}`);
       setSearchResults(response.data);
       setSearchClicked(true);
     } catch (error) {

@@ -34,7 +34,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 
 const api = axios.create({
-  baseURL: `http://localhost:3001/api/topics`
+  baseURL: `https://article-writing-backend.onrender.com/api/topics`
 });
 
 function Topics() {
@@ -94,7 +94,7 @@ function Topics() {
 
     const fetchTopicDomains = async () => {
       try {
-        const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
+        const topicDomainsResponse = await axios.get('https://article-writing-backend.onrender.com/api/topicDomains/get');
         setTopicDomains(topicDomainsResponse.data);
 
       } catch (error) {
@@ -104,7 +104,7 @@ function Topics() {
 
     const fetchKeywords = async () => {
       try {
-        const keywordResponse = await axios.get('http://localhost:3001/api/keywords/get');
+        const keywordResponse = await axios.get('https://article-writing-backend.onrender.com/api/keywords/get');
         setKeywords(keywordResponse.data);
       } catch (error) {
         console.error('Error fetching keywords:', error);
@@ -122,7 +122,7 @@ function Topics() {
     const fetchKeywordsByTopicDomain = async () => {
       try {
         if (selectedTopicDomain) {
-          const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedTopicDomain}`);
+          const response = await axios.get(`https://article-writing-backend.onrender.com/api/keywords/get/${selectedTopicDomain}`);
           setTopicDomainKeywords(response.data);
           console.log(response.data);
         } else {
@@ -144,13 +144,13 @@ function Topics() {
     const fetchFilteredTopicDomainKeywords = async () => {
       try {
         if (filterSelectedTopicDomain) {
-          const response = await axios.get(`http://localhost:3001/api/keywords/get/${filterSelectedTopicDomain}`);
+          const response = await axios.get(`https://article-writing-backend.onrender.com/api/keywords/get/${filterSelectedTopicDomain}`);
           setFilteredTopicDomainKeywords(response.data); // Assuming response.data.keywords contains the array of keywords
           console.log(response.data);
 
         } else {
           // If no keyword is selected
-          const response = await axios.get(`http://localhost:3001/api/keywords/get`);
+          const response = await axios.get(`https://article-writing-backend.onrender.com/api/keywords/get`);
           setFilteredTopicDomainKeywords(response.data); 
         }
       } catch (error) {
@@ -187,13 +187,13 @@ function Topics() {
 
     try {
       if (selectedValue === 'allTopicDomains') {
-        const responseData = await api.get(`http://localhost:3001/api/topics/get`);
+        const responseData = await api.get(`https://article-writing-backend.onrender.com/api/topics/get`);
         setData(responseData.data); // Show all data
 
-        setFilteredTopicDomainKeywords((await api.get(`http://localhost:3001/api/keywords/get`)).data);
+        setFilteredTopicDomainKeywords((await api.get(`https://article-writing-backend.onrender.com/api/keywords/get`)).data);
 
       } else {
-        const response = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
+        const response = await api.get(`https://article-writing-backend.onrender.com/api/topics/${filterSelectedTopicDomain}`);
         setData(response.data); // Show data filtered by the selected topic domain
 
       }
@@ -335,7 +335,7 @@ function Topics() {
     try {
 
       // Delete the topic
-      await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
+      await axios.delete(`https://article-writing-backend.onrender.com/api/topics/delete/${deleteTargetId}`);
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.topicId !== deleteTargetId));
       setShowDeleteConfirmation(false);
@@ -365,16 +365,16 @@ function Topics() {
       let responseData;
       if (filterSelectedTopicDomain === 'allTopicDomains' && filterSelectedKeyword === 'allKeywords') {
         // Fetch all data when both topic domain and keyword are 'all'
-        responseData = await api.get("http://localhost:3001/api/topics/get");
+        responseData = await api.get("https://article-writing-backend.onrender.com/api/topics/get");
       } else if (filterSelectedTopicDomain === 'allTopicDomains') {
         // Fetch data filtered by keyword when only topic domain is 'all'
-        responseData = await api.get(`http://localhost:3001/api/topics/getByKeyword/${filterSelectedKeyword}`);
+        responseData = await api.get(`https://article-writing-backend.onrender.com/api/topics/getByKeyword/${filterSelectedKeyword}`);
       } else if (filterSelectedKeyword === 'allKeywords') {
         // Fetch data filtered by topic domain when only keyword is 'all'
-        responseData = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
+        responseData = await api.get(`https://article-writing-backend.onrender.com/api/topics/${filterSelectedTopicDomain}`);
       } else {
         // Fetch data filtered by both topic domain and keyword
-        responseData = await api.get(`http://localhost:3001/api/topics/get/${filterSelectedTopicDomain}/${filterSelectedKeyword}`);
+        responseData = await api.get(`https://article-writing-backend.onrender.com/api/topics/get/${filterSelectedTopicDomain}/${filterSelectedKeyword}`);
       }
   
       setData(responseData.data); // Update the data

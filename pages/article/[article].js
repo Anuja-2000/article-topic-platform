@@ -21,7 +21,7 @@ const ArticlePage = () => {
     const fetchData = async () => {
       if (!articleId) return;
       try {
-         const response = await fetch(`http://localhost:3001/api/readerArticle/get`, {
+         const response = await fetch(`https://article-writing-backend.onrender.com/api/readerArticle/get`, {
           headers: {
             'Content-Type': 'application/json', // Adjust the content type if needed
 

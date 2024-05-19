@@ -10,7 +10,7 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
      const fetchData = async () => {
       if (!userId) return;
       try {
-         const response = await fetch(`http://localhost:3001/api/user/${userId}`, {
+         const response = await fetch(`https://article-writing-backend.onrender.com/api/user/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json', 

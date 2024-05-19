@@ -54,7 +54,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   };
   const updateData = async (newLikes) => {
     try {
-      await fetch(`http://localhost:3001/api/readerArticle/updateLikes`, {
+      await fetch(`https://article-writing-backend.onrender.com/api/readerArticle/updateLikes`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json', // Adjust the content type if needed

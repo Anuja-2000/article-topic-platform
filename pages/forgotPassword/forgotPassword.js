@@ -27,7 +27,7 @@ function ForgotPassword() {
     const { name,email } = formData;
     try {
       console.log(name,email);
-      const response = await axios.post('http://localhost:3001/api/auth/reset-password', { name,email });
+      const response = await axios.post('https://article-writing-backend.onrender.com/api/auth/reset-password', { name,email });
 
       if (response.data.success) {        
         setMessage({ text: 'Reset password email sent.', type: 'success' });

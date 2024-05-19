@@ -27,7 +27,7 @@ const DeactivateArticles = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/reportArticle/get');
+                const response = await axios.get('https://article-writing-backend.onrender.com/api/reportArticle/get');
                 console.log(response.data);
 
                 // Iterate over reported articles and fetch details
@@ -35,12 +35,12 @@ const DeactivateArticles = () => {
                     console.log(article);
                     console.log("articleId", article.articleId); // Access topicId, topicName directly from flagged topics
                     // Fetch article details by articleId
-                    const reportedArticleResponse = await axios.get(`http://localhost:3001/api/readerArticle/getById/${article.articleId}`);
+                    const reportedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/readerArticle/getById/${article.articleId}`);
                     const { title, userId } = reportedArticleResponse.data; // Destructure response.data
                     console.log("for test", reportedArticleResponse.data)
                     console.log(title);
 
-                    const articleWriterResponse = await axios.get(`http://localhost:3001/api/user/${userId}`);
+                    const articleWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${userId}`);
                     console.log(userId);
                     const { name } = articleWriterResponse.data; // Destructure response.data
                     console.log("for user test", articleWriterResponse.data)
@@ -103,10 +103,10 @@ const DeactivateArticles = () => {
     const handleConfirmDelete = async () => {
         try {
             // Delete the topic
-            await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
+            await axios.delete(`https://article-writing-backend.onrender.com/api/topics/delete/${deleteTargetId}`);
 
             // Delete flagged topics related to the deleted topic
-            await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+            await axios.delete(`https://article-writing-backend.onrender.com/api/flaggedTopics/delete/${deleteTargetId}`);
 
             // Update the state to remove the deleted topic from the UI
             setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.topicId !== deleteTargetId));
@@ -127,7 +127,7 @@ const DeactivateArticles = () => {
     const handleConfirmIgnore = async () => {
         try {
             // Delete flagged topics related to the topic ID
-            await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
+            await axios.delete(`https://article-writing-backend.onrender.com/api/flaggedTopics/delete/${deleteTargetId}`);
 
             // Update the state to remove the ignored topic from the UI
             setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.topicId !== deleteTargetId));

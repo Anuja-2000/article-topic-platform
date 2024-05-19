@@ -237,7 +237,7 @@ function Keywords() {
   const handleConfirmDelete = async () => {
     try {
       // Fetch topics associated with the keywords
-      const topicsResponse = await axios.get(`http://localhost:3001/api/topics/${deleteTargetId}`);
+      const topicsResponse = await axios.get(`https://article-writing-backend.onrender.com/api/topics/${deleteTargetId}`);
       const topicsToDelete = topicsResponse.data;
       console.log("Topics to delete:", topicsToDelete);
 
@@ -245,11 +245,11 @@ function Keywords() {
       for (const topic of topicsToDelete) {
         console.log("Deleting topic:", topic);
         console.log(`Deleting topic with ID: ${topic.topicId}`);
-        await axios.delete(`http://localhost:3001/api/topics/delete/${topic.topicId}`);
+        await axios.delete(`https://article-writing-backend.onrender.com/api/topics/delete/${topic.topicId}`);
       }
 
       // Delete the keyword itself
-      await axios.delete(`http://localhost:3001/api/keywords/delete/${deleteTargetId}`);
+      await axios.delete(`https://article-writing-backend.onrender.com/api/keywords/delete/${deleteTargetId}`);
 
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.keywordId !== deleteTargetId));

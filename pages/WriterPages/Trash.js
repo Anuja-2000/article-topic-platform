@@ -41,7 +41,7 @@ function Trash() {
         }
 
         const response = await axios.get(
-          `http://localhost:3001/api/article/writer/${userid}`
+          `https://article-writing-backend.onrender.com/api/article/writer/${userid}`
         );
 
         console.log("Response: ", response.data);
