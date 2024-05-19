@@ -43,6 +43,12 @@ export default function Login() {
           const email = response.data.data.email;
           const userId = response.data.data.userId;
           const imgUrl = response.data.data.imgUrl;
+          const isActive = response.data.data.isActive;
+        
+          if (!isActive) {
+            alert("Your account is deactivated");
+            return;
+          }
           localStorage.setItem("token", token);
           localStorage.setItem("type", type);
           localStorage.setItem("username", username);
@@ -63,6 +69,8 @@ export default function Login() {
         console.log(error);
         if (error.response.status == 404) {
           alert("User not found! Please register first.");
+        } else if (error.response.status === 403) {
+          alert(error.response.data.message); // Display the message from the server
         } else {
           alert("Invalid Login");
         }
