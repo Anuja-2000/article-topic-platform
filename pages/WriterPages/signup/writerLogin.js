@@ -6,6 +6,7 @@ import { useState } from "react";
 import setAuthtoken from "../../api/auth/axios-set-token";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
+import HomeNav from "../../HomePage/homeNav";
 
 export default function WriterLogin() {
   const [values, setValues] = useState({
@@ -68,6 +69,8 @@ export default function WriterLogin() {
   }
 
   return (
+    <>
+    <HomeNav/>
     <LoginLayout2>
       <Head>
         <title>Login</title>
@@ -151,5 +154,6 @@ export default function WriterLogin() {
         </p>
       </section>
     </LoginLayout2>
+    </>
   );
 }

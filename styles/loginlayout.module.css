@@ -10,6 +10,7 @@
     height: 100vh;
     background-color: rgba(170, 48, 153, 0.521);
     min-width: 720px;
+    margin-top: 60px;
   }
 
 .column {

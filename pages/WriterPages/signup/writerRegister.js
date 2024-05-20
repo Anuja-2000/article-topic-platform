@@ -8,6 +8,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
+import HomeNav from "../../HomePage/homeNav";
 
 export default function WriterRegister() {
 
@@ -86,13 +87,15 @@ export default function WriterRegister() {
   };
 
   return (
+    <>
+    <HomeNav/>
     <LoginLayout2>
 
       <Head>
         <title>Create an account</title>
       </Head>
 
-      <section className={styles.section}>
+      <section className={styles.section} style={{width:"270px"}}>
         <div className={styles.title}>
           <h1 className={styles.title1}>Join our community <br/> to inspire the world!</h1>
 
@@ -180,5 +183,6 @@ export default function WriterRegister() {
         </p>
       </section>
     </LoginLayout2>
+    </>
   )
 }
