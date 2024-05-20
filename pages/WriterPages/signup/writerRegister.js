@@ -62,7 +62,7 @@ export default function WriterRegister() {
     const userId = values.username + "-" + uuidv4();
 
     //Sending user details
-    const response = axios.post("https://article-writing-backend.onrender.com/api/user/signup", {
+    const response = axios.post("https://article-writing-backend.onrender.com/api/auth/signup", {
       userId: userId,
       email: values.email,
       name: values.username,
