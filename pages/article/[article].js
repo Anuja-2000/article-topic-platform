@@ -22,15 +22,17 @@ const ArticlePage = () => {
       if (!articleId) return;
       try {
          const response = await fetch(`http://localhost:3001/api/readerArticle/get`, {
+          method: 'POST',
+          body: JSON.stringify({
+            "id": articleId,
+          }),
           headers: {
-            'Content-Type': 'application/json', // Adjust the content type if needed
-
-            'id': article, // Add custom data in headers
+                'Content-Type': 'application/json',
           },
       });
         const jsonData = await response.json();
         setData(jsonData);
-        console.log(jsonData.likes);
+        console.log(jsonData);
 
       } catch (error) {
         console.error('Error fetching data:', error);
