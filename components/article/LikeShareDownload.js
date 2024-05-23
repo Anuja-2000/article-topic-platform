@@ -97,6 +97,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   };
   const handleReportWriterClick = () => {
     setIsReportWriterDialogOpen(true);
+    setIsMoreOptionsOpen(false); // Close MoreOptionsCard
   };
 
   const handleCloseReportWriterDialog = () => {

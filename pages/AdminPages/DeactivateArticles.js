@@ -195,8 +195,8 @@ const DeactivateArticles = () => {
                                                     <TableCell>{article.count}</TableCell>
                                                     <TableCell>
                                                         <Box sx={{ display: 'flex', gap: '8px' }}>
-                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Deactivate</Button>
-                                                            <Button variant="contained" color="success" onClick={() => handleIgnoreClick(topic.topicId)}>Reject</Button>
+                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Remove</Button>
+                                                            <Button variant="contained" color="success" onClick={() => handleIgnoreClick(topic.topicId)}>Cancel</Button>
                                                         </Box>
                                                     </TableCell>
                                                 </TableRow>
