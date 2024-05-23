@@ -40,7 +40,6 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
           method: 'POST',
           body:JSON.stringify({
             readerId: readerId,
-            writerId:writerId,
             articleId:articleId
           }),
           headers: {
@@ -69,7 +68,6 @@ const likeArticle = async () => {
         {
           id:likeId,
           readerId: readerId,
-          writerId:writerId,
           articleId:articleId
         }
       ),
@@ -90,7 +88,6 @@ const unlikeArticle = async() => {
       body: JSON.stringify(
         {
           readerId: readerId,
-          writerId:writerId,
           articleId:articleId
         }
       ),
