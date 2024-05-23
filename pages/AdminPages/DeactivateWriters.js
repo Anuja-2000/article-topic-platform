@@ -133,31 +133,31 @@ const DeactivateWriters = () => {
       setTimeout(() => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
-   // Fetch updated list of deactivated writers since new writer added to deactivate
-   const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
-   const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
-     const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
-     const { name, email } = reportedWriterResponse.data;
-     return {
-       writerName: name,
-       email: email,
-       writerId: reportedWriter.writerId,
-       reasons: reportedWriter.reasons,
-       count: reportedWriter.count
-     };
-   }));
-   setDeactivatedWriters(deactivatedWritersWithDetails);
- } catch (error) {
-   console.error("Error deactivating user:", error);
- }
-};
+      // Fetch updated list of deactivated writers since new writer added to deactivate
+      const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+        const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+        const { name, email } = reportedWriterResponse.data;
+        return {
+          writerName: name,
+          email: email,
+          writerId: reportedWriter.writerId,
+          reasons: reportedWriter.reasons,
+          count: reportedWriter.count
+        };
+      }));
+      setDeactivatedWriters(deactivatedWritersWithDetails);
+    } catch (error) {
+      console.error("Error deactivating user:", error);
+    }
+  };
   const handleCloseDeleteSuccessfulAlertOpen = () => {
     setDeactivateSuccessfulAlertOpen(false);
   };
 
   const handleConfirmIgnore = async () => {
     try {
-
+      await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
       setShowDeactivateIgnoreConfirmation(false);
       setDeactivateIgnoreAlertOpen(true);
       setTimeout(() => {
