@@ -41,6 +41,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
           body:JSON.stringify({
             readerId: readerId,
             writerId:writerId,
+            articleId:articleId
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   },[initialLikes]);
 
 
-const likeWriter = async () => {
+const likeArticle = async () => {
   try {
     const response = await fetch(`http://localhost:3001/api/like/save`, {
       method: 'POST',
@@ -69,6 +70,7 @@ const likeWriter = async () => {
           id:likeId,
           readerId: readerId,
           writerId:writerId,
+          articleId:articleId
         }
       ),
       headers: {
@@ -81,7 +83,7 @@ const likeWriter = async () => {
   }
 };
 
-const unlikeWriter = async() => {
+const unlikeArticle = async() => {
   try {
     const response = await fetch(`http://localhost:3001/api/like/delete`, {
       method: 'DELETE',
@@ -89,6 +91,7 @@ const unlikeWriter = async() => {
         {
           readerId: readerId,
           writerId:writerId,
+          articleId:articleId
         }
       ),
       headers: {
@@ -148,10 +151,10 @@ const handleShareClick = async () => {
     let newLikes = likes;
     if(isLiked){
       newLikes = likes - 1 ;
-      unlikeWriter();
+      unlikeArticle();
     }else{
       newLikes = likes + 1;
-      likeWriter();
+      likeArticle();
     }
     setIsLiked(!isLiked);
 
