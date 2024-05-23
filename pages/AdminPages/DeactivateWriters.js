@@ -24,11 +24,12 @@ const DeactivateWriters = () => {
   const [deactivateSuccessfulAlertOpen, setDeactivateSuccessfulAlertOpen] = useState(false);
   const [deactivateIgnoreAlertOpen, setDeactivateIgnoreAlertOpen] = useState(false);
   const [showDeactivateIgnoreConfirmation, setShowDeactivateIgnoreConfirmation] = useState(false);
+  const [deactivatedWriters, setDeactivatedWriters] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/reportedWriter/get');
+        const response = await axios.get('http://localhost:3001/api/reportedWriter/reportedWriters/get');
         console.log("response.data", response.data);
 
         // Iterate over reported writers and fetch details
@@ -65,16 +66,42 @@ const DeactivateWriters = () => {
         console.log("reportedWritersWithDetails", reportedWritersWithDetails);
         const sortedArticles = reportedWritersWithDetails.slice().sort((a, b) => {
           return a.writerName.localeCompare(b.writerName);
-      });
+        });
         // Update state with reported writers including additional details
         setUniqueReportedWriters(sortedArticles);
-        
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
+    const fetchDeactivatedWriters = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+        console.log("Deactivated response.data", response.data);
+
+        const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+          const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+          const { name, email } = reportedWriterResponse.data;
+          return {
+            writerName: name,
+            email: email,
+            writerId: reportedWriter.writerId,
+            reasons: reportedWriter.reasons,
+            count: reportedWriter.count
+          };
+        }));
+
+        setDeactivatedWriters(deactivatedWritersWithDetails);
+      } catch (error) {
+        console.error('Error fetching deactivated writers:', error);
+      }
+    };
+
     fetchData();
+    fetchDeactivatedWriters();
   }, []);
+
+
 
   const handleIgnoreClick = (topicId) => {
     setDeleteTargetId(topicId);
@@ -95,17 +122,31 @@ const DeactivateWriters = () => {
     setDeleteTargetId(writerId);
     setShowDeactivateConfirmation(true);
   };
-  
+
   const handleConfirmDeactivate = async () => {
     try {
       await axios.patch(`http://localhost:3001/api/user/deactivateUser/${deleteTargetId}`);
-      await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
+      await axios.patch(`http://localhost:3001/api/reportedWriter/update/${deleteTargetId}`);
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
       setDeactivateSuccessfulAlertOpen(true);
       setTimeout(() => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
+      // Fetch updated list of deactivated writers since new writer added to deactivate
+      const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+        const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+        const { name, email } = reportedWriterResponse.data;
+        return {
+          writerName: name,
+          email: email,
+          writerId: reportedWriter.writerId,
+          reasons: reportedWriter.reasons,
+          count: reportedWriter.count
+        };
+      }));
+      setDeactivatedWriters(deactivatedWritersWithDetails);
     } catch (error) {
       console.error("Error deactivating user:", error);
     }
@@ -116,7 +157,7 @@ const DeactivateWriters = () => {
 
   const handleConfirmIgnore = async () => {
     try {
-    
+      await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
       setShowDeactivateIgnoreConfirmation(false);
       setDeactivateIgnoreAlertOpen(true);
       setTimeout(() => {
@@ -165,8 +206,8 @@ const DeactivateWriters = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                    {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) =>(
-                      
+                      {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) => (
+
                         <TableRow key={writer.writerId}>
                           <TableCell>{writer.writerName}</TableCell>
                           <TableCell>{writer.email}</TableCell>
@@ -218,11 +259,40 @@ const DeactivateWriters = () => {
                 User Deactivated successfully.
               </div>
             )}
-             {deactivateIgnoreAlertOpen && (
+            {deactivateIgnoreAlertOpen && (
               <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
                 Ignore User Deactivating.
               </div>
             )}
+
+            <h2 style={{ textAlign: "center", marginTop: "40px" }}>Deactivated Writers</h2>
+            <Grid container spacing={1}>
+              <Grid item xs={1}></Grid>
+              <Grid item xs={10}>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Name</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Email</h4>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {deactivatedWriters.map((writer) => (
+                        <TableRow key={writer.writerId}>
+                          <TableCell>{writer.writerName}</TableCell>
+                          <TableCell>{writer.email}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+            </Grid>
           </div>
         </Navbar>
       </div>

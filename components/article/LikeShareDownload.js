@@ -176,6 +176,7 @@ const handleShareClick = async () => {
   };
   const handleReportWriterClick = () => {
     setIsReportWriterDialogOpen(true);
+    setIsMoreOptionsOpen(false); // Close MoreOptionsCard
   };
 
   const handleCloseReportWriterDialog = () => {
