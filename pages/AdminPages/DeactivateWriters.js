@@ -306,7 +306,7 @@ const DeactivateWriters = () => {
                           <h4 style={{ color: 'white' }}>Deactivated By</h4>
                         </TableCell>
                         <TableCell>
-                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                          <h4 style={{ color: 'white' }}>Deactivated At</h4>
                         </TableCell>
                         
                       </TableRow>
