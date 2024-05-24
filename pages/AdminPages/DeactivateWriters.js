@@ -25,10 +25,13 @@ const DeactivateWriters = () => {
   const [deactivateIgnoreAlertOpen, setDeactivateIgnoreAlertOpen] = useState(false);
   const [showDeactivateIgnoreConfirmation, setShowDeactivateIgnoreConfirmation] = useState(false);
   const [deactivatedWriters, setDeactivatedWriters] = useState([]);
+  const [adminId, setAdminId] = useState("");
+   
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+      
         const response = await axios.get('http://localhost:3001/api/reportedWriter/reportedWriters/get');
         console.log("response.data", response.data);
 
@@ -39,7 +42,7 @@ const DeactivateWriters = () => {
 
           // Fetch writer details by writerId
           const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
-          const { name, email } = reportedWriterResponse.data; // Destructure response.data
+          const { name, email, savedAt } = reportedWriterResponse.data; // Destructure response.data
           console.log("for user test", reportedWriterResponse.data);
           console.log(name);
 
@@ -59,6 +62,7 @@ const DeactivateWriters = () => {
             writerName: name,
             email: email,
             writerId: reportedWriter.writerId,
+            joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format 
             reasons: uniqueReasonsWithCounts,
             count: reportedWriter.count
           };
@@ -81,12 +85,17 @@ const DeactivateWriters = () => {
 
         const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
           const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
-          const { name, email } = reportedWriterResponse.data;
+          const { name, email, savedAt } = reportedWriterResponse.data;
+          console.log('reportedWriterResponse.data;',reportedWriterResponse.data);
+          const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
           return {
+            deactivatedBy: adminResponse.data.name,
             writerName: name,
             email: email,
+            joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date
             writerId: reportedWriter.writerId,
             reasons: reportedWriter.reasons,
+            deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
             count: reportedWriter.count
           };
         }));
@@ -125,8 +134,10 @@ const DeactivateWriters = () => {
 
   const handleConfirmDeactivate = async () => {
     try {
+      const adminId = localStorage.getItem("userId"); 
       await axios.patch(`http://localhost:3001/api/user/deactivateUser/${deleteTargetId}`);
-      await axios.patch(`http://localhost:3001/api/reportedWriter/update/${deleteTargetId}`);
+      await axios.patch(`http://localhost:3001/api/reportedWriter/update/${deleteTargetId}`, { adminId });
+      
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
       setDeactivateSuccessfulAlertOpen(true);
@@ -137,12 +148,17 @@ const DeactivateWriters = () => {
       const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
       const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
         const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
-        const { name, email } = reportedWriterResponse.data;
+        const { name, email, savedAt} = reportedWriterResponse.data;
+        const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
+        console.log('reportedWriter.deactivatedBy',reportedWriter.deactivatedBy);
         return {
+          deactivatedBy: adminResponse.data.name,
           writerName: name,
           email: email,
           writerId: reportedWriter.writerId,
           reasons: reportedWriter.reasons,
+          joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date 
+          deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
           count: reportedWriter.count
         };
       }));
@@ -195,6 +211,9 @@ const DeactivateWriters = () => {
                           <h4 style={{ color: 'white' }}>Writer Email</h4>
                         </TableCell>
                         <TableCell>
+                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                        </TableCell>
+                        <TableCell>
                           <h4 style={{ color: 'white' }}>Reasons</h4>
                         </TableCell>
                         <TableCell>
@@ -211,6 +230,7 @@ const DeactivateWriters = () => {
                         <TableRow key={writer.writerId}>
                           <TableCell>{writer.writerName}</TableCell>
                           <TableCell>{writer.email}</TableCell>
+                          <TableCell>{writer.joinedAt}</TableCell>
                           <TableCell>
                             {writer.reasons.map((reasonObj, index) => (
                               <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -279,6 +299,16 @@ const DeactivateWriters = () => {
                         <TableCell>
                           <h4 style={{ color: 'white' }}>Writer Email</h4>
                         </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Deactivated By</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                        </TableCell>
+                        
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -286,6 +316,9 @@ const DeactivateWriters = () => {
                         <TableRow key={writer.writerId}>
                           <TableCell>{writer.writerName}</TableCell>
                           <TableCell>{writer.email}</TableCell>
+                          <TableCell>{writer.joinedAt}</TableCell>
+                          <TableCell>{writer.deactivatedBy}</TableCell>
+                          <TableCell>{new Date(writer.deactivatedAt).toISOString().substring(0, 10)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
