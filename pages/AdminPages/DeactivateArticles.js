@@ -203,7 +203,11 @@ const DeactivateArticles = () => {
                                             {uniqueReportedArticles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((article) => (
 
                                                 <TableRow key={article.articleIdId}>
-                                                    <TableCell>{article.title}</TableCell>
+                                                   <TableCell>
+                                                        <a href={`http://localhost:3000/article/${article.articleId}`} style={{ textDecoration: 'none', color: 'inherit' }} onMouseOver={(e) => e.target.style.textDecoration = 'underline'} onMouseOut={(e) => e.target.style.textDecoration = 'none'}>
+                                                            {article.title}
+                                                        </a>
+                                                    </TableCell>
                                                     <TableCell>{article.writerName}</TableCell>
                                                     <TableCell>
                                                         {article.reasons.map((reasonObj, index) => (
