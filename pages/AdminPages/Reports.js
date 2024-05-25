@@ -182,6 +182,10 @@ function Reports() {
   const [writerCountForMonth, setWriterCountForMonth] = React.useState(0);
   const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
   const [writerPopularity, setWriterPopularity] = React.useState([]);
+  const [approvalCount, setApprovalCount] = React.useState({
+    approvals: 0,
+    rejections: 0,
+  });
 
 
   React.useEffect(() => {
@@ -312,6 +316,21 @@ function Reports() {
       .catch((error) => {
         console.log(error);
       });
+
+      //get approval count
+      const approvalData = axios
+      .get(`${urls.BASE_URL_APPROVAL}count`, axiosConfig)
+      .then((res) => {
+        console.log(res.data);
+        setApprovalCount({
+          ...approvalCount,
+          approvals:res.data.approved,
+          rejections:res.data.rejected
+      })
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   const handleWriterSearch = (event) => {
@@ -420,7 +439,7 @@ function Reports() {
                     marginRight: "40px",
                   }}
                 >
-                  <Typography variant="h5" gutterBottom fontStyle={"bold"}>
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom fontStyle={"bold"}>
                     User Details
                   </Typography>
                   <BarChart
@@ -447,7 +466,7 @@ function Reports() {
                     marginRight: "40px",
                   }}
                 >
-                  <Typography variant="h5" gutterBottom>
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     Domain Popularity
                   </Typography>
                   <BarChart
@@ -483,7 +502,7 @@ function Reports() {
                   elevation={3}
                   style={{ height: 350, width: 500, padding: "20px" }}
                 >
-                  <Typography variant="h5" gutterBottom>
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     Writer Popularity
                   </Typography>
                   <PieChart
@@ -512,7 +531,7 @@ function Reports() {
                     marginLeft: "40px",
                   }}
                 >
-                  <Typography variant="h5" gutterBottom>
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     New Users for {month[new Date().getMonth()]}
                   </Typography>
                   <Box
@@ -538,6 +557,42 @@ function Reports() {
                   </Box>
                 </Paper>
               </Box>
+              <Box sx={{ display: "flex", marginTop: "30px" }}>
+                <Paper
+                  elevation={3}
+                  style={{
+                    height: 300,
+                    width: 450,
+                    padding: "20px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
+                    No of approvals by you
+                  </Typography>
+                  <Box
+                    display={"flex"}
+                    sx={{ justifyContent: "space-evenly", marginTop: "50px" }}
+                  >
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.success"}>
+                        <Typography variant="h2">
+                          {approvalCount.approvals}
+                        </Typography>
+                        <Typography variant="h5">Approvals</Typography>
+                      </Box>
+                    </Paper>
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.error"}>
+                        <Typography variant="h2">
+                          {approvalCount.rejections}
+                        </Typography>
+                        <Typography variant="h5">Rejections</Typography>
+                      </Box>
+                    </Paper>
+                  </Box>
+                  </Paper>
+                </Box>
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
