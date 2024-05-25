@@ -2,10 +2,9 @@ import React, { useState, useEffect} from 'react';
 import { IconButton, Typography, Box } from '@mui/material';
 import { ThumbUp, Share, GetApp } from '@mui/icons-material';
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
-
 import { useRouter } from 'next/router';
 import { Card } from '@mui/material/Card';
-
+import { v4 as uuidv4 } from 'uuid';
 import CardContent from '@mui/material';
 import Button from '@mui/material';
 import MoreOptionsCard from './MoreOptionsCard';
@@ -26,12 +25,86 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [isReportWriterDialogOpen, setIsReportWriterDialogOpen] = useState(false);
- 
-  useEffect(() => {
+
+  const [readerId, setReaderId] = useState("");
+  const likeId = "like" + uuidv4();
+
+  useEffect(()=>{
     setLikes(initialLikes);
     console.log(initialLikes);
-  }, [initialLikes]);
-  const handleShareClick = async () => {
+    const readerId = localStorage.getItem("userId");
+    setReaderId(readerId);
+    const getLikes = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/like/get`, {
+          method: 'POST',
+          body:JSON.stringify({
+            readerId: readerId,
+            articleId:articleId
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.status == 200) {  
+          setIsLiked(true);
+        } 
+    
+        // Handle response as needed
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    getLikes();
+  },[initialLikes]);
+
+
+const likeArticle = async () => {
+  try {
+    const response = await fetch(`http://localhost:3001/api/like/save`, {
+      method: 'POST',
+      body: JSON.stringify(
+        {
+          id:likeId,
+          readerId: readerId,
+          articleId:articleId
+        }
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    // Handle response as needed
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
+const unlikeArticle = async() => {
+  try {
+    const response = await fetch(`http://localhost:3001/api/like/delete`, {
+      method: 'DELETE',
+      body: JSON.stringify(
+        {
+          readerId: readerId,
+          articleId:articleId
+        }
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token') || '',
+      },
+    });
+    console.log(response);
+    // Handle response as needed
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+  
+};
+
+const handleShareClick = async () => {
     try {
       setIsShareClicked(true);
 
@@ -52,6 +125,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
       setIsShareClicked(false);
     }
   };
+
   const updateData = async (newLikes) => {
     try {
       await fetch(`https://article-writing-backend.onrender.com/api/readerArticle/updateLikes`, {
@@ -71,9 +145,14 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   };
   
   const handleLikeClick = () => {
-
-    const newLikes = isLiked ? likes - 1 : likes + 1;
-
+    let newLikes = likes;
+    if(isLiked){
+      newLikes = likes - 1 ;
+      unlikeArticle();
+    }else{
+      newLikes = likes + 1;
+      likeArticle();
+    }
     setIsLiked(!isLiked);
 
     // Update the number of likes based on the current state
@@ -97,6 +176,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   };
   const handleReportWriterClick = () => {
     setIsReportWriterDialogOpen(true);
+    setIsMoreOptionsOpen(false); // Close MoreOptionsCard
   };
 
   const handleCloseReportWriterDialog = () => {

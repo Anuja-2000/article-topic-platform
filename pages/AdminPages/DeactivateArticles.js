@@ -23,6 +23,8 @@ const DeactivateArticles = () => {
     const [deleteTargetId, setDeleteTargetId] = useState(null);
     const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
     const [showDeleteIgnoreConfirmation, setShowDeleteIgnoreConfirmation] = useState(false);
+    const [reportedArticles, setReportedArticles] = useState([]);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,7 +38,7 @@ const DeactivateArticles = () => {
                     console.log("articleId", article.articleId); // Access topicId, topicName directly from flagged topics
                     // Fetch article details by articleId
                     const reportedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/readerArticle/getById/${article.articleId}`);
-                    const { title, userId } = reportedArticleResponse.data; // Destructure response.data
+                    const {articleId, title, userId } = reportedArticleResponse.data; // Destructure response.data
                     console.log("for test", reportedArticleResponse.data)
                     console.log(title);
 
@@ -59,7 +61,8 @@ const DeactivateArticles = () => {
 
                     // Return article details with additional data
                     return {
-                        writerName: name, // Include topicId in the returned object
+                        articleId: articleId,
+                        writerName: name, 
                         title: title,
                         userId: userId,
                         reasons: uniqueReasonsWithCounts,
@@ -73,22 +76,47 @@ const DeactivateArticles = () => {
                 });
                 // Update state with reportedArticles including additional details
                 setUniqueReportedArticles(sortedArticles);
-                
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
+
+        const fetchReportedArticles = async () => {
+            try {
+                const response = await axios.get('https://article-writing-backend.onrender.com/api/article/reportedArticles/get');
+                console.log("Reported response.data", response.data);
+    
+                const reportedArticlesWithDetails = await Promise.all(response.data.reportedArticles.map(async (reportedArticle) => {
+                    const reportedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/article/${reportedArticle.articleId}`);
+                    console.log("article", reportedArticleResponse.data.article)
+                    const { articleId, title } = reportedArticleResponse.data.article;
+                    return {
+                        title: title,
+                        articleId: articleId,
+                    };
+                }));
+    
+                setReportedArticles(reportedArticlesWithDetails);
+                console.log('Reported Articles', reportedArticlesWithDetails);
+            } catch (error) {
+                console.error('Error fetching reported articles:', error);
+            }
+        };
         fetchData();
+        fetchReportedArticles();
     }, []);
 
-    const handleDeleteClick = (topicId) => {
-        setDeleteTargetId(topicId);
+    const handleDeleteClick = (articleId) => {
+        setDeleteTargetId(articleId);
         setShowDeleteConfirmation(true);
     };
-    const handleIgnoreClick = (topicId) => {
-        setDeleteTargetId(topicId);
+    
+    const handleIgnoreClick = (articleId) => {
+        setDeleteTargetId(articleId);
         setShowDeleteIgnoreConfirmation(true);
     };
+   
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -102,24 +130,19 @@ const DeactivateArticles = () => {
     };
     const handleConfirmDelete = async () => {
         try {
-            // Delete the topic
-            await axios.delete(`https://article-writing-backend.onrender.com/api/topics/delete/${deleteTargetId}`);
-
-            // Delete flagged topics related to the deleted topic
-            await axios.delete(`https://article-writing-backend.onrender.com/api/flaggedTopics/delete/${deleteTargetId}`);
-
-            // Update the state to remove the deleted topic from the UI
-            setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.topicId !== deleteTargetId));
+            await axios.patch(`https://article-writing-backend.onrender.com/api/article/reportArticle/${deleteTargetId}`);
+            await axios.patch(`https://article-writing-backend.onrender.com/api/reportArticle/reportArticle/${deleteTargetId}`);
+            // Update the state to remove the deactivated article from the UI
+            setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.articleId !== deleteTargetId));
             setShowDeleteConfirmation(false);
             setDeleteSuccessfulAlertOpen(true);
             setTimeout(() => {
                 setDeleteSuccessfulAlertOpen(false);
             }, 20000);
         } catch (error) {
-            console.error("Error deleting data:", error);
+            console.error("Error deactivating article:", error);
         }
     };
-
     const handleCloseDeleteSuccessfulAlertOpen = () => {
         setDeleteSuccessfulAlertOpen(false);
     };
@@ -129,7 +152,7 @@ const DeactivateArticles = () => {
             // Delete flagged topics related to the topic ID
             await axios.delete(`https://article-writing-backend.onrender.com/api/flaggedTopics/delete/${deleteTargetId}`);
 
-            // Update the state to remove the ignored topic from the UI
+            await axios.delete(`https://article-writing-backend.onrender.com/api/reportArticle/delete/${deleteTargetId}`);
             setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.topicId !== deleteTargetId));
             setShowDeleteIgnoreConfirmation(false);
             setDeleteSuccessfulAlertOpen(true);
@@ -182,7 +205,11 @@ const DeactivateArticles = () => {
                                             {uniqueReportedArticles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((article) => (
 
                                                 <TableRow key={article.articleIdId}>
-                                                    <TableCell>{article.title}</TableCell>
+                                                   <TableCell>
+                                                        <a href={`http://localhost:3000/article/${article.articleId}`} style={{ textDecoration: 'none', color: 'inherit' }} onMouseOver={(e) => e.target.style.textDecoration = 'underline'} onMouseOut={(e) => e.target.style.textDecoration = 'none'}>
+                                                            {article.title}
+                                                        </a>
+                                                    </TableCell>
                                                     <TableCell>{article.writerName}</TableCell>
                                                     <TableCell>
                                                         {article.reasons.map((reasonObj, index) => (
@@ -195,8 +222,8 @@ const DeactivateArticles = () => {
                                                     <TableCell>{article.count}</TableCell>
                                                     <TableCell>
                                                         <Box sx={{ display: 'flex', gap: '8px' }}>
-                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Deactivate</Button>
-                                                            <Button variant="contained" color="success" onClick={() => handleIgnoreClick(topic.topicId)}>Reject</Button>
+                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(article.articleId)}>Remove</Button>
+                                                            <Button variant="contained" color="success" onClick={() => handleIgnoreClick(article.articleId)}>Cancel</Button>
                                                         </Box>
                                                     </TableCell>
                                                 </TableRow>
@@ -232,6 +259,30 @@ const DeactivateArticles = () => {
                                 Topic deleted successfully.
                             </div>
                         )}
+                        <h2 style={{ textAlign: "center", marginTop: "40px" }}>Reported Articles</h2>
+                        <Grid container spacing={1}>
+                            <Grid item xs={1}></Grid>
+                            <Grid item xs={10}>
+                                <TableContainer component={Paper}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <h4 style={{ color: 'white' }}>Article</h4>
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {reportedArticles.map((article) => (
+                                                <TableRow key={article.articleId}>
+                                                    <TableCell>{article.title}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
+                        </Grid>
                     </div>
                 </Navbar>
             </div>

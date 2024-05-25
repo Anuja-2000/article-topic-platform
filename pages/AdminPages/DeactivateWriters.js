@@ -24,11 +24,15 @@ const DeactivateWriters = () => {
   const [deactivateSuccessfulAlertOpen, setDeactivateSuccessfulAlertOpen] = useState(false);
   const [deactivateIgnoreAlertOpen, setDeactivateIgnoreAlertOpen] = useState(false);
   const [showDeactivateIgnoreConfirmation, setShowDeactivateIgnoreConfirmation] = useState(false);
+  const [deactivatedWriters, setDeactivatedWriters] = useState([]);
+  const [adminId, setAdminId] = useState("");
+   
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/get');
+      
+        const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/reportedWriters/get');
         console.log("response.data", response.data);
 
         // Iterate over reported writers and fetch details
@@ -38,7 +42,7 @@ const DeactivateWriters = () => {
 
           // Fetch writer details by writerId
           const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
-          const { name, email } = reportedWriterResponse.data; // Destructure response.data
+          const { name, email, savedAt } = reportedWriterResponse.data; // Destructure response.data
           console.log("for user test", reportedWriterResponse.data);
           console.log(name);
 
@@ -58,6 +62,7 @@ const DeactivateWriters = () => {
             writerName: name,
             email: email,
             writerId: reportedWriter.writerId,
+            joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format 
             reasons: uniqueReasonsWithCounts,
             count: reportedWriter.count
           };
@@ -65,16 +70,47 @@ const DeactivateWriters = () => {
         console.log("reportedWritersWithDetails", reportedWritersWithDetails);
         const sortedArticles = reportedWritersWithDetails.slice().sort((a, b) => {
           return a.writerName.localeCompare(b.writerName);
-      });
+        });
         // Update state with reported writers including additional details
         setUniqueReportedWriters(sortedArticles);
-        
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
+    const fetchDeactivatedWriters = async () => {
+      try {
+        const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/deactivateWriters/get');
+        console.log("Deactivated response.data", response.data);
+
+        const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+          const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
+          const { name, email, savedAt } = reportedWriterResponse.data;
+          console.log('reportedWriterResponse.data;',reportedWriterResponse.data);
+          const adminResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.deactivatedBy}`);
+          return {
+            deactivatedBy: adminResponse.data.name,
+            writerName: name,
+            email: email,
+            joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date
+            writerId: reportedWriter.writerId,
+            reasons: reportedWriter.reasons,
+            deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+            count: reportedWriter.count
+          };
+        }));
+
+        setDeactivatedWriters(deactivatedWritersWithDetails);
+      } catch (error) {
+        console.error('Error fetching deactivated writers:', error);
+      }
+    };
+
     fetchData();
+    fetchDeactivatedWriters();
   }, []);
+
+
 
   const handleIgnoreClick = (topicId) => {
     setDeleteTargetId(topicId);
@@ -95,17 +131,38 @@ const DeactivateWriters = () => {
     setDeleteTargetId(writerId);
     setShowDeactivateConfirmation(true);
   };
-  
+
   const handleConfirmDeactivate = async () => {
     try {
+      const adminId = localStorage.getItem("userId"); 
       await axios.patch(`https://article-writing-backend.onrender.com/api/user/deactivateUser/${deleteTargetId}`);
-      await axios.delete(`https://article-writing-backend.onrender.com/api/reportedWriter/delete/${deleteTargetId}`);
+      await axios.patch(`https://article-writing-backend.onrender.com/api/reportedWriter/update/${deleteTargetId}`, { adminId });
+      
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
       setDeactivateSuccessfulAlertOpen(true);
       setTimeout(() => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
+      // Fetch updated list of deactivated writers since new writer added to deactivate
+      const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/deactivateWriters/get');
+      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+        const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
+        const { name, email, savedAt} = reportedWriterResponse.data;
+        const adminResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.deactivatedBy}`);
+        console.log('reportedWriter.deactivatedBy',reportedWriter.deactivatedBy);
+        return {
+          deactivatedBy: adminResponse.data.name,
+          writerName: name,
+          email: email,
+          writerId: reportedWriter.writerId,
+          reasons: reportedWriter.reasons,
+          joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date 
+          deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+          count: reportedWriter.count
+        };
+      }));
+      setDeactivatedWriters(deactivatedWritersWithDetails);
     } catch (error) {
       console.error("Error deactivating user:", error);
     }
@@ -116,7 +173,7 @@ const DeactivateWriters = () => {
 
   const handleConfirmIgnore = async () => {
     try {
-    
+      await axios.delete(`https://article-writing-backend.onrender.com/api/reportedWriter/delete/${deleteTargetId}`);
       setShowDeactivateIgnoreConfirmation(false);
       setDeactivateIgnoreAlertOpen(true);
       setTimeout(() => {
@@ -154,6 +211,9 @@ const DeactivateWriters = () => {
                           <h4 style={{ color: 'white' }}>Writer Email</h4>
                         </TableCell>
                         <TableCell>
+                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                        </TableCell>
+                        <TableCell>
                           <h4 style={{ color: 'white' }}>Reasons</h4>
                         </TableCell>
                         <TableCell>
@@ -165,11 +225,12 @@ const DeactivateWriters = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                    {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) =>(
-                      
+                      {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) => (
+
                         <TableRow key={writer.writerId}>
                           <TableCell>{writer.writerName}</TableCell>
                           <TableCell>{writer.email}</TableCell>
+                          <TableCell>{writer.joinedAt}</TableCell>
                           <TableCell>
                             {writer.reasons.map((reasonObj, index) => (
                               <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -218,11 +279,53 @@ const DeactivateWriters = () => {
                 User Deactivated successfully.
               </div>
             )}
-             {deactivateIgnoreAlertOpen && (
+            {deactivateIgnoreAlertOpen && (
               <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
                 Ignore User Deactivating.
               </div>
             )}
+
+            <h2 style={{ textAlign: "center", marginTop: "40px" }}>Deactivated Writers</h2>
+            <Grid container spacing={1}>
+              <Grid item xs={1}></Grid>
+              <Grid item xs={10}>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Name</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Email</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Deactivated By</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Deactivated At</h4>
+                        </TableCell>
+                        
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {deactivatedWriters.map((writer) => (
+                        <TableRow key={writer.writerId}>
+                          <TableCell>{writer.writerName}</TableCell>
+                          <TableCell>{writer.email}</TableCell>
+                          <TableCell>{writer.joinedAt}</TableCell>
+                          <TableCell>{writer.deactivatedBy}</TableCell>
+                          <TableCell>{new Date(writer.deactivatedAt).toISOString().substring(0, 10)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+            </Grid>
           </div>
         </Navbar>
       </div>

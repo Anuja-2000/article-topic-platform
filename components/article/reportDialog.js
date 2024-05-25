@@ -8,13 +8,14 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
-import { v4 as uuidv4 } from 'uuid'; // Import uuidv4 for generating reportId
+import { v4 as uuidv4 } from 'uuid';
 
 const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
   const [selectedReason, setSelectedReason] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [username, setUsername] = useState("");
   const [customReason, setCustomReason] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,12 +34,11 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
 
   const handleReport = async () => {
     let reason = selectedReason;
-    // If "Other" is selected, use custom reason
     if (selectedReason === 'Other' && customReason.trim() !== '') {
       reason = customReason.trim();
     }
     if (reason) {
-      const reportId = 'report' + uuidv4(); // Generate reportId
+      const reportId = 'report' + uuidv4();
       const reportData = {
         reportId: reportId,
         reporterName: username,
@@ -59,7 +59,7 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
           setSuccessMessage('Article reported successfully!');
           setTimeout(() => {
             setSuccessMessage('');
-            onClose();
+            handleClose();
           }, 3000);
         } else {
           console.error('Failed to report article');
@@ -69,19 +69,30 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
       }
     }
   };
+
   const handleChange = (event) => {
     setSelectedReason(event.target.value);
   };
+
   const handleCustomReasonChange = (event) => {
     setCustomReason(event.target.value);
   };
+
   const handleClose = () => {
     onClose();
+    setSelectedReason('');
+    setCustomReason('');
+    setSuccessMessage('');
+  };
+
+  const handleOpen = () => {
+    setSelectedReason('');
+    setCustomReason('');
     setSuccessMessage('');
   };
 
   return (
-    <Dialog open={isOpen} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog open={isOpen} onClose={handleClose} onEnter={handleOpen} maxWidth="sm" fullWidth>
       <DialogTitle>Report Article</DialogTitle>
       <DialogContent dividers>
         <RadioGroup value={selectedReason} onChange={handleChange}>
@@ -90,8 +101,7 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
           <FormControlLabel value="Spam" control={<Radio />} label="Spam" />
           <FormControlLabel value="Other" control={<Radio />} label="Other" />
         </RadioGroup>
-     {/* Display TextField for custom reason if "Other" is selected */}
-     {selectedReason === 'Other' && (
+        {selectedReason === 'Other' && (
           <TextField
             label="Custom Reason"
             variant="outlined"
