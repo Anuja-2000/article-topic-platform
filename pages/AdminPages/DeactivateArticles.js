@@ -84,11 +84,11 @@ const DeactivateArticles = () => {
 
         const fetchReportedArticles = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/article/reportedArticles/get');
+                const response = await axios.get('https://article-writing-backend.onrender.com/api/article/reportedArticles/get');
                 console.log("Reported response.data", response.data);
     
                 const reportedArticlesWithDetails = await Promise.all(response.data.reportedArticles.map(async (reportedArticle) => {
-                    const reportedArticleResponse = await axios.get(`http://localhost:3001/api/article/${reportedArticle.articleId}`);
+                    const reportedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/article/${reportedArticle.articleId}`);
                     console.log("article", reportedArticleResponse.data.article)
                     const { articleId, title } = reportedArticleResponse.data.article;
                     return {
@@ -152,7 +152,7 @@ const DeactivateArticles = () => {
             // Delete flagged topics related to the topic ID
             await axios.delete(`https://article-writing-backend.onrender.com/api/flaggedTopics/delete/${deleteTargetId}`);
 
-            await axios.delete(`http://localhost:3001/api/reportArticle/delete/${deleteTargetId}`);
+            await axios.delete(`https://article-writing-backend.onrender.com/api/reportArticle/delete/${deleteTargetId}`);
             setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.topicId !== deleteTargetId));
             setShowDeleteIgnoreConfirmation(false);
             setDeleteSuccessfulAlertOpen(true);

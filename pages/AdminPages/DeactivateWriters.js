@@ -80,14 +80,14 @@ const DeactivateWriters = () => {
     };
     const fetchDeactivatedWriters = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+        const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/deactivateWriters/get');
         console.log("Deactivated response.data", response.data);
 
         const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
-          const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+          const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
           const { name, email, savedAt } = reportedWriterResponse.data;
           console.log('reportedWriterResponse.data;',reportedWriterResponse.data);
-          const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
+          const adminResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.deactivatedBy}`);
           return {
             deactivatedBy: adminResponse.data.name,
             writerName: name,
@@ -145,11 +145,11 @@ const DeactivateWriters = () => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
       // Fetch updated list of deactivated writers since new writer added to deactivate
-      const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+      const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/deactivateWriters/get');
       const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
-        const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+        const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
         const { name, email, savedAt} = reportedWriterResponse.data;
-        const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
+        const adminResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.deactivatedBy}`);
         console.log('reportedWriter.deactivatedBy',reportedWriter.deactivatedBy);
         return {
           deactivatedBy: adminResponse.data.name,
@@ -173,7 +173,7 @@ const DeactivateWriters = () => {
 
   const handleConfirmIgnore = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
+      await axios.delete(`https://article-writing-backend.onrender.com/api/reportedWriter/delete/${deleteTargetId}`);
       setShowDeactivateIgnoreConfirmation(false);
       setDeactivateIgnoreAlertOpen(true);
       setTimeout(() => {
