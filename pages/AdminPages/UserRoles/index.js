@@ -18,7 +18,7 @@ import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import { useRouter } from "next/router";
-import NavBar from "../../components/Navbar";
+import NavBar from "../../../components/Navbar";
 import axios from "axios";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
@@ -27,15 +27,17 @@ import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { set } from "react-hook-form";
-import { v4 as uuidv4 } from 'uuid';
-import urls from "../../enums/url";
+import { v4 as uuidv4 } from "uuid";
+import urls from "../../../enums/url";
+import AdminLoading from "./adminLoading";
+import Loading from "./loading";
 
 // export async function getStaticProps() {
 //   const messages = await GetContactUsMessages();
@@ -116,8 +118,7 @@ export default function UserRoles() {
   const [otherUsers, setOtherUsers] = React.useState([]);
   const [userSearchTerm, setUserSearchTerm] = React.useState(" ");
   const [assignUser, setAssignUser] = React.useState(null);
-  const [otherUser, setOtherUser] = React.useState({name: "", email: ""});
-
+  const [otherUser, setOtherUser] = React.useState({ name: "", email: "" });
 
   const [open, setOpen] = React.useState(false);
   const [openOther, setOpenOther] = React.useState(false);
@@ -139,7 +140,6 @@ export default function UserRoles() {
     const response = axios
       .get(`${urls.BASE_URL_USER}getAll`)
       .then((res) => {
-        
         const filteredAdmins = res.data.filter((user) => user.type === "Admin");
         let others = res.data.filter((user) => user.type != "Admin");
         setOtherUsers(others);
@@ -230,23 +230,25 @@ export default function UserRoles() {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
   return (
     <div>
       <NavBar>
         <Container maxWidth="lg">
-          <Box sx={{display:"flex", justifyContent:"space-between"}}>
-          <Typography variant="h4" marginBottom={2} color={"primary.dark"}>
-            Assign User Roles
-          </Typography>
-          <Button
-            variant="outlined"
-            color="primary"
-            size="small"
-            onClick={()=>{setOpenOther(true)}}            
-          >
-            Assign Admin for a new user
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h4" marginBottom={2} color={"primary.dark"}>
+              Assign User Roles
+            </Typography>
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              onClick={() => {
+                setOpenOther(true);
+              }}
+            >
+              Assign Admin for a new user
+            </Button>
           </Box>
           <Divider />
           <Typography variant="h5" marginY={3} color={"primary.dark"}>
@@ -294,27 +296,28 @@ export default function UserRoles() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(adminRowsPerPage > 0
-                  ? admins.slice(
-                      adminPage * adminRowsPerPage,
-                      adminPage * adminRowsPerPage + adminRowsPerPage
-                    )
-                  : admins
-                ).map((admin) => (
-                  <TableRow
-                    key={admin.userId}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>{admin.name}</TableCell>
-                    <TableCell>{admin.email}</TableCell>
-                    <TableCell>
-                    <Chip
-                          label={admin.type}
-                          color="primary"
-                        />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {admins.length > 0 ? (
+                  (adminRowsPerPage > 0
+                    ? admins.slice(
+                        adminPage * adminRowsPerPage,
+                        adminPage * adminRowsPerPage + adminRowsPerPage
+                      )
+                    : admins
+                  ).map((admin) => (
+                    <TableRow
+                      key={admin.userId}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell>{admin.name}</TableCell>
+                      <TableCell>{admin.email}</TableCell>
+                      <TableCell>
+                        <Chip label={admin.type} color="primary" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <AdminLoading />
+                )}
               </TableBody>
               <TableFooter>
                 <TableRow>
@@ -406,32 +409,44 @@ export default function UserRoles() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(userRowsPerPage > 0
-                    ? otherUsers.slice(
-                        userPage * userRowsPerPage,
-                        userPage * userRowsPerPage + userRowsPerPage
-                      )
-                    : users
-                  ).map((user) => (
-                    <TableRow
-                      key={user.userId}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={user.type}
-                          color={user.type === "Writer" ? "primary" : "success"}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="contained" color="primary" onClick={()=>handleClickOpen(user)}>
-                          Assign
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {otherUsers.length > 0 ? (
+                    (userRowsPerPage > 0
+                      ? otherUsers.slice(
+                          userPage * userRowsPerPage,
+                          userPage * userRowsPerPage + userRowsPerPage
+                        )
+                      : users
+                    ).map((user) => (
+                      <TableRow
+                        key={user.userId}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={user.type}
+                            color={
+                              user.type === "Writer" ? "primary" : "success"
+                            }
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleClickOpen(user)}
+                          >
+                            Assign
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <Loading />
+                  )}
                 </TableBody>
                 <TableFooter>
                   <TableRow>
@@ -449,57 +464,69 @@ export default function UserRoles() {
             </TableContainer>
           </Box>
           <React.Fragment>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-      >
-        <DialogTitle>Assign Admin</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to assign this user as an admin?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" color="warning" variant="contained" onClick={sendEmail}>Assign</Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+            <Dialog open={open} onClose={handleClose}>
+              <DialogTitle>Assign Admin</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Are you sure you want to assign this user as an admin?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                <Button
+                  type="submit"
+                  color="warning"
+                  variant="contained"
+                  onClick={sendEmail}
+                >
+                  Assign
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </React.Fragment>
 
-    <React.Fragment>
-      <Dialog
-        open={openOther}
-        onClose={handleCloseOther}
-      >
-        <DialogTitle>Assign Admin to a new user</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please provide detials of the new user
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Name"
-            type="text"
-            fullWidth
-            onChange={(e)=>setOtherUser({...otherUser, name: e.target.value})}
-          />
-          <TextField
-            margin="dense"
-            id="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-            onChange={(e)=>setOtherUser({...otherUser, email: e.target.value})}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseOther}>Cancel</Button>
-          <Button type="submit" color="warning" variant="contained" onClick={sendEmailToNewUser}>Assign</Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+          <React.Fragment>
+            <Dialog open={openOther} onClose={handleCloseOther}>
+              <DialogTitle>Assign Admin to a new user</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Please provide detials of the new user
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Name"
+                  type="text"
+                  fullWidth
+                  onChange={(e) =>
+                    setOtherUser({ ...otherUser, name: e.target.value })
+                  }
+                />
+                <TextField
+                  margin="dense"
+                  id="email"
+                  label="Email Address"
+                  type="email"
+                  fullWidth
+                  onChange={(e) =>
+                    setOtherUser({ ...otherUser, email: e.target.value })
+                  }
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseOther}>Cancel</Button>
+                <Button
+                  type="submit"
+                  color="warning"
+                  variant="contained"
+                  onClick={sendEmailToNewUser}
+                >
+                  Assign
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </React.Fragment>
         </Container>
       </NavBar>
     </div>

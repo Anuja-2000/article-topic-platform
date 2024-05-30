@@ -1,4 +1,4 @@
-import Navbar from "../../components/Navbar";
+import Navbar from "../../../components/Navbar";
 import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -15,20 +15,15 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import axios from "axios";
-import urls from "../../enums/url";
+import urls from "../../../enums/url";
 import { set } from "react-hook-form";
+import Skeleton from "@mui/material/Skeleton";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -70,6 +65,8 @@ export default function ApproveArticles() {
   const [approvalPage, setApprovalPage] = React.useState(0);
   const [rowsPerApprovalPage, setRowsPerApprovalPage] = React.useState(10);
 
+  const [isClient, setIsClient] = React.useState(false)
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -83,7 +80,6 @@ export default function ApproveArticles() {
     setPage(0);
   };
 
-
   const handleChangeApprovalPage = (event, newPage) => {
     setApprovalPage(newPage);
   };
@@ -92,6 +88,10 @@ export default function ApproveArticles() {
     setRowsPerApprovalPage(+event.target.value);
     setApprovalPage(0);
   };
+
+  React.useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   React.useEffect(() => {
     const data = axios
@@ -103,7 +103,7 @@ export default function ApproveArticles() {
         console.log(error);
       });
 
-      const approvalData = axios
+    const approvalData = axios
       .get(`${urls.BASE_URL_APPROVAL}history`)
       .then((response) => {
         setApprovals(response.data);
@@ -152,35 +152,76 @@ export default function ApproveArticles() {
                     </TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
-                  {articles
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((article) => (
-                      <TableRow
-                        key={article.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {article.title}
-                        </TableCell>
-                        <TableCell>{article.userData[0].name}</TableCell>
-                        <TableCell>
-                          {new Date(article.updatedAt).toDateString()}
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip
-                            label="View"
-                            component="a"
-                            href={"reviewArticle/" + article.articleId}
-                            color="primary"
-                            clickable
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
+                 {articles.length != 0 ? (
+                  <TableBody suppressHydrationWarning>
+                    {articles
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((article) => (
+                        <TableRow
+                          key={article.id}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {article.title}
+                          </TableCell>
+                          <TableCell>{article.userData[0].name}</TableCell>
+                          <TableCell>
+                            {new Date(article.updatedAt).toDateString()}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label="View"
+                              component="a"
+                              href={"reviewArticle/" + article.articleId}
+                              color="primary"
+                              clickable
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                ) : (
+                  <Loading/>
+                )}
+                {/* <Suspense fallback={<Loading />}>
+                  <TableBody>
+                    {articles
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((article) => (
+                        <TableRow
+                          key={article.id}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {article.title}
+                          </TableCell>
+                          <TableCell>{article.userData[0].name}</TableCell>
+                          <TableCell>
+                            {new Date(article.updatedAt).toDateString()}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label="View"
+                              component="a"
+                              href={"reviewArticle/" + article.articleId}
+                              color="primary"
+                              clickable
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Suspense> */}
               </Table>
             </TableContainer>
             <TablePagination
@@ -195,7 +236,7 @@ export default function ApproveArticles() {
           </Container>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-        <Container maxWidth="lg">
+          <Container maxWidth="lg">
             <Typography variant="h4" marginBottom={2} color={"primary.main"}>
               Approval History
             </Typography>
@@ -225,7 +266,10 @@ export default function ApproveArticles() {
                 </TableHead>
                 <TableBody>
                   {approvals
-                    .slice(approvalPage * rowsPerApprovalPage, approvalPage * rowsPerApprovalPage + rowsPerApprovalPage)
+                    .slice(
+                      approvalPage * rowsPerApprovalPage,
+                      approvalPage * rowsPerApprovalPage + rowsPerApprovalPage
+                    )
                     .map((approval) => (
                       <TableRow
                         key={approval.articleId}
@@ -237,17 +281,19 @@ export default function ApproveArticles() {
                           {approval.article.title}
                         </TableCell>
                         <TableCell>{approval.writer.name}</TableCell>
+                        <TableCell>{approval.admin.name}</TableCell>
                         <TableCell>
-                          {approval.admin.name}
-                        </TableCell>
-                        <TableCell>
-                        <Chip
-                          label={approval.status}
-                          color={approval.status === "approved" ? "success" : "error"}
-                        />
+                          <Chip
+                            label={approval.status}
+                            color={
+                              approval.status === "approved"
+                                ? "success"
+                                : "error"
+                            }
+                          />
                         </TableCell>
                         <TableCell align="center">
-                        {new Date(approval.approvedAt).toDateString()}
+                          {new Date(approval.approvedAt).toDateString()}
                         </TableCell>
                       </TableRow>
                     ))}
