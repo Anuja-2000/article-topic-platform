@@ -6,6 +6,7 @@ import { useState } from "react";
 import setAuthtoken from "../../api/auth/axios-set-token";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
+import urls from "../../../enums/url";
 
 export default function WriterLogin() {
   const [values, setValues] = useState({
@@ -28,7 +29,7 @@ export default function WriterLogin() {
   };
   async function sendLoginReqest() {
     const response = axios
-    .post("http://localhost:3001/api/user/login", {
+    .post(`${urls.BASE_URL_AUTH}login`, {
         username: values.username,
         email: values.email,
         password: values.password,
