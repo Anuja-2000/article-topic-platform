@@ -50,7 +50,7 @@ const Navbar = () => {
   const unreadNotifications = notifications.filter((notification) => !notification.read).length;
 
   return (
-    <AppBar position="fixed" style={{ width: '100%' }} sx={{ backgroundColor: '#f5f5f5', color: 'black' }}>
+    <AppBar position="fixed" style={{ width: '100%' }}>
       <Toolbar>
         
         <Typography variant="h6" noWrap component="div"
