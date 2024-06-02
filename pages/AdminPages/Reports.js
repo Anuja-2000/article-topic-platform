@@ -181,7 +181,7 @@ function Reports() {
   const [domain, setDomain] = React.useState("Technical");
   const [writerCountForMonth, setWriterCountForMonth] = React.useState(0);
   const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
-  const [writerPopularity, setWriterPopularity] = React.useState([]);
+  const [noOfArticlesWritten, setNoOfArticlesWritten] = React.useState([]);
   const [approvalCount, setApprovalCount] = React.useState({
     approvals: 0,
     rejections: 0,
@@ -317,6 +317,21 @@ function Reports() {
         console.log(error);
       });
 
+      //get writers who has written the most number of articles
+      const mostWritten = axios.get(`${urls.BASE_URL_READER_ARTICLE}writer-popularity`, axiosConfig)
+      .then((res) => {
+        const data = res.data;
+        data.map((item) => {
+          item.label = item.userData[0].name;
+          item.value = item.count;
+        });
+        setNoOfArticlesWritten(data);
+
+        console.log(res.data);
+      }).catch((error) => {
+        console.log(error);
+      });
+
       //get approval count
       const approvalData = axios
       .get(`${urls.BASE_URL_APPROVAL}count`, axiosConfig)
@@ -407,7 +422,7 @@ function Reports() {
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
               <Box display={"flex"}>
                 <Typography
                   variant="h4"
@@ -416,7 +431,7 @@ function Reports() {
                 >
                   Graphs
                 </Typography>
-                <Button
+                {/* <Button
                   variant="outlined"
                   color="primary"
                   style={{
@@ -426,7 +441,7 @@ function Reports() {
                   }}
                 >
                   Download
-                </Button>
+                </Button> */}
               </Box>
               <Divider />
               <Box sx={{ display: "flex" }}>
@@ -502,9 +517,12 @@ function Reports() {
                   elevation={3}
                   style={{ height: 350, width: 500, padding: "20px" }}
                 >
-                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
+                  <Typography variant="h5" color={"primary.dark"}>
                     Writer Popularity
                   </Typography>
+                  <Typography varient="subtitle1" color={"primary.dark"}>
+                    (Based on the number of follwers)
+                    </Typography>
                   <PieChart
                     series={[
                       {
@@ -561,10 +579,9 @@ function Reports() {
                 <Paper
                   elevation={3}
                   style={{
-                    height: 300,
+                    height: 350,
                     width: 450,
-                    padding: "20px",
-                    marginTop: "20px",
+                    padding: "20px"
                   }}
                 >
                   <Typography variant="h5" color={"primary.dark"} gutterBottom>
@@ -590,9 +607,37 @@ function Reports() {
                         <Typography variant="h5">Rejections</Typography>
                       </Box>
                     </Paper>
+                    
                   </Box>
                   </Paper>
+                  <Paper
+                  elevation={3}
+                  style={{ height: 350, width: 500, padding: "20px", marginLeft: "40px" }}
+                >
+                  <Typography variant="h5" color={"primary.dark"}>
+                    Writers with most number of articles
+                  </Typography>
+                  <Typography varient="subtitle1" color={"primary.dark"}>
+                    (Writers who has written the most number of articles)
+                    </Typography>
+                  <PieChart
+                    series={[
+                      {
+                        data: noOfArticlesWritten,
+                        innerRadius: 50,
+                        outerRadius: 95,
+                        paddingAngle: 4,
+                        cornerRadius: 8,
+                        startAngle: -180,
+                        endAngle: 180,
+                        cx: 125,
+                        cy: 130,
+                      },
+                    ]}
+                  />
+                </Paper>
                 </Box>
+                
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
