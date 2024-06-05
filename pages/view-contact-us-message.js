@@ -119,6 +119,7 @@ export default function ViewContactUsMessage() {
     <>
       <NavBar>
         <ThemeProvider theme={theme}>
+        <Button variant="contained" color="primary" onClick={() => router.back()} sx={{ margin: 2 }}>Back</Button>
           <Container maxWidth="lg">
             <Paper elevation={4}>
               <Grid Container spacing={2}>
