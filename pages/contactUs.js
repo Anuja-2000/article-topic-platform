@@ -70,6 +70,7 @@ export default function ContactUs() {
     const messageId = "#message-" + uuidv4();
     const timestamp = new Date();
 
+    try{
     const response = await axios.post(`${urls.BASE_URL_CONTACT_MESSAGE}add`, {
       messageId: messageId,
       name: values.name,
@@ -94,6 +95,10 @@ export default function ContactUs() {
     } else {
       alert("Message failed to send");
     }
+  } catch (error) {
+    console.error("Error sending message:", error);
+    alert("Message failed to send");
+  }
   }
 
   return (
