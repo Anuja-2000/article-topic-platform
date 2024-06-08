@@ -10,11 +10,12 @@ import Button from '@mui/material';
 import MoreOptionsCard from './MoreOptionsCard';
 import ReportDialog from './reportDialog';
 import ReportWriterDialog from './reportWriterDialog';
+import ViewCounter from './viewCounter';
 
 
 
 
-const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) => {
+const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId,view, readerId}) => {
  
   const router = useRouter();
   const { article } = router.query;
@@ -26,14 +27,12 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [isReportWriterDialogOpen, setIsReportWriterDialogOpen] = useState(false);
 
-  const [readerId, setReaderId] = useState("");
+  //const [readerId, setReaderId] = useState("");
+  console.log(view);
   const likeId = "like" + uuidv4();
-
+  
   useEffect(()=>{
     setLikes(initialLikes);
-    console.log(initialLikes);
-    const readerId = localStorage.getItem("userId");
-    setReaderId(readerId);
     const getLikes = async () => {
       try {
         const response = await fetch(`http://localhost:3001/api/like/get`, {
@@ -46,20 +45,21 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId}) =
             'Content-Type': 'application/json',
           },
         });
-        
         if (response.status == 200) {  
           setIsLiked(true);
         } 
-    
+           
         // Handle response as needed
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
+
+    
     getLikes();
   },[initialLikes]);
 
-
+  
 const likeArticle = async () => {
   try {
     const response = await fetch(`http://localhost:3001/api/like/save`, {
@@ -201,6 +201,8 @@ const handleShareClick = async () => {
         <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: 'black', marginLeft: '10px' }} onClick={handleMoreVertIconClick}>
           <MoreVertIcon />
         </IconButton>
+
+        <ViewCounter articleId={articleId} view={view} readerId={readerId}/>
       </Box>
 
       {isMoreOptionsOpen && <MoreOptionsCard onReportArticleClick={handleReportArticleClick}  onReportWriterClick={handleReportWriterClick}/>}
