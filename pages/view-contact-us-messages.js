@@ -161,7 +161,11 @@ export default function ViewContactUsMessages() {
     <div>
       <NavBar>
         <Container maxWidth="lg">
-          <TableContainer component={Paper} elevation={4}>
+          <Typography variant="h5" color="primary.dark" marginBottom={3}>
+            View Messages
+          </Typography>
+          <Paper elevation={4}>
+          <TableContainer>
             <Table
               sx={{ minWidth: 650 }}
               stickyHeader
@@ -169,18 +173,43 @@ export default function ViewContactUsMessages() {
             >
               <TableHead>
                 <TableRow>
-                  <TableCell align="center" colSpan={3}>
-                    <Typography variant="h5" color="primary">
-                      View Messages
-                    </Typography>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#0080FE",
+                      color: "#FFFFFF",
+                      fontWeight: "bold",
+                      boxShadow: "0px 0px 10px 0px",
+                    }}
+                  >
+                    Name
                   </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableHead sx={{ backgroundColor: "primary.main" }}>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Message</TableCell>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#0080FE",
+                      color: "#FFFFFF",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Email
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#0080FE",
+                      color: "#FFFFFF",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Date
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#0080FE",
+                      color: "#FFFFFF",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Message
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -197,6 +226,9 @@ export default function ViewContactUsMessages() {
                   >
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{row.email}</TableCell>
+                    <TableCell>
+                      {new Date(row.savedAt).toDateString()}
+                    </TableCell>
                     <TableCell>
                       <Button
                         variant="contained"
@@ -222,7 +254,7 @@ export default function ViewContactUsMessages() {
                       25,
                       { label: "All", value: -1 },
                     ]}
-                    colSpan={3}
+                    colSpan={4}
                     count={rows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
@@ -240,6 +272,7 @@ export default function ViewContactUsMessages() {
               </TableFooter>
             </Table>
           </TableContainer>
+          </Paper>
         </Container>
       </NavBar>
     </div>
