@@ -41,11 +41,11 @@ const chartSetting = {
       label: "user count",
     },
   ],
-  width: 900,
-  height: 330,
+  width: 1100,
+  height: 340,
   sx: {
     [`.${axisClasses.left} .${axisClasses.label}`]: {
-      transform: "translate(-10px, 0)",
+      transform: "translate(-5px, 0)",
     },
   },
 };
@@ -359,8 +359,6 @@ function Reports() {
           item.value = item.count;
         });
         setNoOfArticlesWritten(data);
-
-        console.log(res.data);
       })
       .catch((error) => {
         console.log(error);
@@ -370,7 +368,6 @@ function Reports() {
     const approvalData = axios
       .get(`${urls.BASE_URL_APPROVAL}count`, axiosConfig)
       .then((res) => {
-        console.log(res.data);
         setApprovalCount({
           ...approvalCount,
           approvals: res.data.approved,
@@ -385,7 +382,6 @@ function Reports() {
     const signupCount = axios
       .get(`${urls.BASE_URL_USER_UTILITY}get-signup-count`, axiosConfig)
       .then((res) => {
-        console.log(res.data);
         setSignupCountData(res.data);
       })
       .catch((error) => {
@@ -525,17 +521,16 @@ function Reports() {
                 <Paper
                   elevation={3}
                   style={{
-                    width: 650,
+                    width: 800,
                     padding: "20px",
-                    marginTop: "20px",
-                    marginRight: "40px",
+                    marginTop: "20px"
                   }}
                 >
                   <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     Domain Popularity
                   </Typography>
                   <BarChart
-                    width={650}
+                    width={800}
                     height={300}
                     series={[
                       {
@@ -565,7 +560,7 @@ function Reports() {
               <Box sx={{ display: "flex", marginTop: "30px" }}>
                 <Paper
                   elevation={3}
-                  style={{ height: 350, width: 500, padding: "20px" }}
+                  style={{ height: 350, width: 600, padding: "20px" }}
                 >
                   <Typography variant="h5" color={"primary.dark"}>
                     Writer Popularity
@@ -594,7 +589,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 450,
+                    width: 500,
                     padding: "20px",
                     marginLeft: "40px",
                   }}
@@ -630,7 +625,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 450,
+                    width: 500,
                     padding: "20px",
                   }}
                 >
@@ -663,7 +658,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 500,
+                    width: 600,
                     padding: "20px",
                     marginLeft: "40px",
                   }}
@@ -696,14 +691,14 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 450,
-                    width: 990,
+                    width: 1140,
                     padding: "20px",
                   }}
                 >
                   <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     User registration count for past 12 months
                   </Typography>
-                  <Box display={"flex"} sx={{ marginTop: "50px" }}>
+                  <Box display={"flex"} sx={{ marginTop: "20px" }}>
                     <BarChart
                       dataset={signupCountData}
                       xAxis={[{ scaleType: "band", dataKey: "Date" }]}
@@ -951,7 +946,7 @@ function Reports() {
                               .slice(
                                 articlesPage * rowsPerArticlesPage,
                                 articlesPage * rowsPerArticlesPage +
-                                  rowsPerArticlesPage
+                                rowsPerArticlesPage
                               )
                               .map((row) => {
                                 return (
