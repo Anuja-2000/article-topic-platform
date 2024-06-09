@@ -359,8 +359,6 @@ function Reports() {
           item.value = item.count;
         });
         setNoOfArticlesWritten(data);
-
-        console.log(res.data);
       })
       .catch((error) => {
         console.log(error);
@@ -370,7 +368,6 @@ function Reports() {
     const approvalData = axios
       .get(`${urls.BASE_URL_APPROVAL}count`, axiosConfig)
       .then((res) => {
-        console.log(res.data);
         setApprovalCount({
           ...approvalCount,
           approvals: res.data.approved,
@@ -385,7 +382,6 @@ function Reports() {
     const signupCount = axios
       .get(`${urls.BASE_URL_USER_UTILITY}get-signup-count`, axiosConfig)
       .then((res) => {
-        console.log(res.data);
         setSignupCountData(res.data);
       })
       .catch((error) => {
@@ -630,7 +626,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 450,
+                    width: 400,
                     padding: "20px",
                   }}
                 >
@@ -663,7 +659,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 500,
+                    width: 550,
                     padding: "20px",
                     marginLeft: "40px",
                   }}
