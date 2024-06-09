@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import urls from "../../../enums/url";
+import setAuthtoken from "../../api/auth/axios-set-token";
 
 export default function WriterRegister() {
 
@@ -63,7 +64,7 @@ export default function WriterRegister() {
     const userId = values.username + "-" + uuidv4();
 
     //Sending user details
-    const response = axios.post(`${urls.BASE_URL_AUTH}signup`, {
+    const response = axios.post(`${urls.BASE_URL_AUTH}WriterSignup`, {
       userId: userId,
       email: values.email,
       name: values.username,
@@ -72,7 +73,21 @@ export default function WriterRegister() {
     }).then((response) => {
       if (response.status == 201) {
         alert("User created successfully");
-        window.location.href = "/login"; 
+        const token = response.data.data.token;
+        const type = response.data.data.type;
+        const username = response.data.data.username;
+        const email = response.data.data.email;
+        const userId = response.data.data.userId;
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("type", type);
+        localStorage.setItem("username", username);
+        localStorage.setItem("email", email);
+        localStorage.setItem("userId", userId);
+
+        setAuthtoken(token);
+        window.location.href = "/WriterPages/Dashboard";
+
       }
     }).catch((error) => {
       console.log(error.response.status);

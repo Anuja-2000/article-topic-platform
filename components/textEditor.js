@@ -7,6 +7,7 @@ import { ARTICLE_ROUTES } from "../public/constants/routes";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import ArticleCoverImageUploader from './ArticleCoverImageUploader';
+import ImageUploader from "./ImageUploader";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -14,6 +15,7 @@ const TextEditor = () => {
   const [text, setText] = useState("");
   const [articleName, setArticleName] = useState("");
   const [userId, setUserId] = useState("");
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -34,6 +36,7 @@ const TextEditor = () => {
       userId: userId,
       title: articleName,
       content: text,
+      images: images.map((img) => img.url),
       savedType: "saved",
     };
 
@@ -49,7 +52,6 @@ const TextEditor = () => {
     axios(config)
       .then((response) => {
         alert("Article saved successfully");
-        // Reload the page to clear the editor
         window.location.reload();
       })
       .catch((error) => {
@@ -64,6 +66,7 @@ const TextEditor = () => {
       userId: userId,
       title: articleName,
       content: text,
+      images: images.map((img) => img.url),
       savedType: "draft",
     };
 
@@ -92,20 +95,30 @@ const TextEditor = () => {
       ["bold", "italic", "underline", "strike", "blockquote"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["link", "image", "video"],
-      ["clean"]
-    ]
+      ["clean"],
+    ],
   };
 
   const formats = [
-    "header", "font", "size",
-    "bold", "italic", "underline", "strike", "blockquote",
-    "list", "bullet",
-    "link", "image", "video"
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "link",
+    "image",
+    "video",
   ];
 
   return (
     <div className={styles.textEditorArea}>
-      <ArticleCoverImageUploader /> {/* cover image uploader */}
+      <ArticleCoverImageUploader />
+      <ImageUploader onImagesChange={setImages} />
       <input
         type="text"
         placeholder="Name of Article"
