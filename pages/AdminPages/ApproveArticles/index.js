@@ -186,15 +186,7 @@ export default function ApproveArticles() {
                       ))}
                   </TableBody>
                 ) : (
-                  <TableBody suppressHydrationWarning>
-                    <TableCell colSpan={4}>
-                      <Skeleton
-                        variant="rectangular"
-                        sx={{ width: "100%" }}
-                        height={180}
-                      />
-                    </TableCell>
-                  </TableBody>
+                  <Loading/>
                 )}
                 {/* <Suspense fallback={<Loading />}>
                   <TableBody>

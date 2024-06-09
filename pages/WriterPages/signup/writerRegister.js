@@ -8,6 +8,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
+import urls from "../../../enums/url";
 import HomeNav from "../../HomePage/homeNav";
 
 export default function WriterRegister() {
@@ -63,7 +64,7 @@ export default function WriterRegister() {
     const userId = values.username + "-" + uuidv4();
 
     //Sending user details
-    const response = axios.post("https://article-writing-backend.onrender.com/api/auth/signup", {
+    const response = axios.post(`${urls.BASE_URL_AUTH}signup`, {
       userId: userId,
       email: values.email,
       name: values.username,

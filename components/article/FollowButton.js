@@ -49,9 +49,10 @@ const followWriter = async () => {
       ),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.getItem('token') || '',
+        //'Authorization': 'Bearer ' + localStorage.getItem('token') || '',
       },
     });
+    console.log(response);
     // Handle response as needed
   } catch (error) {
     console.error('Error fetching data:', error);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import TableContainer from "@mui/material/TableContainer";
 import Grid from "@mui/material/Grid";
@@ -26,12 +27,12 @@ const DeactivateWriters = () => {
   const [showDeactivateIgnoreConfirmation, setShowDeactivateIgnoreConfirmation] = useState(false);
   const [deactivatedWriters, setDeactivatedWriters] = useState([]);
   const [adminId, setAdminId] = useState("");
-   
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-      
+
         const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/reportedWriters/get');
         console.log("response.data", response.data);
 
@@ -86,7 +87,7 @@ const DeactivateWriters = () => {
         const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
           const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
           const { name, email, savedAt } = reportedWriterResponse.data;
-          console.log('reportedWriterResponse.data;',reportedWriterResponse.data);
+          console.log('reportedWriterResponse.data;', reportedWriterResponse.data);
           const adminResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.deactivatedBy}`);
           return {
             deactivatedBy: adminResponse.data.name,
@@ -134,10 +135,10 @@ const DeactivateWriters = () => {
 
   const handleConfirmDeactivate = async () => {
     try {
-      const adminId = localStorage.getItem("userId"); 
+      const adminId = localStorage.getItem("userId");
       await axios.patch(`https://article-writing-backend.onrender.com/api/user/deactivateUser/${deleteTargetId}`);
       await axios.patch(`https://article-writing-backend.onrender.com/api/reportedWriter/update/${deleteTargetId}`, { adminId });
-      
+
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
       setDeactivateSuccessfulAlertOpen(true);
@@ -148,9 +149,9 @@ const DeactivateWriters = () => {
       const response = await axios.get('https://article-writing-backend.onrender.com/api/reportedWriter/deactivateWriters/get');
       const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
         const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.writerId}`);
-        const { name, email, savedAt} = reportedWriterResponse.data;
+        const { name, email, savedAt } = reportedWriterResponse.data;
         const adminResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.deactivatedBy}`);
-        console.log('reportedWriter.deactivatedBy',reportedWriter.deactivatedBy);
+        console.log('reportedWriter.deactivatedBy', reportedWriter.deactivatedBy);
         return {
           deactivatedBy: adminResponse.data.name,
           writerName: name,
@@ -190,6 +191,11 @@ const DeactivateWriters = () => {
     setShowDeactivateIgnoreConfirmation(false);
   };
 
+
+  const handleWriterClick = (writerId) => {
+    // Use router to navigate to writer profile page
+    router.push(`/writer/${writerId}`);
+  };
   return (
     <>
       <div>
@@ -228,7 +234,16 @@ const DeactivateWriters = () => {
                       {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) => (
 
                         <TableRow key={writer.writerId}>
-                          <TableCell>{writer.writerName}</TableCell>
+                          <TableCell>
+                            <a
+                              style={{ textDecoration: 'none', cursor: 'pointer' }}
+                              onClick={() => handleWriterClick(writer.writerId)}
+                              onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
+                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}  
+                            >
+                              {writer.writerName}
+                            </a>
+                          </TableCell>
                           <TableCell>{writer.email}</TableCell>
                           <TableCell>{writer.joinedAt}</TableCell>
                           <TableCell>
@@ -308,13 +323,22 @@ const DeactivateWriters = () => {
                         <TableCell>
                           <h4 style={{ color: 'white' }}>Deactivated At</h4>
                         </TableCell>
-                        
+
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {deactivatedWriters.map((writer) => (
                         <TableRow key={writer.writerId}>
-                          <TableCell>{writer.writerName}</TableCell>
+                          <TableCell>
+                          <a
+                              style={{ textDecoration: 'none', cursor: 'pointer'}}
+                              onClick={() => handleWriterClick(writer.writerId)}
+                              onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
+                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')} 
+                            >
+                            {writer.writerName}
+                            </a>
+                            </TableCell>
                           <TableCell>{writer.email}</TableCell>
                           <TableCell>{writer.joinedAt}</TableCell>
                           <TableCell>{writer.deactivatedBy}</TableCell>

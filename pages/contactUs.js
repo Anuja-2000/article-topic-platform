@@ -70,7 +70,8 @@ export default function ContactUs() {
     const messageId = "#message-" + uuidv4();
     const timestamp = new Date();
 
-    const response = axios.post(`${urls.BASE_URL_CONTACT_MESSAGE}add`, {
+    try{
+    const response = await axios.post(`${urls.BASE_URL_CONTACT_MESSAGE}add`, {
       messageId: messageId,
       name: values.name,
       email: values.email,
@@ -78,6 +79,26 @@ export default function ContactUs() {
       replied: false,
       savedAt: timestamp,
     });
+
+    if (response.status === 201) {
+      alert("Message sent successfully");
+      const notificationResponse = await axios.post(
+        `${urls.BASE_URL_NOTIFICATION}create`,
+        {
+          title: "New contact us message",
+          message: "Test message",
+          type: "contact-us",
+        }
+      ).catch((error) => {
+        console.error("Error creating notification:", error);
+      });
+    } else {
+      alert("Message failed to send");
+    }
+  } catch (error) {
+    console.error("Error sending message:", error);
+    alert("Message failed to send");
+  }
   }
 
   return (

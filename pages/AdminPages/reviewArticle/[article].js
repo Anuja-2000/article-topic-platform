@@ -13,6 +13,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Skeleton from "@mui/material/Skeleton";
 
 const ReviewArticlePage = () => {
   const router = useRouter();
@@ -48,16 +49,16 @@ const ReviewArticlePage = () => {
         }
       );
       if (response.data.success === true && response.status === 200) {
-          const response = await axios.post(`${url.BASE_URL_APPROVAL}save`, {
-            articleId: articleId,
-            adminId: localStorage.getItem("userId"),
-            status: status,
-          });
-          if (response.status === 201) {
-            alert("Article " + status + " successfully");
-            router.push("/AdminPages/ApproveArticles");
-          }
-      }else{
+        const response = await axios.post(`${url.BASE_URL_APPROVAL}save`, {
+          articleId: articleId,
+          adminId: localStorage.getItem("userId"),
+          status: status,
+        });
+        if (response.status === 201) {
+          alert("Article " + status + " successfully");
+          router.push("/AdminPages/ApproveArticles");
+        }
+      } else {
         alert("Article " + status + " failed");
       }
       console.log(response);
@@ -86,26 +87,45 @@ const ReviewArticlePage = () => {
   return (
     <Navbar>
       <Container component="main" maxWidth="lg">
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h4" color="primary">
-            {articleData.title}
-          </Typography>
-          <Typography variant="h6" color="primary.dark">
+          {articleData.length != 0 ? (
+             <Box display="flex" justifyContent="space-between">
+            <Typography variant="h4" color="primary">
+              {articleData.title}
+            </Typography>
+            <Typography variant="h6" color="primary.dark">
             Last updated : {new Date(articleData.updatedAt).toDateString()}
           </Typography>
-        </Box>
+            </Box>
+          ) : (
+            <Box display="flex" justifyContent="space-between">
+            <Skeleton variant="text" width={400} height={60} />
+            <Skeleton variant="text" width={400} height={40} />
+            </Box>
+            
+          )}
+
         <div className={styles.imageContainer}>
-          <Image
-            src={articleData.coverImage}
-            alt="Article Image"
-            className={articleData.image}
-            width="1000"
-            height="500"
-            style={{ borderRadius: "10px" }}
-          />
+          {articleData.length != 0 ? (
+            <Image
+              src={articleData.coverImage}
+              alt="Article Image"
+              className={articleData.image}
+              width="1000"
+              height="500"
+              style={{ borderRadius: "10px" }}
+            />
+          ) : (
+            <Skeleton variant="rectangular" width={1000} height={500} />
+          )}
         </div>
-        <ArticleBody content={articleData.content} className={styles.content} />
-        <Box display="flex" justifyContent="end">
+        {articleData.length != 0 ? (
+          <ArticleBody content={articleData.content} className={styles.content} />
+        ):(
+          <Skeleton variant="text" width={1000} height={500} />
+        )}
+        
+        {articleData.length != 0 ? (
+          <Box display="flex" justifyContent="end">
           <Stack direction="row" spacing={2}>
             <Button
               varient="outlined"
@@ -131,6 +151,15 @@ const ReviewArticlePage = () => {
             </Button>
           </Stack>
         </Box>
+        ):(
+          <Box display="flex" justifyContent="end">
+          <Stack direction="row" spacing={2}>
+            <Skeleton variant="rectangular" width={100} height={40} />
+            <Skeleton variant="rectangular" width={100} height={40} />
+          </Stack>
+        </Box>
+        )}
+        
         <React.Fragment>
           <Dialog open={approveOpen} onClose={handleApproveClose}>
             <DialogTitle>Approve Article</DialogTitle>
