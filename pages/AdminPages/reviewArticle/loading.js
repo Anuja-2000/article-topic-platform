@@ -1,4 +1,4 @@
-import { TableCell, Skeleton, TableRow } from "@mui/material";
+import { TableCell, Skeleton, TableRow, Box } from "@mui/material";
 
 
 export default function Loading() {
