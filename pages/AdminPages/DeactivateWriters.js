@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import TableContainer from "@mui/material/TableContainer";
 import Grid from "@mui/material/Grid";
@@ -19,25 +20,30 @@ const DeactivateWriters = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [uniqueReportedWriters, setUniqueReportedWriters] = useState([]);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showDeactivateConfirmation, setShowDeactivateConfirmation] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
-  const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
-  const [showDeleteIgnoreConfirmation, setShowDeleteIgnoreConfirmation] = useState(false);
+  const [deactivateSuccessfulAlertOpen, setDeactivateSuccessfulAlertOpen] = useState(false);
+  const [deactivateIgnoreAlertOpen, setDeactivateIgnoreAlertOpen] = useState(false);
+  const [showDeactivateIgnoreConfirmation, setShowDeactivateIgnoreConfirmation] = useState(false);
+  const [deactivatedWriters, setDeactivatedWriters] = useState([]);
+  const [adminId, setAdminId] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/reportedWriter/get');
+
+        const response = await axios.get('http://localhost:3001/api/reportedWriter/reportedWriters/get');
         console.log("response.data", response.data);
 
-        // Iterate over reported articles and fetch details
+        // Iterate over reported writers and fetch details
         const reportedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
           console.log("writer", reportedWriter.writerId);
           console.log(reportedWriter); // Access topicId, topicName directly from flagged topics
 
           // Fetch writer details by writerId
           const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
-          const { name, email } = reportedWriterResponse.data; // Destructure response.data
+          const { name, email, savedAt } = reportedWriterResponse.data; // Destructure response.data
           console.log("for user test", reportedWriterResponse.data);
           console.log(name);
 
@@ -57,6 +63,7 @@ const DeactivateWriters = () => {
             writerName: name,
             email: email,
             writerId: reportedWriter.writerId,
+            joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format 
             reasons: uniqueReasonsWithCounts,
             count: reportedWriter.count
           };
@@ -64,24 +71,51 @@ const DeactivateWriters = () => {
         console.log("reportedWritersWithDetails", reportedWritersWithDetails);
         const sortedArticles = reportedWritersWithDetails.slice().sort((a, b) => {
           return a.writerName.localeCompare(b.writerName);
-      });
+        });
         // Update state with reported writers including additional details
         setUniqueReportedWriters(sortedArticles);
-        
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
+    const fetchDeactivatedWriters = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+        console.log("Deactivated response.data", response.data);
+
+        const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+          const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+          const { name, email, savedAt } = reportedWriterResponse.data;
+          console.log('reportedWriterResponse.data;', reportedWriterResponse.data);
+          const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
+          return {
+            deactivatedBy: adminResponse.data.name,
+            writerName: name,
+            email: email,
+            joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date
+            writerId: reportedWriter.writerId,
+            reasons: reportedWriter.reasons,
+            deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+            count: reportedWriter.count
+          };
+        }));
+
+        setDeactivatedWriters(deactivatedWritersWithDetails);
+      } catch (error) {
+        console.error('Error fetching deactivated writers:', error);
+      }
+    };
+
     fetchData();
+    fetchDeactivatedWriters();
   }, []);
 
-  const handleDeleteClick = (topicId) => {
-    setDeleteTargetId(topicId);
-    setShowDeleteConfirmation(true);
-  };
+
+
   const handleIgnoreClick = (topicId) => {
     setDeleteTargetId(topicId);
-    setShowDeleteIgnoreConfirmation(true);
+    setShowDeactivateIgnoreConfirmation(true);
   };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -94,53 +128,74 @@ const DeactivateWriters = () => {
     setPage(0);
     console.log('New page:', 0);
   };
-  const handleConfirmDelete = async () => {
-    try {
-      // Delete the topic
-      await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
-
-      // Delete flagged topics related to the deleted topic
-      await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
-
-      // Update the state to remove the deleted topic from the UI
-      setUniqueReportedWriters(uniqueReportedWriters.filter(item => item.topicId !== deleteTargetId));
-      setShowDeleteConfirmation(false);
-      setDeleteSuccessfulAlertOpen(true);
-      setTimeout(() => {
-        setDeleteSuccessfulAlertOpen(false);
-      }, 20000);
-    } catch (error) {
-      console.error("Error deleting data:", error);
-    }
+  const handleDeleteClick = async (writerId) => {
+    setDeleteTargetId(writerId);
+    setShowDeactivateConfirmation(true);
   };
 
+  const handleConfirmDeactivate = async () => {
+    try {
+      const adminId = localStorage.getItem("userId");
+      await axios.patch(`http://localhost:3001/api/user/deactivateUser/${deleteTargetId}`);
+      await axios.patch(`http://localhost:3001/api/reportedWriter/update/${deleteTargetId}`, { adminId });
+
+      setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
+      setShowDeactivateConfirmation(false);
+      setDeactivateSuccessfulAlertOpen(true);
+      setTimeout(() => {
+        setDeactivateSuccessfulAlertOpen(false);
+      }, 2000);
+      // Fetch updated list of deactivated writers since new writer added to deactivate
+      const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
+        const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+        const { name, email, savedAt } = reportedWriterResponse.data;
+        const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
+        console.log('reportedWriter.deactivatedBy', reportedWriter.deactivatedBy);
+        return {
+          deactivatedBy: adminResponse.data.name,
+          writerName: name,
+          email: email,
+          writerId: reportedWriter.writerId,
+          reasons: reportedWriter.reasons,
+          joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date 
+          deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+          count: reportedWriter.count
+        };
+      }));
+      setDeactivatedWriters(deactivatedWritersWithDetails);
+    } catch (error) {
+      console.error("Error deactivating user:", error);
+    }
+  };
   const handleCloseDeleteSuccessfulAlertOpen = () => {
-    setDeleteSuccessfulAlertOpen(false);
+    setDeactivateSuccessfulAlertOpen(false);
   };
 
   const handleConfirmIgnore = async () => {
     try {
-      // Delete flagged topics related to the topic ID
-      await axios.delete(`http://localhost:3001/api/flaggedTopics/delete/${deleteTargetId}`);
-
-      // Update the state to remove the ignored topic from the UI
-      setUniqueReportedWriters(uniqueReportedWriters.filter(item => item.topicId !== deleteTargetId));
-      setShowDeleteIgnoreConfirmation(false);
-      setDeleteSuccessfulAlertOpen(true);
+      await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
+      setShowDeactivateIgnoreConfirmation(false);
+      setDeactivateIgnoreAlertOpen(true);
       setTimeout(() => {
-        setDeleteSuccessfulAlertOpen(false);
-      }, 20000);
+        setDeactivateIgnoreAlertOpen(false);
+      }, 2000);
     } catch (error) {
-      console.error("Error ignoring flagged topic:", error);
+      console.error("Error ignoring writer from deactivating:", error);
     }
   };
 
 
 
   const handleCloseIgnoreConfirmation = () => {
-    setShowDeleteIgnoreConfirmation(false);
+    setShowDeactivateIgnoreConfirmation(false);
   };
 
+
+  const handleWriterClick = (writerId) => {
+    // Use router to navigate to writer profile page
+    router.push(`/writer/${writerId}`);
+  };
   return (
     <>
       <div>
@@ -162,6 +217,9 @@ const DeactivateWriters = () => {
                           <h4 style={{ color: 'white' }}>Writer Email</h4>
                         </TableCell>
                         <TableCell>
+                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                        </TableCell>
+                        <TableCell>
                           <h4 style={{ color: 'white' }}>Reasons</h4>
                         </TableCell>
                         <TableCell>
@@ -173,11 +231,21 @@ const DeactivateWriters = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                    {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) =>(
-                      
+                      {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) => (
+
                         <TableRow key={writer.writerId}>
-                          <TableCell>{writer.writerName}</TableCell>
+                          <TableCell>
+                            <a
+                              style={{ textDecoration: 'none', cursor: 'pointer' }}
+                              onClick={() => handleWriterClick(writer.writerId)}
+                              onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
+                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}  
+                            >
+                              {writer.writerName}
+                            </a>
+                          </TableCell>
                           <TableCell>{writer.email}</TableCell>
+                          <TableCell>{writer.joinedAt}</TableCell>
                           <TableCell>
                             {writer.reasons.map((reasonObj, index) => (
                               <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -189,8 +257,8 @@ const DeactivateWriters = () => {
                           <TableCell>{writer.count}</TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', gap: '8px' }}>
-                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Deactivate</Button>
-                              <Button variant="contained" color="success" onClick={() => handleIgnoreClick(topic.topicId)}>Reject</Button>
+                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(writer.writerId)}>Deactivate</Button>
+                              <Button variant="contained" color="success" onClick={() => handleIgnoreClick(writer.writerId)}>Reject</Button>
                             </Box>
                           </TableCell>
                         </TableRow>
@@ -221,25 +289,81 @@ const DeactivateWriters = () => {
                 </TableContainer>
               </Grid>
             </Grid>
-            {deleteSuccessfulAlertOpen && (
+            {deactivateSuccessfulAlertOpen && (
               <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
-                Topic deleted successfully.
+                User Deactivated successfully.
               </div>
             )}
+            {deactivateIgnoreAlertOpen && (
+              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                Ignore User Deactivating.
+              </div>
+            )}
+
+            <h2 style={{ textAlign: "center", marginTop: "40px" }}>Deactivated Writers</h2>
+            <Grid container spacing={1}>
+              <Grid item xs={1}></Grid>
+              <Grid item xs={10}>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Name</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Writer Email</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Joined At</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Deactivated By</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Deactivated At</h4>
+                        </TableCell>
+
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {deactivatedWriters.map((writer) => (
+                        <TableRow key={writer.writerId}>
+                          <TableCell>
+                          <a
+                              style={{ textDecoration: 'none', cursor: 'pointer'}}
+                              onClick={() => handleWriterClick(writer.writerId)}
+                              onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
+                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')} 
+                            >
+                            {writer.writerName}
+                            </a>
+                            </TableCell>
+                          <TableCell>{writer.email}</TableCell>
+                          <TableCell>{writer.joinedAt}</TableCell>
+                          <TableCell>{writer.deactivatedBy}</TableCell>
+                          <TableCell>{new Date(writer.deactivatedAt).toISOString().substring(0, 10)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+            </Grid>
           </div>
         </Navbar>
       </div>
-      <Dialog open={showDeleteConfirmation} onClose={() => setShowDeleteConfirmation(false)}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>Are you sure you want to delete this topic?</DialogContent>
+      <Dialog open={showDeactivateConfirmation} onClose={() => setShowDeactivateConfirmation(false)}>
+        <DialogTitle>Confirm Deactivate</DialogTitle>
+        <DialogContent>Are you sure you want to deactivate this user?</DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDeleteConfirmation(false)} color="primary">Cancel</Button>
-          <Button onClick={handleConfirmDelete} color="error">Delete</Button>
+          <Button onClick={() => setShowDeactivateConfirmation(false)} color="primary">Cancel</Button>
+          <Button onClick={handleConfirmDeactivate} color="error">Deactivate</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={showDeleteIgnoreConfirmation} onClose={handleCloseIgnoreConfirmation}>
-        <DialogTitle>Confirm Ignore</DialogTitle>
-        <DialogContent>Are you sure you want to ignore this flagged topic?</DialogContent>
+      <Dialog open={showDeactivateIgnoreConfirmation} onClose={handleCloseIgnoreConfirmation}>
+        <DialogTitle>Confirm Ignore Deactivating</DialogTitle>
+        <DialogContent>Are you sure you want to reject deactivating this user?</DialogContent>
         <DialogActions>
           <Button onClick={handleCloseIgnoreConfirmation} color="primary">Cancel</Button>
           <Button onClick={handleConfirmIgnore} color="primary">Ignore</Button>

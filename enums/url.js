@@ -7,6 +7,9 @@ const urls = {
     BASE_URL_AUTH : `${BASE_URL}auth/`,
     BASE_URL_CONTACT_MESSAGE : `${BASE_URL}contactMessage/`,
     BASE_URL_ARTICLE : `${BASE_URL}article/`,
+    BASE_URL_FOLLOW : `${BASE_URL}follow/`,
+    BASE_URL_APPROVAL : `${BASE_URL}approval/`,
+    BASE_URL_NOTIFICATION : `${BASE_URL}notification/`,
 
 }
 export default urls;

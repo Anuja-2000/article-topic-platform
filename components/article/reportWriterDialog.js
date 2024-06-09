@@ -32,6 +32,15 @@ const ReportWriterDialog = ({ isOpen, onClose, writerId }) => {
     fetchData();
   }, []);
 
+  // Reset state when the dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedReason('');
+      setCustomReason('');
+      setSuccessMessage('');
+    }
+  }, [isOpen]);
+
   const handleReport = async () => {
     let reason = selectedReason;
     if (selectedReason === 'Other' && customReason.trim() !== '') {
@@ -79,6 +88,8 @@ const ReportWriterDialog = ({ isOpen, onClose, writerId }) => {
 
   const handleClose = () => {
     onClose();
+    setSelectedReason('');
+    setCustomReason('');
     setSuccessMessage('');
   };
 

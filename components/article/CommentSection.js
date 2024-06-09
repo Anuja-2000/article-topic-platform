@@ -53,10 +53,13 @@ const CommentSection = ({ articleId }) => {
     if (!artId) return;
     try {
       const response = await fetch(`http://localhost:3001/api/comment/get`, {
-        headers: {
-          id: artId,
-          'Content-Type': 'application/json',
-        },
+        method: 'POST',
+          body: JSON.stringify({
+            "id": artId,
+          }),
+          headers: {
+                'Content-Type': 'application/json',
+          },
       });
       const jsonData = await response.json();
       setData(jsonData);

@@ -11,6 +11,7 @@ import Navbar from "../../components/Navbar";
 import * as React from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { PieChart } from "@mui/x-charts/PieChart";
+import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import axios from "axios";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
@@ -33,6 +34,21 @@ import Iconbutton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import urls from "../../enums/url";
+
+const chartSetting = {
+  yAxis: [
+    {
+      label: "user count",
+    },
+  ],
+  width: 900,
+  height: 330,
+  sx: {
+    [`.${axisClasses.left} .${axisClasses.label}`]: {
+      transform: "translate(-10px, 0)",
+    },
+  },
+};
 
 const columns = [
   { id: "name", label: "User Name", minWidth: 135 },
@@ -181,25 +197,42 @@ function Reports() {
   const [domain, setDomain] = React.useState("Technical");
   const [writerCountForMonth, setWriterCountForMonth] = React.useState(0);
   const [readerCountForMonth, setReaderCountForMonth] = React.useState(0);
-  const [writerPopularity, setWriterPopularity] = React.useState([]);
-
+  const [noOfArticlesWritten, setNoOfArticlesWritten] = React.useState([]);
+  const [approvalCount, setApprovalCount] = React.useState({
+    approvals: 0,
+    rejections: 0,
+  });
+  const [signupCountData, setSignupCountData] = React.useState([
+    {
+      Date: "2024 - Jun",
+      Reader: 1,
+      Writer: 5,
+      Admin: 0,
+    },
+    {
+      Date: "2024 - May",
+      Reader: 14,
+      Writer: 18,
+      Admin: 0,
+    },
+  ]);
 
   React.useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       setAxiosConfig({
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
     }
-  },[]);
+  }, []);
 
   React.useEffect(() => {
-      if (axiosConfig.headers.Authorization !== '') {
-        // Call your fetchData function here
-        fetchData();
-      }
+    if (axiosConfig.headers.Authorization !== "") {
+      // Call your fetchData function here
+      fetchData();
+    }
   }, [axiosConfig]);
 
   async function fetchData() {
@@ -288,7 +321,10 @@ function Reports() {
 
     //get all articles by domain
     const articleData = axios
-      .get(`${urls.BASE_URL_READER_ARTICLE}articles-by-domain/${domain}`, axiosConfig)
+      .get(
+        `${urls.BASE_URL_READER_ARTICLE}articles-by-domain/${domain}`,
+        axiosConfig
+      )
       .then((res) => {
         setArticles(res.data);
       })
@@ -298,16 +334,59 @@ function Reports() {
 
     //get writer popularity on number of articles they have written
     const writerPopularityData = axios
-      .get(`${urls.BASE_URL_READER_ARTICLE}writer-popularity`, axiosConfig)
+      .get(`${urls.BASE_URL_FOLLOW}popular-writers`, axiosConfig)
       .then((res) => {
         popularityResData = res.data;
         popularityData = [];
         for (let user of popularityResData) {
           popularityData.push({
-            label: user.userData[0].name,
+            label: user.userName,
             value: user.count,
           });
         }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    //get writers who has written the most number of articles
+    const mostWritten = axios
+      .get(`${urls.BASE_URL_READER_ARTICLE}writer-popularity`, axiosConfig)
+      .then((res) => {
+        const data = res.data;
+        data.map((item) => {
+          item.label = item.userData[0].name;
+          item.value = item.count;
+        });
+        setNoOfArticlesWritten(data);
+
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    //get approval count
+    const approvalData = axios
+      .get(`${urls.BASE_URL_APPROVAL}count`, axiosConfig)
+      .then((res) => {
+        console.log(res.data);
+        setApprovalCount({
+          ...approvalCount,
+          approvals: res.data.approved,
+          rejections: res.data.rejected,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    //get signup count by month
+    const signupCount = axios
+      .get(`${urls.BASE_URL_USER_UTILITY}get-signup-count`, axiosConfig)
+      .then((res) => {
+        console.log(res.data);
+        setSignupCountData(res.data);
       })
       .catch((error) => {
         console.log(error);
@@ -347,7 +426,7 @@ function Reports() {
     if (event.target.value === "") {
       setReaderSearchTerm(event.target.value);
       const result = axios
-        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`,axiosConfig)
+        .get(`${urls.BASE_URL_USER_UTILITY}get-writers`, axiosConfig)
         .then((res) => {
           setWriters(res.data);
           return;
@@ -388,7 +467,7 @@ function Reports() {
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
               <Box display={"flex"}>
                 <Typography
                   variant="h4"
@@ -397,7 +476,7 @@ function Reports() {
                 >
                   Graphs
                 </Typography>
-                <Button
+                {/* <Button
                   variant="outlined"
                   color="primary"
                   style={{
@@ -407,7 +486,7 @@ function Reports() {
                   }}
                 >
                   Download
-                </Button>
+                </Button> */}
               </Box>
               <Divider />
               <Box sx={{ display: "flex" }}>
@@ -420,7 +499,12 @@ function Reports() {
                     marginRight: "40px",
                   }}
                 >
-                  <Typography variant="h5" gutterBottom fontStyle={"bold"}>
+                  <Typography
+                    variant="h5"
+                    color={"primary.dark"}
+                    gutterBottom
+                    fontStyle={"bold"}
+                  >
                     User Details
                   </Typography>
                   <BarChart
@@ -447,7 +531,7 @@ function Reports() {
                     marginRight: "40px",
                   }}
                 >
-                  <Typography variant="h5" gutterBottom>
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     Domain Popularity
                   </Typography>
                   <BarChart
@@ -483,8 +567,11 @@ function Reports() {
                   elevation={3}
                   style={{ height: 350, width: 500, padding: "20px" }}
                 >
-                  <Typography variant="h5" gutterBottom>
+                  <Typography variant="h5" color={"primary.dark"}>
                     Writer Popularity
+                  </Typography>
+                  <Typography varient="subtitle1" color={"primary.dark"}>
+                    (Based on the number of follwers)
                   </Typography>
                   <PieChart
                     series={[
@@ -512,7 +599,7 @@ function Reports() {
                     marginLeft: "40px",
                   }}
                 >
-                  <Typography variant="h5" gutterBottom>
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     New Users for {month[new Date().getMonth()]}
                   </Typography>
                   <Box
@@ -538,6 +625,98 @@ function Reports() {
                   </Box>
                 </Paper>
               </Box>
+              <Box sx={{ display: "flex", marginTop: "30px" }}>
+                <Paper
+                  elevation={3}
+                  style={{
+                    height: 350,
+                    width: 450,
+                    padding: "20px",
+                  }}
+                >
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
+                    No of approvals by you
+                  </Typography>
+                  <Box
+                    display={"flex"}
+                    sx={{ justifyContent: "space-evenly", marginTop: "50px" }}
+                  >
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.success"}>
+                        <Typography variant="h2">
+                          {approvalCount.approvals}
+                        </Typography>
+                        <Typography variant="h5">Approvals</Typography>
+                      </Box>
+                    </Paper>
+                    <Paper elevation={3} sx={{ borderRadius: "10px" }}>
+                      <Box padding={2} color={"primary.error"}>
+                        <Typography variant="h2">
+                          {approvalCount.rejections}
+                        </Typography>
+                        <Typography variant="h5">Rejections</Typography>
+                      </Box>
+                    </Paper>
+                  </Box>
+                </Paper>
+                <Paper
+                  elevation={3}
+                  style={{
+                    height: 350,
+                    width: 500,
+                    padding: "20px",
+                    marginLeft: "40px",
+                  }}
+                >
+                  <Typography variant="h5" color={"primary.dark"}>
+                    Writers with most number of articles
+                  </Typography>
+                  <Typography varient="subtitle1" color={"primary.dark"}>
+                    (Writers who has written the most number of articles)
+                  </Typography>
+                  <PieChart
+                    series={[
+                      {
+                        data: noOfArticlesWritten,
+                        innerRadius: 50,
+                        outerRadius: 95,
+                        paddingAngle: 4,
+                        cornerRadius: 8,
+                        startAngle: -180,
+                        endAngle: 180,
+                        cx: 125,
+                        cy: 130,
+                      },
+                    ]}
+                  />
+                </Paper>
+              </Box>
+              <Box sx={{ display: "flex", marginTop: "30px" }}>
+                <Paper
+                  elevation={3}
+                  style={{
+                    height: 450,
+                    width: 990,
+                    padding: "20px",
+                  }}
+                >
+                  <Typography variant="h5" color={"primary.dark"} gutterBottom>
+                    User registration count for past 12 months
+                  </Typography>
+                  <Box display={"flex"} sx={{ marginTop: "50px" }}>
+                    <BarChart
+                      dataset={signupCountData}
+                      xAxis={[{ scaleType: "band", dataKey: "Date" }]}
+                      series={[
+                        { dataKey: "Reader", label: "Reader" },
+                        { dataKey: "Writer", label: "Writer" },
+                        { dataKey: "Admin", label: "Admin" },
+                      ]}
+                      {...chartSetting}
+                    />
+                  </Box>
+                </Paper>
+              </Box>
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
@@ -547,7 +726,9 @@ function Reports() {
               </Typography>
               <Divider />
               <Box display="flex" justifyContent="space-between" marginY={2}>
-                <Typography marginY={2}>Writer Details</Typography>
+                <Typography variant="h5" marginY={2} color={"primary.dark"}>
+                  Writer Details
+                </Typography>
                 <FormControl sx={{ m: 1, width: "35ch" }} variant="outlined">
                   <InputLabel htmlFor="outlined-adornment-search">
                     Search User Name
@@ -625,7 +806,9 @@ function Reports() {
                 />
               </Paper>
               <Box display="flex" justifyContent="space-between" marginY={2}>
-                <Typography marginY={2}>Reader Details</Typography>
+                <Typography variant="h5" marginY={2} color={"primary.dark"}>
+                  Reader Details
+                </Typography>
                 <FormControl sx={{ m: 1, width: "35ch" }} variant="outlined">
                   <InputLabel htmlFor="outlined-adornment-search">
                     Search User Name

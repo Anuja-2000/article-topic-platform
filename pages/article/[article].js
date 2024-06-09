@@ -15,22 +15,26 @@ const ArticlePage = () => {
   const router = useRouter();
   const [articleData, setData] = useState([]);
   const articleId = router.query.article ?? null;
-
+  const [readerId, setReaderId] = useState("");
   
   useEffect(() => {
+    const readerId = localStorage.getItem("userId");
+    setReaderId(readerId);
     const fetchData = async () => {
       if (!articleId) return;
       try {
          const response = await fetch(`http://localhost:3001/api/readerArticle/get`, {
+          method: 'POST',
+          body: JSON.stringify({
+            "id": articleId,
+          }),
           headers: {
-            'Content-Type': 'application/json', // Adjust the content type if needed
-
-            'id': article, // Add custom data in headers
+                'Content-Type': 'application/json',
           },
       });
         const jsonData = await response.json();
         setData(jsonData);
-        console.log(jsonData.likes);
+        console.log(jsonData);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -38,6 +42,7 @@ const ArticlePage = () => {
     };
 
     fetchData();
+    console.log(articleData.view);
   }, [articleId]);
 
   if (router.isFallback) {
@@ -60,7 +65,7 @@ const ArticlePage = () => {
           width="1000" height="500" style={{ borderRadius: '10px' }}/>
         </div>
         <ArticleBody content={articleData.content} className={styles.content} />
-        <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} writerId={articleData.userId} articleId={articleId} />
+        <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} writerId={articleData.userId} articleId={articleId} view={articleData.view} readerId={readerId}/>
         <Divider sx={{ marginY: 2 }}/>
         <CommentSection articleId={articleData.articleId}/>
       </div>

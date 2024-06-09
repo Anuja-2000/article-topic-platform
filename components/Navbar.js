@@ -38,6 +38,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import CheckIcon from '@mui/icons-material/Check';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import GradingIcon from '@mui/icons-material/Grading';
+import AdminContext from '../contex/adminContex';
 
 const drawerWidth = 240;
 
@@ -123,14 +124,12 @@ export default function Navbar({children}) {
     const router = useRouter();
 const [selectedIndex, setSelectedIndex] = useState(0);
 
-let openValue = false;
 
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
   const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'ApproveArticles','DeactivateArticles', 'DeactivateWriters', 'UserRoles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
-  openValue = localStorage.getItem('open') === 'true' ? true : false;
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
 
@@ -140,20 +139,17 @@ const handleListItemClick = (event, index) => {
 
 
   const theme = useTheme();
-  if (typeof window !== 'undefined') {
-    openValue = localStorage.getItem('open') === 'true' ? true : false;
-  }
-
-  const [open, setOpen] = React.useState(openValue) 
+  const adminContext = React.useContext(AdminContext);
+  const [open, setOpen] = React.useState(adminContext.drawerOpen || false); 
 
 
   const handleDrawerOpen = () => {
-    localStorage.setItem('open', true);
+    adminContext.addDrawerOpen(true);
     setOpen(true);
   };
 
   const handleDrawerClose = () => {
-    localStorage.setItem('open', false);
+    adminContext.addDrawerOpen(false);
     setOpen(false);
   };
 
