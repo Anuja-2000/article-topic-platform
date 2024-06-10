@@ -6,8 +6,6 @@ import styles from "../styles/EditingArea.module.css";
 import { ARTICLE_ROUTES } from "../public/constants/routes";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import ArticleCoverImageUploader from './ArticleCoverImageUploader';
-import ImageUploader from "./ImageUploader";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -15,34 +13,29 @@ const TextEditor = () => {
   const [text, setText] = useState("");
   const [articleName, setArticleName] = useState("");
   const [userId, setUserId] = useState("");
-  const [images, setImages] = useState([]);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     setUserId(userId);
-    if (!userId) {
-      window.location.href = "/login";
-    }
   }, []);
 
   const handleChange = (value) => {
     setText(value);
   };
 
-  const handleSave = () => {
+  const handleUpdate = () => {
     const articleId = articleName + "-" + uuidv4();
     const articleData = {
       articleId: articleId,
       userId: userId,
       title: articleName,
       content: text,
-      images: images.map((img) => img.url),
       savedType: "saved",
     };
 
     const config = {
-      method: "post",
-      url: ARTICLE_ROUTES.CREATE,
+      method: "put",
+      url: ARTICLE_ROUTES.UPDATE,
       headers: {
         "Content-Type": "application/json",
       },
@@ -56,35 +49,6 @@ const TextEditor = () => {
       })
       .catch((error) => {
         alert("Failed to save article: " + error.message);
-      });
-  };
-
-  const handleSaveAsDraft = () => {
-    const articleId = articleName + "-" + uuidv4();
-    const articleData = {
-      articleId: articleId,
-      userId: userId,
-      title: articleName,
-      content: text,
-      images: images.map((img) => img.url),
-      savedType: "draft",
-    };
-
-    const config = {
-      method: "post",
-      url: ARTICLE_ROUTES.CREATE,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: articleData,
-    };
-
-    axios(config)
-      .then((response) => {
-        alert("Draft saved successfully");
-      })
-      .catch((error) => {
-        alert("Failed to save draft: " + error.message);
       });
   };
 
@@ -117,8 +81,6 @@ const TextEditor = () => {
 
   return (
     <div className={styles.textEditorArea}>
-      <ArticleCoverImageUploader />
-      <ImageUploader onImagesChange={setImages} />
       <input
         type="text"
         placeholder="Name of Article"
@@ -128,11 +90,8 @@ const TextEditor = () => {
       />
       <br />
       <br />
-      <Button variant="contained" color="primary" onClick={handleSave}>
-        Save Article
-      </Button>{" "}
-      <Button variant="contained" color="secondary" onClick={handleSaveAsDraft}>
-        Save As Draft
+      <Button variant="contained" color="primary" onClick={handleUpdate}>
+        Update Article
       </Button>{" "}
       <br />
       <br />
