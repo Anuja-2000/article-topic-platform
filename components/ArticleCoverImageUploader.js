@@ -34,16 +34,16 @@ const ArticleCoverImageUploader = ({ onImageUpload }) => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '350px',
-          position: 'relative' // Add relative positioning for absolute positioning inside
+          position: 'relative'
         }}>
         <input
           accept="image/*"
           style={{ display: 'none' }}
-          id="image-input"
+          id="cover-image-input"
           type="file"
           onChange={handleImageChange}
         />
-        <label htmlFor="image-input" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+        <label htmlFor="cover-image-input" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
           {!imagePreviewUrl && (
             <IconButton color="primary" aria-label="upload picture" component="span">
               <PhotoCamera fontSize="large" />

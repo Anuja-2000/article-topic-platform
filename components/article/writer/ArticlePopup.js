@@ -64,9 +64,16 @@ const ArticlePopup = ({ article, open, onClose }) => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
+  const EditArticle = () => {
+    handleClose();
+  }
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  console.log(article);
 
   if (!article) {
     return null; // Return null if article is null
@@ -119,7 +126,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
           open={open2}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem onClick={EditArticle} disableRipple>
             <EditIcon />
             Edit
           </MenuItem>

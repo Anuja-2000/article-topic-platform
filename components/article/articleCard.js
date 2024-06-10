@@ -23,10 +23,10 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
       const {name,displayName,imgUrl} = jsonData;
       if (name != null) {
           setWriter(name);
-          consloe.log(writer);
+          console.log(writer);
       } else {
           setWriter("!user");
-          consloe.log("!user");
+          console.log("!user");
       }
       setImgUrl(imgUrl);
 
