@@ -216,6 +216,16 @@ function Reports() {
       Admin: 0,
     },
   ]);
+  const [domainCountData, setDomainCountData] = React.useState([
+    {
+      domain: "Technical",
+      count: 0,
+    },
+    {
+      domain: "Health",
+      count: 0,
+    }
+  ]);
 
   React.useEffect(() => {
     const token = localStorage.getItem("token");
@@ -271,15 +281,21 @@ function Reports() {
       .then((res) => {
         let temp = [];
         let countData = [];
-
+        let obj = {
+          domain: "Technical",
+          count: 0,
+        }
         res.data.forEach((item) => {
           if (item.domain != null) {
             temp.push(item.domain);
-            countData.push(item.count);
+            countData.push({
+              domain: item.domain,
+              count: item.count,
+            })
           }
         });
+        setDomainCountData(countData);
         xLabelsDomain = temp;
-        domData = countData;
       })
       .catch((error) => {
         console.log(error);
@@ -530,30 +546,14 @@ function Reports() {
                     Domain Popularity
                   </Typography>
                   <BarChart
+                    dataset={domainCountData}
                     width={800}
                     height={300}
+                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain"}]}
                     series={[
-                      {
-                        data: domData,
-                        label: "No of Articles",
-                        id: "pvId",
-                        yAxisKey: "leftAxisId",
-                        color: "#3f51b5",
-                      },
-                    ]}
-                    xAxis={[
-                      {
-                        data: xLabelsDomain,
-                        scaleType: "band",
-                        tickLabelStyle: {
-                          angle: 20,
-                          textAnchor: "start",
-                          fontSize: 12,
-                          fontWeight: 400,
-                        },
-                      },
-                    ]}
-                    yAxis={[{ id: "leftAxisId" }]}
+                      { dataKey: "count", label: "Count", color: "#0080FE"},
+                    ]}                    
+                    yAxis={[{ id: "leftAxisId", label: "Count"}]}
                   />
                 </Paper>
               </Box>
@@ -715,7 +715,7 @@ function Reports() {
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
               <Typography variant="h4" marginBottom={1} color={"primary.dark"}>
                 User Details
               </Typography>
