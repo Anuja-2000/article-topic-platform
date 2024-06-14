@@ -28,6 +28,8 @@ import TableHead from "@mui/material/TableHead";
 import TablePaginationActions from '../../components/TablePaginationActions';
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import { Chip } from '@mui/material';
+import urls from '../../enums/url';
 
 const api = axios.create({
   baseURL: `http://localhost:3001/api/keywords`
@@ -60,6 +62,7 @@ function Keywords() {
   const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
   const [selectedTopicDomainAddForm, setSelectedTopicDomainAddForm] = useState('');
+  const [suggestedKeywords, setSuggestedKeywords] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -257,6 +260,26 @@ function Keywords() {
     setEditSuccessfulAlertOpen(false);
   };
 
+const handleKeywordNameChange = (e) => {
+  let emptyarray = []
+  if (e.target.value === '') {
+    setSuggestedKeywords(emptyarray);
+  }
+  setKeywordName(e.target.value);
+  if(e.target.value.length < 3) return;
+  fetchSuggestedKeywords(e.target.value);
+};
+
+const fetchSuggestedKeywords = async (keywordName) => {
+  try {
+    const response = await axios.get(`${urls.BASE_URL_KEYWORDS}suggestions/${keywordName}`);
+    let data = response.data.titles;
+    setSuggestedKeywords(data);
+  } catch (error) {
+    console.error("Error fetching suggested keywords:", error);
+  }
+};
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -299,7 +322,7 @@ function Keywords() {
                       label="Keyword Name"
                       variant="outlined"
                       value={keywordName}
-                      onChange={(e) => setKeywordName(e.target.value)}
+                      onChange={(e) => handleKeywordNameChange(e)}
                       error={keywordNameError}
                       style={{ marginRight: "10px" }}
                     />
@@ -312,6 +335,9 @@ function Keywords() {
                       style={{ marginRight: "10px" }}
                     />
                     <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
+                    <div style={{ marginTop: "20px" }}>Suggested Keywords: {
+                    suggestedKeywords.length === 0? <Chip label="No key words right now" color='primary'/>: suggestedKeywords.map(keywordName =>(<Chip key={keywordName} label={keywordName} color='primary' sx={{margin:'5px'}} onClick={()=>setKeywordName(keywordName)}/>))
+                    }</div>
                   </div>
                 )}
 
