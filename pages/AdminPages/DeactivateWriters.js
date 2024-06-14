@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 import TableContainer from "@mui/material/TableContainer";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -15,6 +15,8 @@ import DialogActions from '@mui/material/DialogActions';
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TablePaginationActions from '../../components/TablePaginationActions';
+import Divider from "@mui/material/Divider";
+
 
 const DeactivateWriters = () => {
   const [page, setPage] = useState(0);
@@ -201,11 +203,15 @@ const DeactivateWriters = () => {
       <div>
         <Navbar>
           <div className="App" style={{ marginTop: "60px" }}>
-            <h2 style={{ textAlign: "center" }}>Reported Writers</h2>
 
             <Grid container spacing={1}>
               <Grid item xs={1}></Grid>
               <Grid item xs={10}>
+                <Typography variant="h4" marginBottom={2} color={"primary.dark"} marginTop={2}>User Reported Writers Management</Typography>
+                <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}>  Manage Reported Writers </Typography>
+                <Divider />
+                <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+                <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>User Reported Writers</Typography>
                 <TableContainer component={Paper}>
                   <Table>
                     <TableHead>
@@ -239,7 +245,7 @@ const DeactivateWriters = () => {
                               style={{ textDecoration: 'none', cursor: 'pointer' }}
                               onClick={() => handleWriterClick(writer.writerId)}
                               onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
-                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}  
+                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}
                             >
                               {writer.writerName}
                             </a>
@@ -287,6 +293,7 @@ const DeactivateWriters = () => {
                     </TableFooter>
                   </Table>
                 </TableContainer>
+                </div>
               </Grid>
             </Grid>
             {deactivateSuccessfulAlertOpen && (
@@ -299,11 +306,10 @@ const DeactivateWriters = () => {
                 Ignore User Deactivating.
               </div>
             )}
-
-            <h2 style={{ textAlign: "center", marginTop: "40px" }}>Deactivated Writers</h2>
             <Grid container spacing={1}>
               <Grid item xs={1}></Grid>
               <Grid item xs={10}>
+                <Typography variant="h5" marginBottom={2} color={"primary.dark"}  marginTop={2}> Deactivated Writers</Typography>
                 <TableContainer component={Paper}>
                   <Table>
                     <TableHead>
@@ -330,15 +336,15 @@ const DeactivateWriters = () => {
                       {deactivatedWriters.map((writer) => (
                         <TableRow key={writer.writerId}>
                           <TableCell>
-                          <a
+                            <a
                               style={{ textDecoration: 'none', cursor: 'pointer'}}
                               onClick={() => handleWriterClick(writer.writerId)}
                               onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
-                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')} 
+                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}
                             >
-                            {writer.writerName}
+                              {writer.writerName}
                             </a>
-                            </TableCell>
+                          </TableCell>
                           <TableCell>{writer.email}</TableCell>
                           <TableCell>{writer.joinedAt}</TableCell>
                           <TableCell>{writer.deactivatedBy}</TableCell>
