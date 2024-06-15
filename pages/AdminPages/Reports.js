@@ -41,11 +41,11 @@ const chartSetting = {
       label: "user count",
     },
   ],
-  width: 900,
-  height: 330,
+  width: 1100,
+  height: 340,
   sx: {
     [`.${axisClasses.left} .${axisClasses.label}`]: {
-      transform: "translate(-10px, 0)",
+      transform: "translate(-5px, 0)",
     },
   },
 };
@@ -216,6 +216,16 @@ function Reports() {
       Admin: 0,
     },
   ]);
+  const [domainCountData, setDomainCountData] = React.useState([
+    {
+      domain: "Technical",
+      count: 0,
+    },
+    {
+      domain: "Health",
+      count: 0,
+    }
+  ]);
 
   React.useEffect(() => {
     const token = localStorage.getItem("token");
@@ -271,15 +281,21 @@ function Reports() {
       .then((res) => {
         let temp = [];
         let countData = [];
-
+        let obj = {
+          domain: "Technical",
+          count: 0,
+        }
         res.data.forEach((item) => {
           if (item.domain != null) {
             temp.push(item.domain);
-            countData.push(item.count);
+            countData.push({
+              domain: item.domain,
+              count: item.count,
+            })
           }
         });
+        setDomainCountData(countData);
         xLabelsDomain = temp;
-        domData = countData;
       })
       .catch((error) => {
         console.log(error);
@@ -359,8 +375,6 @@ function Reports() {
           item.value = item.count;
         });
         setNoOfArticlesWritten(data);
-
-        console.log(res.data);
       })
       .catch((error) => {
         console.log(error);
@@ -370,7 +384,6 @@ function Reports() {
     const approvalData = axios
       .get(`${urls.BASE_URL_APPROVAL}count`, axiosConfig)
       .then((res) => {
-        console.log(res.data);
         setApprovalCount({
           ...approvalCount,
           approvals: res.data.approved,
@@ -385,7 +398,6 @@ function Reports() {
     const signupCount = axios
       .get(`${urls.BASE_URL_USER_UTILITY}get-signup-count`, axiosConfig)
       .then((res) => {
-        console.log(res.data);
         setSignupCountData(res.data);
       })
       .catch((error) => {
@@ -525,47 +537,30 @@ function Reports() {
                 <Paper
                   elevation={3}
                   style={{
-                    width: 650,
+                    width: 800,
                     padding: "20px",
-                    marginTop: "20px",
-                    marginRight: "40px",
+                    marginTop: "20px"
                   }}
                 >
                   <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     Domain Popularity
                   </Typography>
                   <BarChart
-                    width={650}
+                    dataset={domainCountData}
+                    width={800}
                     height={300}
+                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain"}]}
                     series={[
-                      {
-                        data: domData,
-                        label: "No of Articles",
-                        id: "pvId",
-                        yAxisKey: "leftAxisId",
-                        color: "#3f51b5",
-                      },
-                    ]}
-                    xAxis={[
-                      {
-                        data: xLabelsDomain,
-                        scaleType: "band",
-                        tickLabelStyle: {
-                          angle: 20,
-                          textAnchor: "start",
-                          fontSize: 12,
-                          fontWeight: 400,
-                        },
-                      },
-                    ]}
-                    yAxis={[{ id: "leftAxisId" }]}
+                      { dataKey: "count", label: "Count", color: "#0080FE"},
+                    ]}                    
+                    yAxis={[{ id: "leftAxisId", label: "Count"}]}
                   />
                 </Paper>
               </Box>
               <Box sx={{ display: "flex", marginTop: "30px" }}>
                 <Paper
                   elevation={3}
-                  style={{ height: 350, width: 500, padding: "20px" }}
+                  style={{ height: 350, width: 600, padding: "20px" }}
                 >
                   <Typography variant="h5" color={"primary.dark"}>
                     Writer Popularity
@@ -594,7 +589,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 450,
+                    width: 500,
                     padding: "20px",
                     marginLeft: "40px",
                   }}
@@ -630,7 +625,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 450,
+                    width: 500,
                     padding: "20px",
                   }}
                 >
@@ -663,7 +658,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 500,
+                    width: 600,
                     padding: "20px",
                     marginLeft: "40px",
                   }}
@@ -696,14 +691,14 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 450,
-                    width: 990,
+                    width: 1140,
                     padding: "20px",
                   }}
                 >
                   <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     User registration count for past 12 months
                   </Typography>
-                  <Box display={"flex"} sx={{ marginTop: "50px" }}>
+                  <Box display={"flex"} sx={{ marginTop: "20px" }}>
                     <BarChart
                       dataset={signupCountData}
                       xAxis={[{ scaleType: "band", dataKey: "Date" }]}
@@ -720,7 +715,7 @@ function Reports() {
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
               <Typography variant="h4" marginBottom={1} color={"primary.dark"}>
                 User Details
               </Typography>
@@ -951,7 +946,7 @@ function Reports() {
                               .slice(
                                 articlesPage * rowsPerArticlesPage,
                                 articlesPage * rowsPerArticlesPage +
-                                  rowsPerArticlesPage
+                                rowsPerArticlesPage
                               )
                               .map((row) => {
                                 return (
