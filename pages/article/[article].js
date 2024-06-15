@@ -65,7 +65,7 @@ const ArticlePage = () => {
           width="1000" height="500" style={{ borderRadius: '10px' }}/>
         </div>
         <ArticleBody content={articleData.content} className={styles.content} />
-        <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} writerId={articleData.userId} articleId={articleId} view={articleData.view} readerId={readerId}/>
+        <LikeShareDownload articleTitle={articleData.title} initialLikes={articleData.likes} writerId={articleData.userId} articleId={articleId} view={articleData.viewCount} readerId={readerId}/>
         <Divider sx={{ marginY: 2 }}/>
         <CommentSection articleId={articleData.articleId}/>
       </div>
