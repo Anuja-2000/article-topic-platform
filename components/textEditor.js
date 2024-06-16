@@ -9,6 +9,9 @@ import { v4 as uuidv4 } from "uuid";
 import ArticleCoverImageUploader from './ArticleCoverImageUploader';
 import ImageUploader from "./ImageUploader";
 
+import CircularProgress from "@mui/material/CircularProgress";
+import { set } from "react-hook-form";
+
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const TextEditor = () => {
@@ -16,6 +19,8 @@ const TextEditor = () => {
   const [articleName, setArticleName] = useState("");
   const [userId, setUserId] = useState("");
   const [images, setImages] = useState([]);
+  const [coverImage, setCoverImage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -29,16 +34,26 @@ const TextEditor = () => {
     setText(value);
   };
 
+  const handleCoverImageUpload = (base64Image) => {
+    setCoverImage(base64Image);
+
+    console.log("Cover Image: ", base64Image);
+  };
+
   const handleSave = () => {
+
+    setLoading(true);
     const articleId = articleName + "-" + uuidv4();
     const articleData = {
       articleId: articleId,
       userId: userId,
       title: articleName,
       content: text,
-      images: images.map((img) => img.url),
       savedType: "saved",
+      coverImage: coverImage,
     };
+
+    console.log(articleData)
 
     const config = {
       method: "post",
@@ -52,6 +67,7 @@ const TextEditor = () => {
     axios(config)
       .then((response) => {
         alert("Article saved successfully");
+        setLoading(false);
         window.location.reload();
       })
       .catch((error) => {
@@ -60,14 +76,16 @@ const TextEditor = () => {
   };
 
   const handleSaveAsDraft = () => {
+
+    setLoading(true);
     const articleId = articleName + "-" + uuidv4();
     const articleData = {
       articleId: articleId,
       userId: userId,
       title: articleName,
       content: text,
-      images: images.map((img) => img.url),
       savedType: "draft",
+      coverImage: coverImage,
     };
 
     const config = {
@@ -82,6 +100,8 @@ const TextEditor = () => {
     axios(config)
       .then((response) => {
         alert("Draft saved successfully");
+        setLoading(false);
+        window.location.reload();
       })
       .catch((error) => {
         alert("Failed to save draft: " + error.message);
@@ -117,7 +137,7 @@ const TextEditor = () => {
 
   return (
     <div className={styles.textEditorArea}>
-      <ArticleCoverImageUploader />
+      <ArticleCoverImageUploader onImageUpload={handleCoverImageUpload}/>
       <ImageUploader onImagesChange={setImages} />
       <input
         type="text"
@@ -128,12 +148,17 @@ const TextEditor = () => {
       />
       <br />
       <br />
-      <Button variant="contained" color="primary" onClick={handleSave}>
-        Save Article
-      </Button>{" "}
-      <Button variant="contained" color="secondary" onClick={handleSaveAsDraft}>
-        Save As Draft
-      </Button>{" "}
+      {loading? <CircularProgress /> : 
+      <>
+        <Button variant="contained" color="primary" onClick={handleSave}>
+          Save Article
+        </Button>{" "}
+        <Button variant="contained" color="secondary" onClick={handleSaveAsDraft}>
+          Save As Draft
+        </Button>
+      </>
+      }
+      {" "}
       <br />
       <br />
       {typeof window !== "undefined" && (

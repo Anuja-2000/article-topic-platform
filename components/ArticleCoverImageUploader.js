@@ -13,11 +13,12 @@ const ArticleCoverImageUploader = ({ onImageUpload }) => {
       reader.onloadend = () => {
         setImagePreviewUrl(reader.result);
         if (onImageUpload) {
-          onImageUpload(reader.result);
+          onImageUpload(reader.result); // This is the Base64 string
         }
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // Convert image file to Base64 string
     }
+    
   };
 
   return (
@@ -26,16 +27,16 @@ const ArticleCoverImageUploader = ({ onImageUpload }) => {
         Upload Cover Image
       </Typography>
       <div style={{
-          border: '2px dashed #ccc',
-          padding: '20px',
-          marginBottom: '10px',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '350px',
-          position: 'relative'
-        }}>
+        border: '2px dashed #ccc',
+        padding: '20px',
+        marginBottom: '10px',
+        cursor: 'pointer',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '350px',
+        position: 'relative'
+      }}>
         <input
           accept="image/*"
           style={{ display: 'none' }}
@@ -44,11 +45,9 @@ const ArticleCoverImageUploader = ({ onImageUpload }) => {
           onChange={handleImageChange}
         />
         <label htmlFor="cover-image-input" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-          {!imagePreviewUrl && (
-            <IconButton color="primary" aria-label="upload picture" component="span">
-              <PhotoCamera fontSize="large" />
-            </IconButton>
-          )}
+          <IconButton color="primary" aria-label="upload picture" component="span">
+            <PhotoCamera fontSize="large" />
+          </IconButton>
         </label>
         {imagePreviewUrl && (
           <div style={{ width: '100%', height: '350px', overflow: 'hidden' }}>
