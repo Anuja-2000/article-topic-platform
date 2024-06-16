@@ -23,7 +23,7 @@ import AvatarIcon from "../components/avatar";
 import CustomNotificationIcon from "../components/customNotificationIcon";
 import Tooltip from "@mui/material/Tooltip";
 import { Button } from "@mui/material";
-import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import AssistantIcon from '@mui/icons-material/Assistant';
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
@@ -109,6 +109,7 @@ const Drawer = styled(MuiDrawer, {
 export default function Navbar({ children }) {
   const iconMap = {
     Dashboard: <DashboardIcon sx={{ color: "white" }} />,
+    "Topic Suggestion":  <AssistantIcon sx={{ color: "white" }} />,
     "Create Article": <CreateIcon sx={{ color: "white" }} />,
     "Saved Articles": <TopicIcon sx={{ color: "white" }} />,
     Drafts: <SaveAsIcon sx={{ color: "white" }} />,
@@ -118,15 +119,12 @@ export default function Navbar({ children }) {
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const handleClickTopicSuggestion = () => {
-    router.push("/userTopicSuggestion");
-  };
-
   useEffect(() => {
     // Update the selected index whenever the route changes
     const path = router.pathname;
     const index = [
       "Dashboard",
+      "Topic Suggestion",
       "Create Article",
       "Saved Articles",
       "Drafts",
@@ -197,35 +195,7 @@ export default function Navbar({ children }) {
           >
             GATE
           </Typography>
-          <Button
-            onClick={handleClickTopicSuggestion}
-            color="inherit"
-            sx={{
-              textDecoration: "none",
-              color: "inherit",
-              display: "flex",
-              alignItems: "center",
-              borderRadius: 6,
-              marginLeft: 13,
-              fontSize: 20,
-              textTransform: "none",
-              fontFamily: "Ubuntu",
-            }}
-          >
-            <LightbulbIcon sx={{ marginRight: "5px" }} />
-            <Typography
-              variant="body1"
-              sx={{
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              Topic Suggestion
-            </Typography>
-          </Button>
+         
           <div style={{ flexGrow: 1 }}></div>
           <IconButton
             size="large"
@@ -259,6 +229,7 @@ export default function Navbar({ children }) {
         <List>
           {[
             "Dashboard",
+            "Topic Suggestion",
             "Create Article",
             "Saved Articles",
             "Drafts",

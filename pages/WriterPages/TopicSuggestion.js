@@ -7,9 +7,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import WriterNavbar from '../components/WriterNavbar';
+import Navbar from "../../components/createArticleNavbar";
 import Image from 'next/image';
-import searchTopicImage from '../public/asset/searchTopicImage.jpg';
+import searchTopicImage from '../../public/asset/searchTopicImage.jpg';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -17,10 +17,11 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Link from "next/link"
 import { useRouter } from 'next/router';
+import Box from '@mui/material/Box';
 
-
-const UserTopicSuggestion = () => {
+const TopicSuggestion = () => {
   const [topicDomains, setTopicDomains] = useState([]);
+  //selectedTopicDomain is a ID
   const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
   const [keywords, setKeywords] = useState([]);
   const [selectedKeywords, setSelectedKeywords] = useState([]);
@@ -41,6 +42,7 @@ const UserTopicSuggestion = () => {
       try {
         const response = await axios.get('http://localhost:3001/api/topicDomains/get');
         setTopicDomains(response.data);
+        console.log("TopicDomains",topicDomains)
       } catch (error) {
         console.error('Error fetching topic domains:', error);
       }
@@ -52,7 +54,9 @@ const UserTopicSuggestion = () => {
 
 
   const handleTopicDomainChange = async (event) => {
+    setSelectedKeywords('');
     const selectedDomain = event.target.value;
+    console.log("selectedDomain",selectedDomain)
     setSelectedTopicDomain(selectedDomain);
     try {
       const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedDomain}`);
@@ -112,38 +116,49 @@ const UserTopicSuggestion = () => {
 
   return (
 
-    <><div>
-      <WriterNavbar />
-    </div>
-      <div className="App" style={{ marginTop: '120px', backgroundColor: '#669999', minHeight: '100vh', padding: '20px' }}>
-        <Grid container spacing={3}>
+    <div>
+      <Navbar >
+        <Typography variant="h4" marginBottom={2} color={"primary.dark"} marginTop={2}>Topics Suggestion for Your Articles </Typography>
+        <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}>  According to  a Topic Domain and  a keyword </Typography>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <div style={{ marginRight: '20px' }}>
-              <Card style={{ backgroundColor: '#1E1E3C', color: 'white', borderRadius: '20px' }}>
+              <Card style={{ backgroundColor: '#0080FE', color: 'white', borderRadius: '20px' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Topic Domains</Typography>
                   {topicDomains.map((domain) => (
                     <FormControlLabel
                       key={domain.topicDomainId}
-                      control={<Checkbox checked={selectedTopicDomain === domain.topicDomainId} onChange={handleTopicDomainChange} value={domain.topicDomainId} />}
+                      control={<Checkbox checked={selectedTopicDomain === domain.topicDomainId} onChange={handleTopicDomainChange} value={domain.topicDomainId}
+                        sx={{
+                          color: 'white',
+                          '&.Mui-checked': {
+                            color: 'black',
+                          },
+                        }} />}
                       label={domain.topicDomainName}
                       style={{ color: 'white' }} />
                   ))}
                 </CardContent>
               </Card>
-              <Card style={{ backgroundColor: '#1E1E3C', color: 'white', marginTop: '20px', borderRadius: '20px' }}>
+              <Card style={{ backgroundColor: '#0080FE', color: 'white', marginTop: '20px', borderRadius: '20px' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Keywords</Typography>
                   {keywords.map((keyword) => (
                     <FormControlLabel
                       key={keyword.keywordId}
-                      control={<Checkbox checked={selectedKeywords.includes(keyword.keywordId)} onChange={handleKeywordChange} value={keyword.keywordId} />}
+                      control={<Checkbox checked={selectedKeywords.includes(keyword.keywordId)} onChange={handleKeywordChange} value={keyword.keywordId} sx={{
+                        color: 'white',
+                        '&.Mui-checked': {
+                          color: 'black',
+                        },
+                      }} />}
                       label={keyword.keywordName}
                       style={{ color: 'white' }} />
                   ))}
                 </CardContent>
               </Card>
-              <Card style={{ backgroundColor: '#1E1E3C', color: 'white', marginTop: '20px', borderRadius: '20px' }}>
+              <Card style={{ backgroundColor: '#0080FE', color: 'white', marginTop: '20px', borderRadius: '20px' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Trending Keywords</Typography>
                   {/* Add trending keywords here */}
@@ -159,13 +174,9 @@ const UserTopicSuggestion = () => {
               {!searchClicked ? (
 
                 <>
-                  {/* Alert for selecting topic domain and keyword */}
-                  <Alert severity="warning" style={{ marginBottom: '20px' }}>
-                    <AlertTitle>Please select a topic domain and at least one keyword. Then click search button</AlertTitle>
-                  </Alert>
-                  <Card style={{ backgroundColor: '#1E1E3C', padding: '20px', width: '100%', borderRadius: '20px' }}>
+                  <Card style={{ backgroundColor: '#0080FE', padding: '20px', width: '100%', borderRadius: '20px' }}>
                     <CardContent>
-                      <Typography variant="h4" style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', color: '#1e90ff' }}>Lets Start</Typography>
+                      <Typography variant="h6" style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', color: 'white' }}>We will provide topics according to your topic domain & keyword</Typography>
                       <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <Image src={searchTopicImage} alt="Placeholder" width={500} height={300} />
                       </div>
@@ -174,13 +185,13 @@ const UserTopicSuggestion = () => {
                 </>
               ) : (
                 <>
-                  <Card style={{ backgroundColor: '#E3F2FD', padding: '20px', width: '100%', borderRadius: '20px' }}>
+                  <Card style={{ backgroundColor: '#0080FE', padding: '20px', width: '100%', borderRadius: '20px' }}>
                     <CardContent>
-                      <Typography variant="h4" gutterBottom style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', color: '#1e90ff' }}> Search Results</Typography>
+                      <Typography variant="h4" gutterBottom style={{ marginBottom: '10px', color: 'primary.dark' }}> Search Results</Typography>
                       {searchResults.map((result) => (
                         <div key={result.topicId}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                            <Typography variant="h6" style={{ color: 'white', fontWeight: 'bold' }}>
                               {result.topicName}
                             </Typography>
 
@@ -188,7 +199,7 @@ const UserTopicSuggestion = () => {
                               <ContentCopy />
                             </IconButton>
                           </div>
-                          <Typography variant="body1">{result.description}</Typography>
+                          <Typography variant="body1" style={{ color: 'primary.dark' }}>{result.description}</Typography>
                           {copiedTopic === result.topicName && (
                             <Alert severity="success" action={<IconButton
                               aria-label="close"
@@ -212,20 +223,31 @@ const UserTopicSuggestion = () => {
                   </Card>
 
 
-                  {/* Feedback button */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                    <Button variant="contained" color="secondary" onClick={handleFeedback}>
+                  {/* Feedback button and text */}
+                  <Grid container spacing={2} marginTop={2}>
+                    <Grid item xs={12} sm={6}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <Typography variant="h7" style={{ color: 'primary.dark', fontStyle: 'italic' }}>
+                          Please take a moment to fill this feedback
+                        </Typography>
+                      </div>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
+                        <Button variant="contained" color="primary" onClick={handleFeedback}>
                       Feedback
                     </Button>
                   </div>
+                    </Grid>
+                  </Grid>
                   {/* Redirect link to writer dashboard */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                  {/*<div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
                     <Link href="http://localhost:3000/WriterPages/CreateArticle">
                       <Typography variant="body1" style={{ color: 'blue', fontStyle: 'italic' }}>
                         Redirect to writer dashboard
                       </Typography>
                     </Link>
-                  </div>
+                  </div>*/}
 
                 </>
               )}
@@ -233,10 +255,12 @@ const UserTopicSuggestion = () => {
             </div>
           </Grid>
         </Grid>
-      </div></>
 
+
+      </Navbar>
+    </div >
 
   );
 };
 
-export default UserTopicSuggestion;
+export default TopicSuggestion;
