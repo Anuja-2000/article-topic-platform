@@ -199,7 +199,7 @@ const DeactivateArticles = () => {
                                                     <h4 style={{ color: 'white' }}>Count</h4>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <h4 style={{ color: 'white' }}>Actions</h4>
+                                                    <h4 style={{ color: 'white', textAlign:"center"}}>Actions</h4>
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -223,9 +223,9 @@ const DeactivateArticles = () => {
                                                     </TableCell>
                                                     <TableCell>{article.count}</TableCell>
                                                     <TableCell>
-                                                        <Box sx={{ display: 'flex', gap: '8px' }}>
-                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(article.articleId)}>Remove</Button>
-                                                            <Button variant="contained" color="success" onClick={() => handleIgnoreClick(article.articleId)}>Cancel</Button>
+                                                        <Box sx={{ display: 'flex', gap: '8px'}}>
+                                                            <Button variant="contained" color="error" size="small"  sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(article.articleId)}>Remove</Button>
+                                                            <Button variant="contained" color="success" size= "small" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleIgnoreClick(article.articleId)}>Cancel</Button>
                                                         </Box>
                                                     </TableCell>
                                                 </TableRow>

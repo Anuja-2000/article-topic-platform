@@ -87,6 +87,7 @@ function Topics() {
     const fetchTopicDomains = async () => {
       try {
         const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
+        console.log("'http://localhost:3001/api/topicDomains/get",topicDomainsResponse.data);
         setTopicDomains(topicDomainsResponse.data);
       } catch (error) {
         console.error('Error fetching topic domains:', error);
@@ -453,7 +454,7 @@ function Topics() {
 
               {/* Toggle Add Form Button */}
               <div style={{ textAlign: "Right", marginBottom: "30px" }}>
-                <Button variant="contained" color="primary" onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
+                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
                   {showAddForm ? "Cancel" : "Create Topic"}
                 </Button>
               </div>
@@ -558,8 +559,8 @@ function Topics() {
 
                             ) : (
                               <Box sx={{ display: 'flex', gap: '8px' }}>
-                                <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                                <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                                <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(row.topicId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
 
                               </Box>
                             )}
