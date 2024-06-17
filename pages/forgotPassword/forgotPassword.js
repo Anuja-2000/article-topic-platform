@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import React from 'react';
 import { useForm } from "react-hook-form";
 import axios from 'axios';
+import HomeNav from '../HomePage/homeNav';
 
 const RestButton = styled(Button)({
   textTransform: 'none',
@@ -42,7 +43,9 @@ function forgotPassword() {
   };
 
   return (
-    <div className={styles.box}>
+    <>
+    <HomeNav />
+    <div className={styles.box} style={{marginTop:"75px"}}>
       <div className={styles.box1}>
         <div className={styles.innerBox}>
           <h1 className={styles.title}>Forgot<br /> Your Password?</h1>
@@ -80,6 +83,7 @@ function forgotPassword() {
         <Image src="/forgotPassword.jpg" width="800" height="708" alt='Forgot Password' />
       </div>
     </div>
+    </>
   );
 }
 
