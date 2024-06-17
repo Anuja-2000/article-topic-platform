@@ -107,7 +107,7 @@ const reviewArticlePage = () => {
         <div className={styles.imageContainer}>
           {articleData.length != 0 ? (
             <Image
-              src={`data:image/jpeg;base64,${articleData.coverImage != null?(articleData.coverImage.slice(23)):""}`}
+              src={`${articleData.coverImage != null?(articleData.coverImage):""}`}
               alt="Article Image"
               width={1000}
               height={500}

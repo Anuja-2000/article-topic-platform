@@ -68,7 +68,7 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
       <CardMedia
         component="img"
         height="160"
-        src={`data:image/jpeg;base64,${coverImage != null ?(coverImage.slice(23)):''}`}
+        src={`${coverImage != null ?(coverImage):''}`}
         alt={title}
         style={{ marginBottom: '0px', borderRadius: '4px' }}
       />
