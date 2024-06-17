@@ -42,8 +42,6 @@ export default function CustomNotificationIcon() {
     }
   };
 
-  let config;
-
   React.useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -53,7 +51,6 @@ export default function CustomNotificationIcon() {
         console.log(error);
       }
     };
-    // if (config)
     fetchNotifications();
   }, []);
 
