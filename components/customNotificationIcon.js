@@ -44,26 +44,6 @@ export default function CustomNotificationIcon() {
 
   let config;
 
-  // React.useEffect(() => {
-  //   const getToken = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       if (token) {
-  //         config = {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //         return;
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-
-  //   getToken();
-  // }, []);
-
   React.useEffect(() => {
     const fetchNotifications = async () => {
       try {
