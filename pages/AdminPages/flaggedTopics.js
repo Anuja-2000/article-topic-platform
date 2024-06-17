@@ -142,7 +142,7 @@ const FlaggedTopics = () => {
                                                         <h4 style={{ color: 'white' }}>Count</h4>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <h4 style={{ color: 'white' }}>Actions</h4>
+                                                        <h4 style={{ color: 'white', textAlign:"center" }}>Actions</h4>
                                                     </TableCell>
                                                 </TableRow>
                                             </TableHead>
@@ -163,8 +163,8 @@ const FlaggedTopics = () => {
                                                         <TableCell>{topic.count}</TableCell>
                                                         <TableCell>
                                                             <Box sx={{ display: 'flex', gap: '8px' }}>
-                                                                <Button variant="contained" color="error" onClick={() => handleDeleteClick(topic.topicId)}>Delete</Button>
-                                                                <Button variant="contained" color="primary" onClick={() => handleIgnoreClick(topic.topicId)}>Ignore</Button>
+                                                                <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(topic.topicId)}>Delete</Button>
+                                                                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleIgnoreClick(topic.topicId)}>Ignore</Button>
                                                             </Box>
                                                         </TableCell>
                                                     </TableRow>

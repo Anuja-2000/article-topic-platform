@@ -160,7 +160,7 @@ function Dashboard({}) {
               fontFamily: "Montserrat, sans-serif",
               fontWeight: 700,
               letterSpacing: ".3rem",
-              color: "black",
+              color: "primary.dark",
               textDecoration: "none",
               paddingLeft: "10px",
               marginBottom: "30px",
