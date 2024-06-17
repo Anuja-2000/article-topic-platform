@@ -95,7 +95,7 @@ const DeactivateWriters = () => {
           const { name, email, savedAt } = deactivatedWriterResponse.data;
           console.log("writer username", username);
           console.log('DeactivatedWriterResponse.data;', deactivatedWriterResponse.data);
-         
+
           return {
             deactivatedBy: deactivatedWriter.deactivatedBy,
             writerName: name,
@@ -104,6 +104,7 @@ const DeactivateWriters = () => {
             writerId: deactivatedWriter.writerId,
             reasons: deactivatedWriter.deactivatedReason,
             deactivatedAt: new Date(deactivatedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+            daysSinceDeactivation: calculateDaysDifference(deactivatedWriter.deactivatedAt)
           };
         }));
 
@@ -113,6 +114,19 @@ const DeactivateWriters = () => {
         console.error('Error fetching deactivated writers:', error);
       }
     };
+
+    const calculateDaysDifference = (deactivatedAt) => {
+      const givenDate = new Date(deactivatedAt);
+      const currentDate = new Date();
+      const differenceInTime = currentDate - givenDate;
+      const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
+
+      if (differenceInDays >= 30 || differenceInDays < 0) {
+        return 0;
+      } else {
+        return (30 - differenceInDays);
+      }
+    }
 
     const fetchAdmin = async () => {
       try {
@@ -176,7 +190,7 @@ const DeactivateWriters = () => {
       const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (deactivatedWriter) => {
         const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${deactivatedWriter.writerId}`);
         const { name, email, savedAt } = reportedWriterResponse.data;
-        
+
         console.log('deactivatedWriter.deactivatedBy', deactivatedWriter.deactivatedBy);
         return {
           deactivatedBy: deactivatedWriter.deactivatedBy,
@@ -186,6 +200,7 @@ const DeactivateWriters = () => {
           reasons: deactivatedWriter.deactivatedReason,
           joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date 
           deactivatedAt: new Date(deactivatedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+          daysSinceDeactivation: calculateDaysDifference(deactivatedWriter.deactivatedAt)
         };
       }));
       setDeactivatedWriters(deactivatedWritersWithDetails);
@@ -412,10 +427,15 @@ const DeactivateWriters = () => {
                             <TableCell>{writer.deactivatedBy}</TableCell>
                             <TableCell>{new Date(writer.deactivatedAt).toISOString().substring(0, 10)}</TableCell>
                             <TableCell>
-                              <Button variant="contained" color="success" size="medium" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleActivateClick(writer.writerId)}>Activate</Button>
-                              <Typography sx={{ color: 'red', marginTop: '8px' }}>
-                                days remaining
-                              </Typography>
+                              {(writer.daysSinceDeactivation < 1) ? "" :
+                                (
+                                  <>
+                                    <Button variant="contained" color="success" size="medium" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleActivateClick(writer.writerId)}>Activate</Button>
+                                    <Typography sx={{ color: 'red', marginTop: '8px' }}>
+                                      {writer.daysSinceDeactivation} days remaining
+                                    </Typography>
+                                  </>
+                                )}
                             </TableCell>
                           </TableRow>
                         )))}
