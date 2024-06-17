@@ -277,7 +277,7 @@ function TopicDomains() {
               </div>
               {/* Toggle Add Form Button */}
               <div style={{ textAlign: "Right", marginBottom: "30px"}}>
-                <Button variant="contained" color="primary" onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
+                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
                   {showAddForm ? "Cancel" : "Create Topic Domain"}
                 </Button>
               </div>
@@ -327,8 +327,8 @@ function TopicDomains() {
 
                           ) : (
                             <Box sx={{ display: 'flex', gap: '8px' }}>
-                              <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                              <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                              <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
                             </Box>
                           )}
                         </TableCell>
