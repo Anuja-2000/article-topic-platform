@@ -58,7 +58,7 @@ function CreateArticles() {
                   marginBottom: "30px",
                 }}
               >
-                Write Article h
+                Write Article
               </Typography>
               <Stack alignItems="center" direction="row" spacing={1}></Stack>
             </Stack>

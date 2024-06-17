@@ -35,15 +35,13 @@ const ViewCounter = ({ articleId,view, readerId}) => {
                'Content-Type': 'application/json',
          },
      });
-     console.log(response.status);
+
      if (response.status !== 200) {
         let newViews = view +1;
         console.log(newViews)
         setViews(newViews);     
         saveView();
-        updateView(newViews);
-        console.log(response.status);
-        console.log(views);
+        updateView(newViews);    
         } 
      } catch (error) {
        console.error('Error fetching data:', error);
@@ -61,7 +59,7 @@ const updateView = async(newViews)=>{
     method: 'PUT',
     body: JSON.stringify({
       id: articleId,
-      view:newViews
+      viewCount:newViews
     }),
     headers: {
           'Content-Type': 'application/json',
