@@ -954,7 +954,7 @@ function Reports() {
                                     hover
                                     role="checkbox"
                                     tabIndex={-1}
-                                    key={row.id}
+                                    key={row._id}
                                   >
                                     <TableCell>{row.title}</TableCell>
                                     <TableCell>

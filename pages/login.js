@@ -84,7 +84,7 @@ export default function Login() {
         <Head>
           <title>Login</title>
         </Head>
-        <section className={styles.section}>
+        <section className={styles.section} style={{width:"300px"}}>
           <div className={styles.title}>
             <h1 className={styles.title1}>Login</h1>
             <p className={styles.word}>
@@ -135,18 +135,18 @@ export default function Login() {
                   Log in
                 </button>
               </div>
-              <div className={styles.or}>OR</div>
+              {/* <div className={styles.or}>OR</div>
               <div className={styles.inputbutton2}>
                 <button type="submit" className={styles.submit2}>
                   Log in with Google
                 </button>
-              </div>
+              </div> */}
             </div>
           </form>
 
           <p className={styles.footer}>
             Don&apos;t have an account?
-            <Link href={"/register"} className={styles.last}>
+            <Link href={"/register"} className={styles.last} style={{marginLeft:'5px'}}>
               Sign Up
             </Link>
           </p>
