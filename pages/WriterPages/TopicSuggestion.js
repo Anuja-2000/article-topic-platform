@@ -109,7 +109,7 @@ const TopicSuggestion = () => {
   const handleFeedback = () => {
     // Pass searchResults to feedback page
     router.push({
-      pathname: '/UserTopicSuggestionFeedback',
+      pathname: '/WriterPages/TopicSuggestionFeedback',
       query: { searchResults: JSON.stringify(searchResults) },
     });
   };
