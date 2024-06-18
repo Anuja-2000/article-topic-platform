@@ -9,28 +9,52 @@ const TopicSuggestionFeedback = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showFeedbackSuccessfulAlert, setShowFeedbackSuccessfulAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   useEffect(() => {
+    const fetchGeneratedTopic = async () => {
     try {
       const { searchResults } = router.query;
       if (searchResults) {
-        setSearchResults(
-          JSON.parse(searchResults).map((result) => ({
-            ...result,
+        
+        const parsedResults = JSON.parse(searchResults);
+        const allTopics = Object.values(parsedResults).flatMap(keywordTopics =>
+          keywordTopics.map(topic => ({
+            topicId: topic.topicId,
+            topicName: topic.topicName,
             relevant: false,
             irrelevant: false,
-            reason: '' // Initialize reason property
-
+            reason: '', // Initialize reason property
           }))
         );
-
+        setSearchResults(allTopics);
+        
         router.replace(router.pathname, undefined, { shallow: true });
         setIsLoading(true);
       }
     } catch (error) {
       console.error('Error fetching generated topics:', error);
     }
+  };
+    const fetchWriter = async () => {
+      try {
+        const username = localStorage.getItem("username");
+        const email = localStorage.getItem("email");
+        if (username && email) {
+          setUsername(username);
+          setEmail(email);
+        } else {
+          setUsername("");
+          setEmail("");
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    console.log("writer",username);
 
+    fetchGeneratedTopic();
+    fetchWriter();
   }, [router]);
   /*
    useEffect(() => {
@@ -110,7 +134,7 @@ const TopicSuggestionFeedback = () => {
           const flaggedTopic = {
             topicId,
             topicName,
-            flaggedBy: "sampleUser",  //need to change further
+            flaggedBy: username,  //need to change further
             reason,
 
           };

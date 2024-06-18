@@ -117,7 +117,9 @@ const DeactivateWriters = () => {
 
     const calculateDaysDifference = (deactivatedAt) => {
       const givenDate = new Date(deactivatedAt);
+      console.log("givenDate",givenDate);
       const currentDate = new Date();
+      console.log("currentDate",currentDate);
       const differenceInTime = currentDate - givenDate;
       const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
 
