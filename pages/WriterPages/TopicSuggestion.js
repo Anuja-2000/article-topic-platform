@@ -25,7 +25,7 @@ const TopicSuggestion = () => {
   const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
   const [keywords, setKeywords] = useState([]);
   const [selectedKeywords, setSelectedKeywords] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState({});
   const [searchClicked, setSearchClicked] = useState(false);
 
 
@@ -56,7 +56,7 @@ const TopicSuggestion = () => {
   const handleTopicDomainChange = async (event) => {
     setSelectedKeywords('');
     const selectedDomain = event.target.value;
-    console.log("selectedDomain",selectedDomain)
+    console.log("selectedDomain", selectedDomain)
     setSelectedTopicDomain(selectedDomain);
     try {
       const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedDomain}`);
@@ -79,7 +79,10 @@ const TopicSuggestion = () => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/topics/get/${selectedTopicDomain}/${selectedKeywords}`);
+      const response = await axios.get(`http://localhost:3001/api/topics/get/${selectedTopicDomain}/${selectedKeywords.join(',')}`);
+      console.log("selected keys", selectedKeywords.join(','));
+      console.log("Backend response", response);
+      console.log("searchResults", response.data);
       setSearchResults(response.data);
       setSearchClicked(true);
     } catch (error) {
@@ -158,7 +161,7 @@ const TopicSuggestion = () => {
                   ))}
                 </CardContent>
               </Card>
-              <Card style={{ backgroundColor: '#0080FE', color: 'white', marginTop: '20px', borderRadius: '20px' }}>
+              <Card style={{ backgroundColor: '#0080FE', color: 'white', marginTop: '20px',  width: '100%', borderRadius: '20px' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>Trending Keywords</Typography>
                   {/* Add trending keywords here */}
@@ -185,42 +188,50 @@ const TopicSuggestion = () => {
                 </>
               ) : (
                 <>
-                  <Card style={{ backgroundColor: '#0080FE', padding: '20px', width: '100%', borderRadius: '20px' }}>
-                    <CardContent>
-                      <Typography variant="h4" gutterBottom style={{ marginBottom: '10px', color: 'primary.dark' }}> Search Results</Typography>
-                      {searchResults.map((result) => (
-                        <div key={result.topicId}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Typography variant="h6" style={{ color: 'white', fontWeight: 'bold' }}>
-                              {result.topicName}
+                  {Object.keys(searchResults).map((keywordId) => (
+                    <Card key={keywordId} style={{ backgroundColor: '#0080FE', padding: '20px', marginTop: '20px', width: '100%', borderRadius: '20px' }}>
+                      <CardContent>
+                        <Typography variant="h6" style={{ marginBottom: '10px', color: 'white', fontWeight: 'bold' }}>
+                          {`${keywordId}:`}
+                        </Typography>
+                        {searchResults[keywordId].map((topic) => (
+                          <div key={topic.topicId}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Typography variant="h6" style={{ color: 'white', fontWeight: 'bold' }}>
+                                {topic.topicName}
+                              </Typography>
+                              <IconButton onClick={() => handleCopySelectedTopicNames(topic.topicName)}>
+                                <ContentCopy />
+                              </IconButton>
+                            </div>
+                            <Typography variant="body1" style={{ color: 'primary.dark' }}>
+                              {topic.description}
                             </Typography>
-
-                            <IconButton onClick={() => handleCopySelectedTopicNames(result.topicName)}>
-                              <ContentCopy />
-                            </IconButton>
+                            {copiedTopic === topic.topicName && (
+                              <Alert severity="success" action={
+                                <IconButton
+                                  aria-label="close"
+                                  color="inherit"
+                                  size="small"
+                                  onClick={() => {
+                                    setShowAlert(false);
+                                    setCopiedTopic('');
+                                  }}
+                                >
+                                  <CloseIcon fontSize="inherit" />
+                                </IconButton>
+                              }
+                                style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999' }}
+                              >
+                                <AlertTitle>Successfully copied</AlertTitle>
+                                {copiedTopic}
+                              </Alert>
+                            )}
                           </div>
-                          <Typography variant="body1" style={{ color: 'primary.dark' }}>{result.description}</Typography>
-                          {copiedTopic === result.topicName && (
-                            <Alert severity="success" action={<IconButton
-                              aria-label="close"
-                              color="inherit"
-                              size="small"
-                              onClick={() => {
-                                setShowAlert(false);
-                                setCopiedTopic('');
-                              }}
-                            >
-                              <CloseIcon fontSize="inherit" />
-                            </IconButton>} style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999' }}>
-                              <AlertTitle>Successfully copied</AlertTitle>
-                              {copiedTopic}
-                            </Alert>
-                          )}
-                        </div>
-                      ))}
-
-                    </CardContent>
-                  </Card>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  ))}
 
 
                   {/* Feedback button and text */}
@@ -235,9 +246,9 @@ const TopicSuggestion = () => {
                     <Grid item xs={12} sm={6}>
                       <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
                         <Button variant="contained" color="primary" onClick={handleFeedback}>
-                      Feedback
-                    </Button>
-                  </div>
+                          Feedback
+                        </Button>
+                      </div>
                     </Grid>
                   </Grid>
                   {/* Redirect link to writer dashboard */}
