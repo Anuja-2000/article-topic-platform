@@ -16,6 +16,7 @@ import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TablePaginationActions from '../../components/TablePaginationActions';
 import Divider from "@mui/material/Divider";
+import TextField from "@mui/material/TextField";
 
 
 const DeactivateWriters = () => {
@@ -28,9 +29,12 @@ const DeactivateWriters = () => {
   const [deactivateIgnoreAlertOpen, setDeactivateIgnoreAlertOpen] = useState(false);
   const [showDeactivateIgnoreConfirmation, setShowDeactivateIgnoreConfirmation] = useState(false);
   const [deactivatedWriters, setDeactivatedWriters] = useState([]);
-  const [adminId, setAdminId] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [showActivateConfirmation, setShowActivateConfirmation] = useState(false);
+  const [activateSuccessfulAlertOpen, setActivateSuccessfulAlertOpen] = useState(false);
   const router = useRouter();
-
+  const [deactivationReason, setDeactivationReason] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,40 +87,74 @@ const DeactivateWriters = () => {
     };
     const fetchDeactivatedWriters = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
+        const response = await axios.get('http://localhost:3001/api/deactivatedWriter/deactivatedWriters/getAll');
         console.log("Deactivated response.data", response.data);
 
-        const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
-          const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
-          const { name, email, savedAt } = reportedWriterResponse.data;
-          console.log('reportedWriterResponse.data;', reportedWriterResponse.data);
-          const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
+        const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (deactivatedWriter) => {
+          const deactivatedWriterResponse = await axios.get(`http://localhost:3001/api/user/${deactivatedWriter.writerId}`);
+          const { name, email, savedAt } = deactivatedWriterResponse.data;
+          console.log("writer username", username);
+          console.log('DeactivatedWriterResponse.data;', deactivatedWriterResponse.data);
+
           return {
-            deactivatedBy: adminResponse.data.name,
+            deactivatedBy: deactivatedWriter.deactivatedBy,
             writerName: name,
             email: email,
             joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date
-            writerId: reportedWriter.writerId,
-            reasons: reportedWriter.reasons,
-            deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
-            count: reportedWriter.count
+            writerId: deactivatedWriter.writerId,
+            reasons: deactivatedWriter.deactivatedReason,
+            deactivatedAt: new Date(deactivatedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+            daysSinceDeactivation: calculateDaysDifference(deactivatedWriter.deactivatedAt)
           };
         }));
 
         setDeactivatedWriters(deactivatedWritersWithDetails);
+
       } catch (error) {
         console.error('Error fetching deactivated writers:', error);
       }
     };
 
+    const calculateDaysDifference = (deactivatedAt) => {
+      const givenDate = new Date(deactivatedAt);
+      console.log("givenDate",givenDate);
+      const currentDate = new Date();
+      console.log("currentDate",currentDate);
+      const differenceInTime = currentDate - givenDate;
+      const differenceInDays = Math.floor(differenceInTime / (1000 * 60 * 60 * 24));
+
+      if (differenceInDays >= 30 || differenceInDays < 0) {
+        return 0;
+      } else {
+        return (30 - differenceInDays);
+      }
+    }
+
+    const fetchAdmin = async () => {
+      try {
+        const username = localStorage.getItem("username");
+        const email = localStorage.getItem("email");
+        if (username && email) {
+          setUsername(username);
+          setEmail(email);
+        } else {
+          setUsername("");
+          setEmail("");
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    console.log("adminName 2", username)
+    fetchAdmin();
     fetchData();
     fetchDeactivatedWriters();
   }, []);
 
 
 
-  const handleIgnoreClick = (topicId) => {
-    setDeleteTargetId(topicId);
+  const handleIgnoreClick = (writerId) => {
+    setDeleteTargetId(writerId);
     setShowDeactivateIgnoreConfirmation(true);
   };
   const handleChangePage = (event, newPage) => {
@@ -137,10 +175,12 @@ const DeactivateWriters = () => {
 
   const handleConfirmDeactivate = async () => {
     try {
-      const adminId = localStorage.getItem("userId");
-      await axios.patch(`http://localhost:3001/api/user/deactivateUser/${deleteTargetId}`);
-      await axios.patch(`http://localhost:3001/api/reportedWriter/update/${deleteTargetId}`, { adminId });
 
+      await axios.patch(`http://localhost:3001/api/user/deactivateUser/${deleteTargetId}`);
+      await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
+      await axios.post(`http://localhost:3001/api/deactivatedWriter/save/${deleteTargetId}/${username}`, {
+        deactivatedReason: deactivationReason
+      });
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
       setDeactivateSuccessfulAlertOpen(true);
@@ -148,21 +188,21 @@ const DeactivateWriters = () => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
       // Fetch updated list of deactivated writers since new writer added to deactivate
-      const response = await axios.get('http://localhost:3001/api/reportedWriter/deactivateWriters/get');
-      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (reportedWriter) => {
-        const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.writerId}`);
+      const response = await axios.get('http://localhost:3001/api/deactivatedWriter/deactivatedWriters/getAll');
+      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (deactivatedWriter) => {
+        const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${deactivatedWriter.writerId}`);
         const { name, email, savedAt } = reportedWriterResponse.data;
-        const adminResponse = await axios.get(`http://localhost:3001/api/user/${reportedWriter.deactivatedBy}`);
-        console.log('reportedWriter.deactivatedBy', reportedWriter.deactivatedBy);
+
+        console.log('deactivatedWriter.deactivatedBy', deactivatedWriter.deactivatedBy);
         return {
-          deactivatedBy: adminResponse.data.name,
+          deactivatedBy: deactivatedWriter.deactivatedBy,
           writerName: name,
           email: email,
-          writerId: reportedWriter.writerId,
-          reasons: reportedWriter.reasons,
+          writerId: deactivatedWriter.writerId,
+          reasons: deactivatedWriter.deactivatedReason,
           joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date 
-          deactivatedAt: new Date(reportedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
-          count: reportedWriter.count
+          deactivatedAt: new Date(deactivatedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
+          daysSinceDeactivation: calculateDaysDifference(deactivatedWriter.deactivatedAt)
         };
       }));
       setDeactivatedWriters(deactivatedWritersWithDetails);
@@ -177,6 +217,7 @@ const DeactivateWriters = () => {
   const handleConfirmIgnore = async () => {
     try {
       await axios.delete(`http://localhost:3001/api/reportedWriter/delete/${deleteTargetId}`);
+      setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateIgnoreConfirmation(false);
       setDeactivateIgnoreAlertOpen(true);
       setTimeout(() => {
@@ -193,7 +234,28 @@ const DeactivateWriters = () => {
     setShowDeactivateIgnoreConfirmation(false);
   };
 
+  const handleActivateClick = (writerId) => {
+    setDeleteTargetId(writerId);
+    setShowActivateConfirmation(true);
+  };
 
+  const handleConfirmActivate = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/api/deactivatedWriter/deleteDeactivateWriter/${deleteTargetId}`);
+      await axios.patch(`http://localhost:3001/api/user/activateUser/${deleteTargetId}`);
+      setDeactivatedWriters(deactivatedWriters.filter((writer) => writer.writerId !== deleteTargetId));
+      setShowActivateConfirmation(false);
+      setActivateSuccessfulAlertOpen(true);
+      setTimeout(() => {
+        setActivateSuccessfulAlertOpen(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Error reactivating writer :", error);
+    }
+  };
+  const handleCloseActivateConfirmation = () => {
+    setShowActivateConfirmation(false);
+  };
   const handleWriterClick = (writerId) => {
     // Use router to navigate to writer profile page
     router.push(`/writer/${writerId}`);
@@ -211,88 +273,95 @@ const DeactivateWriters = () => {
                 <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}>  Manage Reported Writers </Typography>
                 <Divider />
                 <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-                <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>User Reported Writers</Typography>
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>
-                          <h4 style={{ color: 'white' }}>Writer Name</h4>
-                        </TableCell>
-                        <TableCell>
-                          <h4 style={{ color: 'white' }}>Writer Email</h4>
-                        </TableCell>
-                        <TableCell>
-                          <h4 style={{ color: 'white' }}>Joined At</h4>
-                        </TableCell>
-                        <TableCell>
-                          <h4 style={{ color: 'white' }}>Reasons</h4>
-                        </TableCell>
-                        <TableCell>
-                          <h4 style={{ color: 'white' }}>Count</h4>
-                        </TableCell>
-                        <TableCell>
-                          <h4 style={{ color: 'white' }}>Actions</h4>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) => (
-
-                        <TableRow key={writer.writerId}>
+                  <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>User Reported Writers</Typography>
+                  <TableContainer component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
                           <TableCell>
-                            <a
-                              style={{ textDecoration: 'none', cursor: 'pointer' }}
-                              onClick={() => handleWriterClick(writer.writerId)}
-                              onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
-                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}
-                            >
-                              {writer.writerName}
-                            </a>
+                            <h4 style={{ color: 'white' }}>Writer Name</h4>
                           </TableCell>
-                          <TableCell>{writer.email}</TableCell>
-                          <TableCell>{writer.joinedAt}</TableCell>
                           <TableCell>
-                            {writer.reasons.map((reasonObj, index) => (
-                              <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ textAlign: 'left' }}>{reasonObj.reason}</span>
-                                <span style={{ textAlign: 'right' }}>{reasonObj.count}</span>
-                              </div>
-                            ))}
+                            <h4 style={{ color: 'white' }}>Writer Email</h4>
                           </TableCell>
-                          <TableCell>{writer.count}</TableCell>
                           <TableCell>
-                            <Box sx={{ display: 'flex', gap: '8px' }}>
-                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(writer.writerId)}>Deactivate</Button>
-                              <Button variant="contained" color="success" onClick={() => handleIgnoreClick(writer.writerId)}>Reject</Button>
-                            </Box>
+                            <h4 style={{ color: 'white' }}>Joined At</h4>
+                          </TableCell>
+                          <TableCell>
+                            <h4 style={{ color: 'white' }}>Reasons</h4>
+                          </TableCell>
+                          <TableCell>
+                            <h4 style={{ color: 'white' }}>Count</h4>
+                          </TableCell>
+                          <TableCell>
+                            <h4 style={{ color: 'white', textAlign: "center" }}>Actions</h4>
                           </TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                    <TableFooter>
-                      <TableRow>
-                        <TablePagination
-                          style={{ marginLeft: "auto" }} // Aligns pagination to the right
-                          rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                          colSpan={3}
-                          count={uniqueReportedWriters.length}
-                          rowsPerPage={rowsPerPage}
-                          page={page}
-                          SelectProps={{
-                            inputProps: {
-                              "aria-label": "rows per page",
-                            },
-                            native: true,
-                          }}
-                          onPageChange={handleChangePage}
-                          onRowsPerPageChange={handleChangeRowsPerPage}
-                          ActionsComponent={TablePaginationActions}
-                        />
-                      </TableRow>
-                    </TableFooter>
-                  </Table>
-                </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {uniqueReportedWriters.length == 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={6} align="center">
+                              No data
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          uniqueReportedWriters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((writer) => (
+
+                            <TableRow key={writer.writerId}>
+                              <TableCell>
+                                <a
+                                  style={{ textDecoration: 'none', cursor: 'pointer' }}
+                                  onClick={() => handleWriterClick(writer.writerId)}
+                                  onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
+                                  onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}
+                                >
+                                  {writer.writerName}
+                                </a>
+                              </TableCell>
+                              <TableCell>{writer.email}</TableCell>
+                              <TableCell>{writer.joinedAt}</TableCell>
+                              <TableCell>
+                                {writer.reasons.map((reasonObj, index) => (
+                                  <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span style={{ textAlign: 'left' }}>{reasonObj.reason}</span>
+                                    <span style={{ textAlign: 'right' }}>{reasonObj.count}</span>
+                                  </div>
+                                ))}
+                              </TableCell>
+                              <TableCell>{writer.count}</TableCell>
+                              <TableCell>
+                                <Box sx={{ display: 'flex', gap: '8px' }}>
+                                  <Button variant="contained" color="error" size="small" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(writer.writerId)}>Deactivate</Button>
+                                  <Button variant="contained" color="success" size="small" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleIgnoreClick(writer.writerId)}>Reject</Button>
+                                </Box>
+                              </TableCell>
+                            </TableRow>
+                          )))}
+                      </TableBody>
+                      <TableFooter>
+                        <TableRow>
+                          <TablePagination
+                            style={{ marginLeft: "auto" }} // Aligns pagination to the right
+                            rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                            colSpan={3}
+                            count={uniqueReportedWriters.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            SelectProps={{
+                              inputProps: {
+                                "aria-label": "rows per page",
+                              },
+                              native: true,
+                            }}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            ActionsComponent={TablePaginationActions}
+                          />
+                        </TableRow>
+                      </TableFooter>
+                    </Table>
+                  </TableContainer>
                 </div>
               </Grid>
             </Grid>
@@ -306,10 +375,11 @@ const DeactivateWriters = () => {
                 Ignore User Deactivating.
               </div>
             )}
+
             <Grid container spacing={1}>
               <Grid item xs={1}></Grid>
               <Grid item xs={10}>
-                <Typography variant="h5" marginBottom={2} color={"primary.dark"}  marginTop={2}> Deactivated Writers</Typography>
+                <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}> Deactivated Writers</Typography>
                 <TableContainer component={Paper}>
                   <Table>
                     <TableHead>
@@ -329,39 +399,75 @@ const DeactivateWriters = () => {
                         <TableCell>
                           <h4 style={{ color: 'white' }}>Deactivated At</h4>
                         </TableCell>
-
+                        <TableCell>
+                          <h4 style={{ color: 'white', }}>Activate</h4>
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {deactivatedWriters.map((writer) => (
-                        <TableRow key={writer.writerId}>
-                          <TableCell>
-                            <a
-                              style={{ textDecoration: 'none', cursor: 'pointer'}}
-                              onClick={() => handleWriterClick(writer.writerId)}
-                              onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
-                              onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}
-                            >
-                              {writer.writerName}
-                            </a>
+                      {deactivatedWriters.length == 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} align="center">
+                            No data
                           </TableCell>
-                          <TableCell>{writer.email}</TableCell>
-                          <TableCell>{writer.joinedAt}</TableCell>
-                          <TableCell>{writer.deactivatedBy}</TableCell>
-                          <TableCell>{new Date(writer.deactivatedAt).toISOString().substring(0, 10)}</TableCell>
                         </TableRow>
-                      ))}
+                      ) : (
+                        deactivatedWriters.map((writer) => (
+                          <TableRow key={writer.writerId}>
+                            <TableCell>
+                              <a
+                                style={{ textDecoration: 'none', cursor: 'pointer' }}
+                                onClick={() => handleWriterClick(writer.writerId)}
+                                onMouseOver={(e) => (e.currentTarget.style.color = 'blue')}
+                                onMouseOut={(e) => (e.currentTarget.style.color = 'inherit')}
+                              >
+                                {writer.writerName}
+                              </a>
+                            </TableCell>
+                            <TableCell>{writer.email}</TableCell>
+                            <TableCell>{writer.joinedAt}</TableCell>
+                            <TableCell>{writer.deactivatedBy}</TableCell>
+                            <TableCell>{new Date(writer.deactivatedAt).toISOString().substring(0, 10)}</TableCell>
+                            <TableCell>
+                              {(writer.daysSinceDeactivation < 1) ? "" :
+                                (
+                                  <>
+                                    <Button variant="contained" color="success" size="medium" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleActivateClick(writer.writerId)}>Activate</Button>
+                                    <Typography sx={{ color: 'red', marginTop: '8px' }}>
+                                      {writer.daysSinceDeactivation} days remaining
+                                    </Typography>
+                                  </>
+                                )}
+                            </TableCell>
+                          </TableRow>
+                        )))}
                     </TableBody>
                   </Table>
                 </TableContainer>
               </Grid>
             </Grid>
+            {activateSuccessfulAlertOpen && (
+              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                User Activated successfully.
+              </div>
+            )}
           </div>
         </Navbar>
       </div>
       <Dialog open={showDeactivateConfirmation} onClose={() => setShowDeactivateConfirmation(false)}>
         <DialogTitle>Confirm Deactivate</DialogTitle>
-        <DialogContent>Are you sure you want to deactivate this user?</DialogContent>
+        <DialogContent>
+          <Typography>Are you sure you want to deactivate this user?</Typography>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Deactivation Reason"
+            type="text"
+            fullWidth
+            value={deactivationReason}
+            onChange={(e) => setDeactivationReason(e.target.value)}
+          />
+        </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDeactivateConfirmation(false)} color="primary">Cancel</Button>
           <Button onClick={handleConfirmDeactivate} color="error">Deactivate</Button>
@@ -373,6 +479,14 @@ const DeactivateWriters = () => {
         <DialogActions>
           <Button onClick={handleCloseIgnoreConfirmation} color="primary">Cancel</Button>
           <Button onClick={handleConfirmIgnore} color="primary">Ignore</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={showActivateConfirmation} >
+        <DialogTitle>Confirm Activate Writer</DialogTitle>
+        <DialogContent>Are you sure you want to activate this user?</DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseActivateConfirmation} color="primary">Cancel</Button>
+          <Button onClick={handleConfirmActivate} color="success">Activate</Button>
         </DialogActions>
       </Dialog>
 

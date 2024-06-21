@@ -12,7 +12,7 @@ const ArticlesCard = ({ article, onClick }) => {
             {article.title}
           </Typography>
           <img
-            src={article.coverImage}
+            src={article.coverImage || "https://i.ibb.co/DbhGj0C/Copy-of-204069-D-Vehicle-crash-prediction-and-prevention-systems-using-Artificial-Intelligence.png"}
             alt={article.title}
             style={{ width: "70%", height: "auto" }}
           />

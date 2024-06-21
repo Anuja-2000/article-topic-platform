@@ -223,7 +223,7 @@ function Keywords() {
   const handleConfirmDelete = async () => {
     try {
       // Fetch topics associated with the keywords
-      const topicsResponse = await axios.get(`http://localhost:3001/api/topics/${deleteTargetId}`);
+      const topicsResponse = await axios.get(`http://localhost:3001/api/topics/getByKeyword/${deleteTargetId}`);
       const topicsToDelete = topicsResponse.data;
       console.log("Topics to delete:", topicsToDelete);
 
@@ -343,7 +343,7 @@ const fetchSuggestedKeywords = async (keywordName) => {
 
                 {/* Toggle Add Form Button */}
                 <div style={{ textAlign: "Right", marginBottom: "30px" }}>
-                  <Button variant="contained" color="primary" onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
+                  <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
                     {showAddForm ? "Cancel" : "Create Keyword"}
                   </Button>
                 </div>
@@ -419,8 +419,8 @@ const fetchSuggestedKeywords = async (keywordName) => {
                               <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
                             ) : (
                               <Box sx={{ display: 'flex', gap: '8px' }}>
-                                <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                                <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                                <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
                               </Box>
                             )}</TableCell>
                           </TableRow>

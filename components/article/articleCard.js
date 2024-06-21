@@ -65,8 +65,14 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
           ))}
         </Box>
       </CardContent>
-      <CardMedia component="img" height="160" src={coverImage} alt={title} style={{marginBottom: '0px',borderRadius: '4px' }} />
-    </Card>
+      <CardMedia
+        component="img"
+        height="160"
+        src={`${coverImage != null ?(coverImage):''}`}
+        alt={title}
+        style={{ marginBottom: '0px', borderRadius: '4px' }}
+      />
+      </Card>
   );
 };
 
