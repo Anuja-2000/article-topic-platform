@@ -34,6 +34,8 @@ import Iconbutton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import urls from "../../enums/url";
+import { set } from "react-hook-form";
+import UserDetailsDialog from "../../components/userDetailsDialog";
 
 const chartSetting = {
   yAxis: [
@@ -188,6 +190,8 @@ function Reports() {
       });
   };
 
+  const [open, setOpen] = React.useState(false);
+  const [userId, setUserId] = React.useState("");
   const [usersCount, setUsersCount] = React.useState([0, 0]);
   const [writers, setWriters] = React.useState([]);
   const [readers, setReaders] = React.useState([]);
@@ -463,6 +467,11 @@ function Reports() {
     }
   };
 
+  const openDialog = (id) => {
+    setUserId(id);
+    setOpen(true);
+  }
+
   return (
     <>
       <Navbar>
@@ -549,11 +558,11 @@ function Reports() {
                     dataset={domainCountData}
                     width={800}
                     height={300}
-                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain"}]}
+                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain" }]}
                     series={[
-                      { dataKey: "count", label: "Count", color: "#0080FE"},
-                    ]}                    
-                    yAxis={[{ id: "leftAxisId", label: "Count"}]}
+                      { dataKey: "count", label: "Count", color: "#0080FE" },
+                    ]}
+                    yAxis={[{ id: "leftAxisId", label: "Count" }]}
                   />
                 </Paper>
               </Box>
@@ -778,6 +787,7 @@ function Reports() {
                               role="checkbox"
                               tabIndex={-1}
                               key={row.userId}
+                              onClick={() => openDialog(row.userId)}
                             >
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
@@ -858,6 +868,7 @@ function Reports() {
                               role="checkbox"
                               tabIndex={-1}
                               key={row.userId}
+                              onClick={() => openDialog(row.userId)}
                             >
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
@@ -881,6 +892,7 @@ function Reports() {
                 />
               </Paper>
             </Container>
+            <UserDetailsDialog userId={userId} open={open} onClose={() => setOpen(false)} />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
             <Container maxWidth="lg">
