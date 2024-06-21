@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import style from "../../styles/search.module.css";
 import Head from "next/head"
-import {Box, TextField, IconButton, InputAdornment} from '@mui/material';
+import {Box, TextField, IconButton, InputAdornment,InputLabel,Select,MenuItem,Checkbox,ListItemText} from '@mui/material';
 import styled from 'styled-components';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchArticleBox from './searchArticleBox';
@@ -27,11 +27,30 @@ const SearchTextField = styled(TextField)({
       },
  });
 
+ 
+
 function Search(){
     const [searchKey, setSearchKey] = useState('');
+    const [selectedDomains, setSelectedDomains] = useState([]);
     const handleInputChange = (event) => {
       setSearchKey(event.target.value);
      };
+
+     const domainsList = [
+      'example.com',
+      'anotherexample.com',
+      'sampledomain.com',
+    ];
+     
+    const handleChange = (event) => {
+      const {
+        target: { value },
+      } = event;
+      setSelectedDomains(
+        typeof value === 'string' ? value.split(',') : value,
+      );
+    };
+    
     return(
         
         <div className={style.outer}>
@@ -54,6 +73,19 @@ function Search(){
                           </IconButton>
                         </InputAdornment>
                       )}}  />
+                </Box>
+                <Box>
+                <InputLabel>Filter by Domain</InputLabel>
+                <Select
+                  value={selectedDomains}
+                  onChange={handleChange}
+                >
+                  {domainsList.map((domain) => (
+                    <MenuItem key={domain} value={domain}>
+                      {domain}
+                    </MenuItem>
+                  ))}
+                </Select>
                 </Box>
             </div> 
             <div className={style.articleBoxOuter}>
