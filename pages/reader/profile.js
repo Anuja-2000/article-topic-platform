@@ -191,8 +191,8 @@ const Profile = () => {
           }
       
           try {
-            const response = await fetch(`http://localhost:3001/api/user/deleteUser`, {
-              method: 'DELETE',
+            const response = await fetch(`http://localhost:3001/api/user/deactiveUser`, {
+              method: 'PATCH',
               body: JSON.stringify({
                 userId:userId
               }),
