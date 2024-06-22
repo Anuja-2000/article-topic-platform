@@ -8,6 +8,8 @@ const Header = ({ writerId, date, title}) => {
   const [userId, setUserId] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [writer, setWriter] = useState("");
+  const createdDate = new Date(date).toLocaleDateString();     
+  const createdTime = new Date(date).toLocaleTimeString();
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
@@ -60,7 +62,7 @@ const Header = ({ writerId, date, title}) => {
             <Box>
               <Typography variant="subtitle2" style={{ fontWeight: 'bold' }}>{writer}</Typography>
               <Typography variant="caption" color="textSecondary" >
-                {date}
+                {createdDate} &nbsp; {createdTime}
               </Typography>
             </Box>
           </Box>
