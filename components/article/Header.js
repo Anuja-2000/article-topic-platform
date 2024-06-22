@@ -4,11 +4,19 @@ import { Avatar, Typography, Box, Divider } from '@mui/material';
 import FollowButton from '../../components/article/FollowButton';
 
 
-const Header = ({ writerId, date, title }) => {
+const Header = ({ writerId, date, title}) => {
   const [userId, setUserId] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [writer, setWriter] = useState("");
   useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
+    console.log(userId);
+    if(userId!==null && username!==null){
+      setUserId(userId);
+    }else{
+      setUserId("");
+    }
 
     const fetchData = async () => {
       if (!writerId) return;
@@ -39,12 +47,6 @@ const Header = ({ writerId, date, title }) => {
      };
     fetchData();
 
-    const userId = localStorage.getItem("userId");
-    if(userId!==null){
-      setUserId(userId);
-    }else{
-      setUserId("");
-    }
   }, [writerId]);
 
 
