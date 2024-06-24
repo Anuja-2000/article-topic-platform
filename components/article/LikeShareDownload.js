@@ -19,17 +19,25 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
   const [isShareClicked, setIsShareClicked] = useState(false);
   const [likes, setLikes] = useState(0); // Initial number of likes
   const [isLiked, setIsLiked] = useState(false);
-
+  const [userId, setUserId] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [isReportWriterDialogOpen, setIsReportWriterDialogOpen] = useState(false);
 
 
   //const [readerId, setReaderId] = useState("");
-  console.log(view);
+  console.log(readerId);
   const likeId = "like" + uuidv4();
 
   useEffect(()=>{
+    const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
+    console.log(userId);
+    if(userId!==null && username!==null){
+      setUserId(userId);
+    }else{
+      setUserId("");
+    }
     setLikes(initialLikes);
     const getLikes = async () => {
       try {
@@ -189,7 +197,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
     <>
       <Box display="flex" alignItems="center" justifyContent="flex-start" mt={3}>
         <Box display="flex" alignItems="center" mr={2}>
-          <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: isLiked ? 'blue' : 'black' }} onClick={handleLikeClick}>
+          <IconButton color="inherit" sx={{ backgroundColor: '#f5f5f5', color: isLiked ? 'blue' : 'black' }} onClick={handleLikeClick} disabled={userId === ""}>
             <ThumbUp />
           </IconButton>
           <Typography variant="subtitle2" color="textSecondary">
