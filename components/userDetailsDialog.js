@@ -51,6 +51,32 @@ export default function UserDetailsDialog({ userId, open, onClose }) {
         fetchUser();
     }, [userId]);
 
+    const handleDelete = async () => {
+        try {
+            const result = await axios.patch(`${urls.BASE_URL_USER}deactiveUser`,{
+                userId: userId
+            });
+            if(result.status === 200)
+                alert('User Deleted Successfully');
+            onClose();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleRestore = async () => {
+        try {
+            const result = await axios.patch(`${urls.BASE_URL_USER}restoreUser`,{
+                userId: userId
+            });
+            if(result.status === 200)
+                alert('User Restored Successfully');
+            onClose();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 return (
     <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth='xs'>
         <DialogTitle color={"primary.dark"}>User Details</DialogTitle>
@@ -67,9 +93,11 @@ return (
                 : null}
         </DialogContent>
         <DialogActions>
-            <Button variant='contained' onClick={onClose} color="error">
+            { user.isDeactived ?<Button variant='contained' onClick={handleRestore} color="success">
+                Restore
+            </Button> :<Button variant='contained' onClick={handleDelete} color="error">
                 Delete
-            </Button>
+            </Button>}
             <Button onClick={onClose} color="primary">
                 Cancel
             </Button>

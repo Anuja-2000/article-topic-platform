@@ -157,6 +157,18 @@ function Reports() {
     setReaderPage(0);
   };
 
+  const [deletedPage, setDeletedPage] = React.useState(0);
+  const [rowsPerDeletedPage, setRowsPerDeletedPage] = React.useState(10);
+
+  const handleChangeDeletedPage = (event, newPage) => {
+    setDeletedPage(newPage);
+  };
+
+  const handleChangeRowsPerDeletedPage = (event) => {
+    setRowsPerDeletedPage(+event.target.value);
+    setDeletedPage(0);
+  };
+
   const [articlesPage, setArticlesPage] = React.useState(0);
   const [rowsPerArticlesPage, setRowsPerArticlesPage] = React.useState(10);
 
@@ -195,6 +207,7 @@ function Reports() {
   const [usersCount, setUsersCount] = React.useState([0, 0]);
   const [writers, setWriters] = React.useState([]);
   const [readers, setReaders] = React.useState([]);
+  const [deletedUsers, setDeletedUsers] = React.useState([]);
   const [articles, setArticles] = React.useState([]);
   const [writerSearchTerm, setWriterSearchTerm] = React.useState("");
   const [readerSearchTerm, setReaderSearchTerm] = React.useState("");
@@ -275,6 +288,15 @@ function Reports() {
       .get(`${urls.BASE_URL_USER_UTILITY}get-readers`, axiosConfig)
       .then((res) => {
         setReaders(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    const deletedUserRes = axios
+      .get(`${urls.BASE_URL_USER}getDeleted`, axiosConfig)
+      .then((res) => {
+        setDeletedUsers(res.data);
       })
       .catch((error) => {
         console.log(error);
@@ -889,6 +911,87 @@ function Reports() {
                   page={readerPage}
                   onPageChange={handleChangeReaderPage}
                   onRowsPerPageChange={handleChangeRowsPerReaderPage}
+                />
+              </Paper>
+              <Box display="flex" justifyContent="space-between" marginY={2}>
+                <Typography variant="h5" marginY={2} color={"primary.dark"}>
+                  Deleted users
+                </Typography>
+                <FormControl sx={{ m: 1, width: "35ch" }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-search">
+                    Search User Name
+                  </InputLabel>
+                  <OutlinedInput
+                    id="reader-search"
+                    type="text"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <Iconbutton>
+                          <SearchIcon />
+                        </Iconbutton>
+                      </InputAdornment>
+                    }
+                    label="Search"
+                    onChange={handleReaderSearch}
+                    value={readerSearchTerm}
+                  />
+                </FormControl>
+              </Box>
+              <Paper sx={{ width: "100%", overflow: "hidden" }} elevation={3}>
+                <TableContainer sx={{ maxHeight: 440 }}>
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                            style={{
+                              minWidth: column.minWidth,
+                              backgroundColor: "#0080FE",
+                              color: "#FFFFFF",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {column.label}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {deletedUsers
+                        .slice(
+                          deletedPage * rowsPerDeletedPage,
+                          deletedPage * rowsPerDeletedPage + rowsPerDeletedPage
+                        )
+                        .map((row) => {
+                          return (
+                            <TableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={row.userId}
+                              onClick={() => openDialog(row.userId)}
+                            >
+                              <TableCell>{row.name}</TableCell>
+                              <TableCell>{row.email}</TableCell>
+                              <TableCell>
+                                {new Date(row.savedAt).toDateString()}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  component="div"
+                  count={deletedUsers.length}
+                  rowsPerPage={rowsPerDeletedPage}
+                  page={deletedPage}
+                  onPageChange={handleChangeDeletedPage}
+                  onRowsPerPageChange={handleChangeRowsPerDeletedPage}
                 />
               </Paper>
             </Container>
