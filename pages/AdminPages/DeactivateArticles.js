@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 import TableContainer from "@mui/material/TableContainer";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -14,7 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TablePaginationActions from '../../components/TablePaginationActions';
-
+import Divider from "@mui/material/Divider";
 const DeactivateArticles = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -62,7 +62,7 @@ const DeactivateArticles = () => {
                     // Return article details with additional data
                     return {
                         articleId: articleId,
-                        writerName: name, 
+                        writerName: name,
                         title: title,
                         userId: userId,
                         reasons: uniqueReasonsWithCounts,
@@ -86,7 +86,7 @@ const DeactivateArticles = () => {
             try {
                 const response = await axios.get('https://article-writing-backend.onrender.com/api/article/reportedArticles/get');
                 console.log("Reported response.data", response.data);
-    
+
                 const reportedArticlesWithDetails = await Promise.all(response.data.reportedArticles.map(async (reportedArticle) => {
                     const reportedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/article/${reportedArticle.articleId}`);
                     console.log("article", reportedArticleResponse.data.article)
@@ -96,7 +96,7 @@ const DeactivateArticles = () => {
                         articleId: articleId,
                     };
                 }));
-    
+
                 setReportedArticles(reportedArticlesWithDetails);
                 console.log('Reported Articles', reportedArticlesWithDetails);
             } catch (error) {
@@ -111,12 +111,12 @@ const DeactivateArticles = () => {
         setDeleteTargetId(articleId);
         setShowDeleteConfirmation(true);
     };
-    
+
     const handleIgnoreClick = (articleId) => {
         setDeleteTargetId(articleId);
         setShowDeleteIgnoreConfirmation(true);
     };
-   
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -175,11 +175,15 @@ const DeactivateArticles = () => {
             <div>
                 <Navbar>
                     <div className="App" style={{ marginTop: "60px" }}>
-                        <h2 style={{ textAlign: "center" }}>Reported Articles</h2>
 
                         <Grid container spacing={1}>
                             <Grid item xs={1}></Grid>
                             <Grid item xs={10}>
+                                <Typography variant="h4" marginBottom={2} color={"primary.dark"}> User Reported Article Management</Typography>
+                                <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}>  Manage User Reported Articles  </Typography>
+                                <Divider />
+                                <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+                                <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>Reported Articles by Users</Typography>
                                 <TableContainer component={Paper}>
                                     <Table>
                                         <TableHead>
@@ -197,7 +201,7 @@ const DeactivateArticles = () => {
                                                     <h4 style={{ color: 'white' }}>Count</h4>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <h4 style={{ color: 'white' }}>Actions</h4>
+                                                    <h4 style={{ color: 'white', textAlign:"center"}}>Actions</h4>
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -205,7 +209,7 @@ const DeactivateArticles = () => {
                                             {uniqueReportedArticles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((article) => (
 
                                                 <TableRow key={article.articleIdId}>
-                                                   <TableCell>
+                                                    <TableCell>
                                                         <a href={`http://localhost:3000/article/${article.articleId}`} style={{ textDecoration: 'none', color: 'inherit' }} onMouseOver={(e) => e.target.style.textDecoration = 'underline'} onMouseOut={(e) => e.target.style.textDecoration = 'none'}>
                                                             {article.title}
                                                         </a>
@@ -221,9 +225,9 @@ const DeactivateArticles = () => {
                                                     </TableCell>
                                                     <TableCell>{article.count}</TableCell>
                                                     <TableCell>
-                                                        <Box sx={{ display: 'flex', gap: '8px' }}>
-                                                            <Button variant="contained" color="error" onClick={() => handleDeleteClick(article.articleId)}>Remove</Button>
-                                                            <Button variant="contained" color="success" onClick={() => handleIgnoreClick(article.articleId)}>Cancel</Button>
+                                                        <Box sx={{ display: 'flex', gap: '8px'}}>
+                                                            <Button variant="contained" color="error" size="small"  sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(article.articleId)}>Remove</Button>
+                                                            <Button variant="contained" color="success" size= "small" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleIgnoreClick(article.articleId)}>Cancel</Button>
                                                         </Box>
                                                     </TableCell>
                                                 </TableRow>
@@ -252,6 +256,7 @@ const DeactivateArticles = () => {
                                         </TableFooter>
                                     </Table>
                                 </TableContainer>
+                                </div>
                             </Grid>
                         </Grid>
                         {deleteSuccessfulAlertOpen && (
@@ -259,10 +264,11 @@ const DeactivateArticles = () => {
                                 Topic deleted successfully.
                             </div>
                         )}
-                        <h2 style={{ textAlign: "center", marginTop: "40px" }}>Reported Articles</h2>
+
                         <Grid container spacing={1}>
                             <Grid item xs={1}></Grid>
                             <Grid item xs={10}>
+                            <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>Reported Articles by Admins</Typography>
                                 <TableContainer component={Paper}>
                                     <Table>
                                         <TableHead>

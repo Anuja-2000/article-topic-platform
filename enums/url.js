@@ -10,6 +10,7 @@ const urls = {
     BASE_URL_FOLLOW : `${BASE_URL}follow/`,
     BASE_URL_APPROVAL : `${BASE_URL}approval/`,
     BASE_URL_NOTIFICATION : `${BASE_URL}notification/`,
+    BASE_URL_KEYWORDS : `${BASE_URL}keywords/`,
 
 }
 export default urls;

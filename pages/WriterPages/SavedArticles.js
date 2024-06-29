@@ -15,6 +15,9 @@ import {
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../components/createArticleNavbar";
+import { Blocks } from 'react-loader-spinner';
+//import loader.css
+import '../../styles/loader.module.css';
 import urls from "../../enums/url";
 
 function SavedArticles() {
@@ -22,6 +25,7 @@ function SavedArticles() {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [userid, setUserId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const handleArticleClick = (article) => {
     setSelectedArticle(article);
     setIsPopupOpen(true);
@@ -62,10 +66,11 @@ function SavedArticles() {
               description: article.content,
               logo: article.coverImage || "https://picsum.photos/600/600", // Random image for cover 
               title: article.title,
-              coverImage: `https://picsum.photos/500/300?random=${index}`,
+              coverImage: article.coverImage,
               status: article.status,
             }))
           );
+          setIsLoading(false);
         } else {
           console.error("Failed to fetch articles: ", response.data);
         }
@@ -82,6 +87,21 @@ function SavedArticles() {
   return (
     <div>
       <Navbar>
+
+        {isLoading ? (
+          <Stack alignItems="center">
+            <Blocks
+              height="80"
+              width="80"
+              color="#4fa94d"
+              ariaLabel="blocks-loading"
+              wrapperStyle={{}}
+              wrapperClass="blocks-wrapper"
+              visible={true}
+            />
+            </Stack>
+        ) :
+        <>
         <h1>Saved Articles</h1>
         <Box
           component="main"
@@ -119,6 +139,8 @@ function SavedArticles() {
           open={isPopupOpen}
           onClose={() => setIsPopupOpen(false)}
         />
+        </>
+        }
       </Navbar>
     </div>
   );

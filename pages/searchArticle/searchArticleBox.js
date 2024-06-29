@@ -9,8 +9,7 @@ import urls from '../../enums/url';
 function SearchArticleBox({keyword}) {
 
         const [articleData, setData] = useState([]);
-        const backendApiUrl = process.env.NEXT_PUBLIC_BACKEND_API;
-    
+        
         useEffect(() => {
           const fetchData = async () => {
             try {

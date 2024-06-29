@@ -22,6 +22,8 @@ import Paper from '@mui/material/Paper';
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
 
 const api = axios.create({
   baseURL: `https://article-writing-backend.onrender.com/api/topicDomains`
@@ -29,38 +31,28 @@ const api = axios.create({
 
 function TopicDomains() {
   const [data, setData] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const [editingRowId, setEditingRowId] = useState(null);
   const [topicDomainName, setTopicDomainName] = useState('');
   const [description, setDescription] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
-
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State to control the visibility of the delete confirmation dialog
   const [deleteTargetId, setDeleteTargetId] = useState(null); // State to store the id of the topic domain to be deleted
-
-  const [showEditConfirmation, setShowEditConfirmation] = useState(false);
-  // Define a new state variable to store the currently edited row
+  const [showEditConfirmation, setShowEditConfirmation] = useState(false);  // Define a new state variable to store the currently edited row
   const [editingRow, setEditingRow] = useState(null);
-
   const [showAddConfirmation, setShowAddConfirmation] = useState(false);
   const [newItem, setNewItem] = useState({ topicDomainName: '', description: '' });
-// State variables to track whether the fields are empty
-  const [topicDomainNameError, setTopicDomainNameError] = useState(false); 
+  const [topicDomainNameError, setTopicDomainNameError] = useState(false);// State variables to track whether the fields are empty
   const [descriptionError, setDescriptionError] = useState(false);
-
   const [showAlert, setShowAlert] = useState(false);
-
   const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
   const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = useState(false);
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = useState(false);
   useEffect(() => {
-    const fetchData = async () => {
+        const fetchData = async () => {
       try {
         const response = await api.get("/get");
         setData(response.data);
@@ -86,7 +78,7 @@ function TopicDomains() {
     setPage(0);
     console.log('New page:', 0);
   };
-  
+
   const handleAddClick = () => {
     if (topicDomainName.trim() === "") {
       setTopicDomainNameError(true);
@@ -95,7 +87,6 @@ function TopicDomains() {
     } else {
       setTopicDomainNameError(false);
     }
-
     if (description.trim() === "") {
       setDescriptionError(true);
       setShowAlert(true);
@@ -106,13 +97,13 @@ function TopicDomains() {
     setNewItem({ topicDomainName, description });
     setShowAddConfirmation(true);
   };
- 
+
   const handleConfirmAdd = async () => {
-    console.log("handleConfirmAdd function called"); 
+    console.log("handleConfirmAdd function called");
     console.log(newItem);
     try {
       const response = await api.post("/add", newItem);
-      setData([...data, response.data]); 
+      setData([...data, response.data]);
       setNewItem({ topicDomainName: '', description: '' }); // Clear newItem state
       setShowAddConfirmation(false); // Hide the confirmation dialog
       setShowAddForm(false); // Close the add form
@@ -122,8 +113,8 @@ function TopicDomains() {
         setAddSuccessfulAlertOpen(false);
       }, 20000);
 
-      setTopicDomainName(''); 
-      setDescription(''); 
+      setTopicDomainName('');
+      setDescription('');
     } catch (error) {
       console.error("Error adding data:", error);
     }
@@ -150,8 +141,8 @@ function TopicDomains() {
       console.error("Error updating data:", error);
     }
   };
-  
-// To handle confirming the save operation after editing a row
+
+  // To handle confirming the save operation after editing a row
   const handleConfirmSave = async () => {
     try {
       const updatedRow = data.find(item => item.topicDomainId === editingRowId);
@@ -169,10 +160,9 @@ function TopicDomains() {
       console.error("Error updating data:", error);
     }
   };
-
   const handleCancelSave = () => {
     setShowEditConfirmation(false);
-    setEditingRowId(null); 
+    setEditingRowId(null);
     // Revert the changes made to the edited row using the editingRow state
     const updatedData = data.map(item => {
       if (item.topicDomainId === editingRow.topicDomainId) {
@@ -255,41 +245,43 @@ function TopicDomains() {
     <div>
       <Navbar>
         <div className="App" style={{ marginTop: "60px" }}>
-          <h2 style={{ textAlign: "center" }}>Topic Domains</h2>
-
-          {/* Add Form */}
-          {showAddForm && (
-            <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <TextField
-                label="Topic Domain Name"
-                variant="outlined"
-                value={topicDomainName}
-                onChange={(e) => setTopicDomainName(e.target.value)}
-                error={topicDomainNameError}
-                style={{ marginRight: "10px" }}
-              />
-              <TextField
-                label="Description"
-                variant="outlined"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                error={descriptionError}
-                style={{ marginRight: "10px" }}
-              />
-              <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
-            </div>
-          )}
-
-          {/* Toggle Add Form Button */}
-          <div style={{ textAlign: "Right", marginBottom: "30px", marginRight: "150px" }}>
-            <Button variant="contained" color="primary" onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
-              {showAddForm ? "Hide Form" : "Show Add Form"}
-            </Button>
-          </div>
-
           <Grid container spacing={1}>
             <Grid item xs={1}></Grid>
             <Grid item xs={10}>
+              <Typography variant="h4" marginBottom={2} color={"primary.dark"} marginTop={2}>Topic Domains Management </Typography>
+              <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}>  Manage Topic domains  </Typography>
+              <Divider />
+              <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+                {/* Add Form */}
+                {showAddForm && (
+                  <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                    <TextField
+                      label="Topic Domain Name"
+                      variant="outlined"
+                      value={topicDomainName}
+                      onChange={(e) => setTopicDomainName(e.target.value)}
+                      error={topicDomainNameError}
+                      style={{ marginRight: "10px" }}
+                    />
+                    <TextField
+                      label="Description"
+                      variant="outlined"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      error={descriptionError}
+                      style={{ marginRight: "10px" }}
+                    />
+                    <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
+                  </div>
+                )}
+              </div>
+              {/* Toggle Add Form Button */}
+              <div style={{ textAlign: "Right", marginBottom: "30px"}}>
+                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
+                  {showAddForm ? "Cancel" : "Create Topic Domain"}
+                </Button>
+              </div>
+              <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>Topic Domains</Typography>
               <TableContainer component={Paper}>
                 <Table>
                   <TableHead>
@@ -306,11 +298,9 @@ function TopicDomains() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                  {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) =>(
-                    
-
+                    {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                       <TableRow key={row.topicDomainId}>
-                        <TableCell> 
+                        <TableCell>
                           {editingRowId === row.topicDomainId ? (
                             <input
                               type="text"
@@ -320,7 +310,7 @@ function TopicDomains() {
                           ) : (
                             row.topicDomainName
                           )} </TableCell>
-                       <TableCell>
+                        <TableCell>
                           {editingRowId === row.topicDomainId ? (
                             <input
                               type="text"
@@ -331,18 +321,18 @@ function TopicDomains() {
                             row.description
                           )}
                         </TableCell>
-                        <TableCell> 
+                        <TableCell>
                           {editingRowId === row.topicDomainId ? (
                             <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
 
                           ) : (
                             <Box sx={{ display: 'flex', gap: '8px' }}>
-                              <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                              <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                              <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(row.topicDomainId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
                             </Box>
                           )}
                         </TableCell>
-                        </TableRow>
+                      </TableRow>
                     ))}
                   </TableBody>
                   <TableFooter>
@@ -368,57 +358,52 @@ function TopicDomains() {
                   </TableFooter>
                 </Table>
               </TableContainer>
+
+              <DeleteConfirmationDialog
+                open={showDeleteConfirmation}
+                onClose={() => setShowDeleteConfirmation(false)}
+                onConfirm={handleConfirmDelete}
+              />
+              <EditConfirmationDialog
+                open={showEditConfirmation}
+                onClose={handleCancelSave}
+                onConfirm={handleConfirmSave}
+              />
+              <AddTopicDomainConfirmationDialog
+                open={showAddConfirmation}
+                onClose={handleCancelAdd}
+                onConfirm={handleConfirmAdd}
+                newItem={newItem}
+                setNewItem={setNewItem}
+              />
+              <AlertDialog
+                open={showAlert}
+                message="Please fill in all required fields."
+                onClose={() => setShowAlert(false)}
+              />
+              <Snackbar open={deleteSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseDeleteSuccessfulAlertOpen}>
+                <MuiAlert onClose={handleCloseDeleteSuccessfulAlertOpen} severity="success">
+                  Topic Domain and related keywords and topics deleted successfully!
+                </MuiAlert>
+              </Snackbar>
+
+              <Snackbar open={addSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseAddSuccessfulAlertOpen}>
+                <MuiAlert onClose={handleCloseAddSuccessfulAlertOpen} severity="success">
+                  Topic Domain added successfully!
+                </MuiAlert>
+              </Snackbar>
+
+              <Snackbar open={editSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseEditSuccessfulAlertOpen}>
+                <MuiAlert onClose={handleCloseEditSuccessfulAlertOpen} severity="success">
+                  Topic Domain edited successfully!
+                </MuiAlert>
+              </Snackbar>
             </Grid>
             <Grid item xs={1}></Grid>
           </Grid>
-
-
-          <DeleteConfirmationDialog
-            open={showDeleteConfirmation}
-            onClose={() => setShowDeleteConfirmation(false)}
-            onConfirm={handleConfirmDelete}
-          />
-
-          <EditConfirmationDialog
-            open={showEditConfirmation}
-            onClose={handleCancelSave}
-            onConfirm={handleConfirmSave}
-          />
-
-          <AddTopicDomainConfirmationDialog
-            open={showAddConfirmation}
-            onClose={handleCancelAdd}
-            onConfirm={handleConfirmAdd}
-            newItem={newItem}
-            setNewItem={setNewItem}
-          />
-
-          <AlertDialog
-            open={showAlert}
-            message="Please fill in all required fields."
-            onClose={() => setShowAlert(false)}
-          />
-          <Snackbar open={deleteSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseDeleteSuccessfulAlertOpen}>
-            <MuiAlert onClose={handleCloseDeleteSuccessfulAlertOpen} severity="success">
-              Topic Domain and related keywords and topics deleted successfully!
-            </MuiAlert>
-          </Snackbar>
-
-          <Snackbar open={addSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseAddSuccessfulAlertOpen}>
-            <MuiAlert onClose={handleCloseAddSuccessfulAlertOpen} severity="success">
-              Topic Domain added successfully!
-            </MuiAlert>
-          </Snackbar>
-
-          <Snackbar open={editSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseEditSuccessfulAlertOpen}>
-            <MuiAlert onClose={handleCloseEditSuccessfulAlertOpen} severity="success">
-              Topic Domain edited successfully!
-            </MuiAlert>
-          </Snackbar>
         </div>
       </Navbar>
     </div>
   );
 }
-
 export default TopicDomains;

@@ -5,6 +5,7 @@ import { Card, CardContent, Typography, CardActions, Button, CardMedia, Avatar, 
 const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
   const [imgUrl, setImgUrl] = useState("");
   const [writer, setWriter] = useState("");
+  const createdDate = new Date(updatedAt).toLocaleDateString();     
  
   useEffect(() => {
      const fetchData = async () => {
@@ -23,10 +24,10 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
       const {name,displayName,imgUrl} = jsonData;
       if (name != null) {
           setWriter(name);
-          consloe.log(writer);
+          console.log(writer);
       } else {
           setWriter("!user");
-          consloe.log("!user");
+          console.log("!user");
       }
       setImgUrl(imgUrl);
 
@@ -53,7 +54,7 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
             </Typography>
           </Box>
           <Typography color="text.secondary" variant="body2" style={{ fontSize: 10 }}>
-            {updatedAt}
+            {createdDate}
           </Typography>
         </Box>
         <Typography variant="h6" component="div" style={{ marginTop: '12px', fontWeight: 700,fontSize: 20 }}>
@@ -65,8 +66,14 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
           ))}
         </Box>
       </CardContent>
-      <CardMedia component="img" height="160" src={coverImage} alt={title} style={{marginBottom: '0px',borderRadius: '4px' }} />
-    </Card>
+      <CardMedia
+        component="img"
+        height="160"
+        src={`${coverImage != null ?(coverImage):''}`}
+        alt={title}
+        style={{ marginBottom: '0px', borderRadius: '4px' }}
+      />
+      </Card>
   );
 };
 

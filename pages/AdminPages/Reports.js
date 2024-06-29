@@ -34,6 +34,8 @@ import Iconbutton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import urls from "../../enums/url";
+import { set } from "react-hook-form";
+import UserDetailsDialog from "../../components/userDetailsDialog";
 
 const chartSetting = {
   yAxis: [
@@ -41,11 +43,11 @@ const chartSetting = {
       label: "user count",
     },
   ],
-  width: 900,
-  height: 330,
+  width: 1100,
+  height: 340,
   sx: {
     [`.${axisClasses.left} .${axisClasses.label}`]: {
-      transform: "translate(-10px, 0)",
+      transform: "translate(-5px, 0)",
     },
   },
 };
@@ -155,6 +157,18 @@ function Reports() {
     setReaderPage(0);
   };
 
+  const [deletedPage, setDeletedPage] = React.useState(0);
+  const [rowsPerDeletedPage, setRowsPerDeletedPage] = React.useState(10);
+
+  const handleChangeDeletedPage = (event, newPage) => {
+    setDeletedPage(newPage);
+  };
+
+  const handleChangeRowsPerDeletedPage = (event) => {
+    setRowsPerDeletedPage(+event.target.value);
+    setDeletedPage(0);
+  };
+
   const [articlesPage, setArticlesPage] = React.useState(0);
   const [rowsPerArticlesPage, setRowsPerArticlesPage] = React.useState(10);
 
@@ -188,9 +202,12 @@ function Reports() {
       });
   };
 
+  const [open, setOpen] = React.useState(false);
+  const [userId, setUserId] = React.useState("");
   const [usersCount, setUsersCount] = React.useState([0, 0]);
   const [writers, setWriters] = React.useState([]);
   const [readers, setReaders] = React.useState([]);
+  const [deletedUsers, setDeletedUsers] = React.useState([]);
   const [articles, setArticles] = React.useState([]);
   const [writerSearchTerm, setWriterSearchTerm] = React.useState("");
   const [readerSearchTerm, setReaderSearchTerm] = React.useState("");
@@ -215,6 +232,16 @@ function Reports() {
       Writer: 18,
       Admin: 0,
     },
+  ]);
+  const [domainCountData, setDomainCountData] = React.useState([
+    {
+      domain: "Technical",
+      count: 0,
+    },
+    {
+      domain: "Health",
+      count: 0,
+    }
   ]);
 
   React.useEffect(() => {
@@ -266,20 +293,35 @@ function Reports() {
         console.log(error);
       });
 
+    const deletedUserRes = axios
+      .get(`${urls.BASE_URL_USER}getDeleted`, axiosConfig)
+      .then((res) => {
+        setDeletedUsers(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     const domains = axios
       .get(`${urls.BASE_URL_READER_ARTICLE}count-by-domain`, axiosConfig)
       .then((res) => {
         let temp = [];
         let countData = [];
-
+        let obj = {
+          domain: "Technical",
+          count: 0,
+        }
         res.data.forEach((item) => {
           if (item.domain != null) {
             temp.push(item.domain);
-            countData.push(item.count);
+            countData.push({
+              domain: item.domain,
+              count: item.count,
+            })
           }
         });
+        setDomainCountData(countData);
         xLabelsDomain = temp;
-        domData = countData;
       })
       .catch((error) => {
         console.log(error);
@@ -447,6 +489,11 @@ function Reports() {
     }
   };
 
+  const openDialog = (id) => {
+    setUserId(id);
+    setOpen(true);
+  }
+
   return (
     <>
       <Navbar>
@@ -521,47 +568,30 @@ function Reports() {
                 <Paper
                   elevation={3}
                   style={{
-                    width: 650,
+                    width: 800,
                     padding: "20px",
-                    marginTop: "20px",
-                    marginRight: "40px",
+                    marginTop: "20px"
                   }}
                 >
                   <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     Domain Popularity
                   </Typography>
                   <BarChart
-                    width={650}
+                    dataset={domainCountData}
+                    width={800}
                     height={300}
+                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain" }]}
                     series={[
-                      {
-                        data: domData,
-                        label: "No of Articles",
-                        id: "pvId",
-                        yAxisKey: "leftAxisId",
-                        color: "#3f51b5",
-                      },
+                      { dataKey: "count", label: "Count", color: "#0080FE" },
                     ]}
-                    xAxis={[
-                      {
-                        data: xLabelsDomain,
-                        scaleType: "band",
-                        tickLabelStyle: {
-                          angle: 20,
-                          textAnchor: "start",
-                          fontSize: 12,
-                          fontWeight: 400,
-                        },
-                      },
-                    ]}
-                    yAxis={[{ id: "leftAxisId" }]}
+                    yAxis={[{ id: "leftAxisId", label: "Count" }]}
                   />
                 </Paper>
               </Box>
               <Box sx={{ display: "flex", marginTop: "30px" }}>
                 <Paper
                   elevation={3}
-                  style={{ height: 350, width: 500, padding: "20px" }}
+                  style={{ height: 350, width: 600, padding: "20px" }}
                 >
                   <Typography variant="h5" color={"primary.dark"}>
                     Writer Popularity
@@ -590,7 +620,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 450,
+                    width: 500,
                     padding: "20px",
                     marginLeft: "40px",
                   }}
@@ -626,7 +656,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 400,
+                    width: 500,
                     padding: "20px",
                   }}
                 >
@@ -659,7 +689,7 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 350,
-                    width: 550,
+                    width: 600,
                     padding: "20px",
                     marginLeft: "40px",
                   }}
@@ -692,14 +722,14 @@ function Reports() {
                   elevation={3}
                   style={{
                     height: 450,
-                    width: 990,
+                    width: 1140,
                     padding: "20px",
                   }}
                 >
                   <Typography variant="h5" color={"primary.dark"} gutterBottom>
                     User registration count for past 12 months
                   </Typography>
-                  <Box display={"flex"} sx={{ marginTop: "50px" }}>
+                  <Box display={"flex"} sx={{ marginTop: "20px" }}>
                     <BarChart
                       dataset={signupCountData}
                       xAxis={[{ scaleType: "band", dataKey: "Date" }]}
@@ -716,7 +746,7 @@ function Reports() {
             </Container>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
               <Typography variant="h4" marginBottom={1} color={"primary.dark"}>
                 User Details
               </Typography>
@@ -779,6 +809,7 @@ function Reports() {
                               role="checkbox"
                               tabIndex={-1}
                               key={row.userId}
+                              onClick={() => openDialog(row.userId)}
                             >
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
@@ -859,6 +890,7 @@ function Reports() {
                               role="checkbox"
                               tabIndex={-1}
                               key={row.userId}
+                              onClick={() => openDialog(row.userId)}
                             >
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.email}</TableCell>
@@ -881,7 +913,89 @@ function Reports() {
                   onRowsPerPageChange={handleChangeRowsPerReaderPage}
                 />
               </Paper>
+              <Box display="flex" justifyContent="space-between" marginY={2}>
+                <Typography variant="h5" marginY={2} color={"primary.dark"}>
+                  Deleted users
+                </Typography>
+                <FormControl sx={{ m: 1, width: "35ch" }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-search">
+                    Search User Name
+                  </InputLabel>
+                  <OutlinedInput
+                    id="reader-search"
+                    type="text"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <Iconbutton>
+                          <SearchIcon />
+                        </Iconbutton>
+                      </InputAdornment>
+                    }
+                    label="Search"
+                    onChange={handleReaderSearch}
+                    value={readerSearchTerm}
+                  />
+                </FormControl>
+              </Box>
+              <Paper sx={{ width: "100%", overflow: "hidden" }} elevation={3}>
+                <TableContainer sx={{ maxHeight: 440 }}>
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                            style={{
+                              minWidth: column.minWidth,
+                              backgroundColor: "#0080FE",
+                              color: "#FFFFFF",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {column.label}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {deletedUsers
+                        .slice(
+                          deletedPage * rowsPerDeletedPage,
+                          deletedPage * rowsPerDeletedPage + rowsPerDeletedPage
+                        )
+                        .map((row) => {
+                          return (
+                            <TableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={row.userId}
+                              onClick={() => openDialog(row.userId)}
+                            >
+                              <TableCell>{row.name}</TableCell>
+                              <TableCell>{row.email}</TableCell>
+                              <TableCell>
+                                {new Date(row.savedAt).toDateString()}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  component="div"
+                  count={deletedUsers.length}
+                  rowsPerPage={rowsPerDeletedPage}
+                  page={deletedPage}
+                  onPageChange={handleChangeDeletedPage}
+                  onRowsPerPageChange={handleChangeRowsPerDeletedPage}
+                />
+              </Paper>
             </Container>
+            <UserDetailsDialog userId={userId} open={open} onClose={() => setOpen(false)} />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
             <Container maxWidth="lg">
@@ -947,7 +1061,7 @@ function Reports() {
                               .slice(
                                 articlesPage * rowsPerArticlesPage,
                                 articlesPage * rowsPerArticlesPage +
-                                  rowsPerArticlesPage
+                                rowsPerArticlesPage
                               )
                               .map((row) => {
                                 return (
@@ -955,7 +1069,7 @@ function Reports() {
                                     hover
                                     role="checkbox"
                                     tabIndex={-1}
-                                    key={row.id}
+                                    key={row._id}
                                   >
                                     <TableCell>{row.title}</TableCell>
                                     <TableCell>

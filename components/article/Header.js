@@ -4,11 +4,21 @@ import { Avatar, Typography, Box, Divider } from '@mui/material';
 import FollowButton from '../../components/article/FollowButton';
 
 
-const Header = ({ writerId, date, title }) => {
+const Header = ({ writerId, date, title}) => {
   const [userId, setUserId] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [writer, setWriter] = useState("");
+  const createdDate = new Date(date).toLocaleDateString();     
+  const createdTime = new Date(date).toLocaleTimeString();
   useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
+    console.log(userId);
+    if(userId!==null && username!==null){
+      setUserId(userId);
+    }else{
+      setUserId("");
+    }
 
     const fetchData = async () => {
       if (!writerId) return;
@@ -25,10 +35,10 @@ const Header = ({ writerId, date, title }) => {
       const {name,displayName,imgUrl} = jsonData;
       if (name != null) {
           setWriter(name);
-          consloe.log(writer);
+          console.log(writer);
       } else {
           setWriter("!user");
-          consloe.log("!user");
+          console.log("!user");
       }
     
       setImgUrl(imgUrl);
@@ -39,12 +49,6 @@ const Header = ({ writerId, date, title }) => {
      };
     fetchData();
 
-    const userId = localStorage.getItem("userId");
-    if(userId!==null){
-      setUserId(userId);
-    }else{
-      setUserId("");
-    }
   }, [writerId]);
 
 
@@ -58,7 +62,7 @@ const Header = ({ writerId, date, title }) => {
             <Box>
               <Typography variant="subtitle2" style={{ fontWeight: 'bold' }}>{writer}</Typography>
               <Typography variant="caption" color="textSecondary" >
-                {date}
+                {createdDate} &nbsp; {createdTime}
               </Typography>
             </Box>
           </Box>

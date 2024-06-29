@@ -11,7 +11,7 @@
 .searchBox{
    
     height: 12vh;
-    width: 100vw;
+    width: 95vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,6 +19,6 @@
 
 .articleBoxOuter{
     overflow: hidden;
-    width: 100vw;
+    width: 95vw;
     
 }

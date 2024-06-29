@@ -3,47 +3,47 @@ import axios from "axios";
 import Navbar from "../../components/createArticleNavbar";
 import WriterDashboardSummeryTable from "../../components/article/WriterDashboardSummeryTable";
 import Typography from "@mui/material/Typography";
-import Lottie from 'react-lottie';
+import Lottie from "react-lottie";
 
-function Dashboard() {
+const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const [articles, setArticles] = useState([]);
+  const [userId, setUserId] = useState("");
 
-  // Effect for initializing data
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    setUserName(localStorage.getItem("username")); // Load username from local storage
-
-    if (userId) {
-      fetchArticles(userId); // Fetch articles if userId is available
-    } else {
-      console.error("No user ID found"); // If userId is not found
-    }
+    const storedUserId = localStorage.getItem("userId");
+    const storedUserName = localStorage.getItem("username");
+    setUserId(storedUserId);
+    setUserName(storedUserName);
   }, []);
 
-  // Fetch articles
-  const fetchArticles = async (userId) => {
-    try {
-      const response = await axios.get(`https://article-writing-backend.onrender.com/api/article/writer/${userId}`);
-      if (response.data.success) {
-        setArticles(response.data.articles);
-      } else {
-        console.error("Failed to fetch articles:", response.data.message);
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/api/article/writer/${userId}`);
+        if (response.data.success) {
+          setArticles(response.data.articles);
+        } else {
+          console.error("Failed to fetch articles:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+        alert("Failed to load articles. Please check your network and try again.");
       }
-    } catch (error) {
-      console.error("Error fetching articles:", error);
-      alert("Failed to load articles. Please check your network and try again."); // Improved user feedback
-    }
-  };
+    };
 
-  // Animation in dashboard
+    if (userId) {
+      fetchArticles();
+    }
+  }, [userId]);
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
-    path: '/WriterAnimation.json', 
+    path: "/WriterAnimation.json",
     rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice'
-    }
+      preserveAspectRatio: "xMidYMid slice",
+    },
   };
 
   return (
@@ -65,14 +65,13 @@ function Dashboard() {
         >
           Welcome {userName} to your Dashboard
         </Typography>
-        {/* Animation prop setting */}
-        <div style={{ maxWidth: '600px', margin: 'auto', marginBottom: '20px' }}>
+        <div style={{ maxWidth: "600px", margin: "auto", marginBottom: "20px" }}>
           <Lottie options={defaultOptions} height={600} width={600} />
         </div>
         <WriterDashboardSummeryTable articles={articles} />
       </Navbar>
     </div>
   );
-}
+};
 
 export default Dashboard;

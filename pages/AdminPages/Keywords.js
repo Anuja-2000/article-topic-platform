@@ -26,6 +26,10 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePaginationActions from '../../components/TablePaginationActions';
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import { Chip } from '@mui/material';
+import urls from '../../enums/url';
 
 const api = axios.create({
   baseURL: `https://article-writing-backend.onrender.com/api/keywords`
@@ -37,36 +41,28 @@ function Keywords() {
   const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const [editingRowId, setEditingRowId] = useState(null);
   const [keywordName, setKeywordName] = useState('');
   const [description, setDescription] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
-
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State to control the visibility of the delete confirmation dialog
   const [deleteTargetId, setDeleteTargetId] = useState(null); // State to store the id of the topic domain to be deleted
-
   const [showEditConfirmation, setShowEditConfirmation] = useState(false);
   // Define a new state variable to store the currently edited row
   const [editingRow, setEditingRow] = useState(null);
-
   const [showAddConfirmation, setShowAddConfirmation] = useState(false);
   const [newItem, setNewItem] = useState({ topicDomainName: '', description: '' });
-
   // State variables to track whether the fields are empty
   const [keywordNameError, setKeywordNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
-
   const [showAlert, setShowAlert] = useState(false);
-
   const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = React.useState(false);
   const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
-
   const [selectedTopicDomainAddForm, setSelectedTopicDomainAddForm] = useState('');
+  const [suggestedKeywords, setSuggestedKeywords] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +85,6 @@ function Keywords() {
         console.error('Error fetching topic domains:', error);
       }
     };
-
     fetchData();
     fetchTopicDomains();
     setSelectedTopicDomain('all'); // Set 'all' as the default selected topic domain
@@ -99,11 +94,10 @@ function Keywords() {
   const handleFilterChange = async (event) => {
     const selectedValue = event.target.value;
     setSelectedTopicDomain(selectedValue);
-
     try {
       if (selectedValue === 'all') {
         const responseData = await api.get("/get");
-        setData(responseData.data); 
+        setData(responseData.data);
       } else {
         const response = await api.get(`/get/${selectedValue}`);
         console.log(`${selectedValue}`);
@@ -114,7 +108,6 @@ function Keywords() {
     }
   };
 
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -123,8 +116,6 @@ function Keywords() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-
   const handleAddClick = () => {
     if (keywordName.trim() === "") {
       setKeywordNameError(true);
@@ -133,7 +124,6 @@ function Keywords() {
     } else {
       setKeywordNameError(false);
     }
-
     if (description.trim() === "") {
       setDescriptionError(true);
       setShowAlert(true);
@@ -157,14 +147,14 @@ function Keywords() {
       }
       const newItemWithTopicDomainId = { ...newItem, topicDomainId: selectedTopicDomainAddForm };
       console.log(newItemWithTopicDomainId);
-      
+
       const response = await api.post("/add", newItemWithTopicDomainId);
       setData([...data, response.data]); // Update data array with the new item
       setNewItem({ keywordName: '', description: '' });
-      setShowAddConfirmation(false); 
+      setShowAddConfirmation(false);
       setShowAddForm(false);
 
-      setSelectedTopicDomainAddForm(''); 
+      setSelectedTopicDomainAddForm('');
       setKeywordName('');
       setDescription('');
       setAddSuccessfulAlertOpen(true);
@@ -180,26 +170,23 @@ function Keywords() {
   const handleCancelAdd = () => {
     setShowAddConfirmation(false);
     setNewItem({ keywordName: '', description: '' });
-    setShowAddForm(false); 
+    setShowAddForm(false);
     setKeywordName('');
     setDescription('');
   };
-
 
   // Update the handleEditClick function to set the editingRow state
   const handleEditClick = (row) => {
     setEditingRow(row);
     setEditingRowId(row.keywordId);
   };
-
   const handleSaveClick = async (row) => {
     try {
-      setShowEditConfirmation(true); 
+      setShowEditConfirmation(true);
     } catch (error) {
       console.error("Error updating data:", error);
     }
   };
-
   const handleConfirmSave = async () => {
     try {
       const updatedRow = data.find(item => item.keywordId === editingRowId);
@@ -216,7 +203,6 @@ function Keywords() {
       console.error("Error updating data:", error);
     }
   };
-
   const handleCancelSave = () => {
     setShowEditConfirmation(false);
     setEditingRowId(null); // Reset editing row ID
@@ -237,7 +223,7 @@ function Keywords() {
   const handleConfirmDelete = async () => {
     try {
       // Fetch topics associated with the keywords
-      const topicsResponse = await axios.get(`https://article-writing-backend.onrender.com/api/topics/${deleteTargetId}`);
+      const topicsResponse = await axios.get(`https://article-writing-backend.onrender.com/api/topics/getByKeyword/${deleteTargetId}`);
       const topicsToDelete = topicsResponse.data;
       console.log("Topics to delete:", topicsToDelete);
 
@@ -250,7 +236,6 @@ function Keywords() {
 
       // Delete the keyword itself
       await axios.delete(`https://article-writing-backend.onrender.com/api/keywords/delete/${deleteTargetId}`);
-
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.keywordId !== deleteTargetId));
       setShowDeleteConfirmation(false);
@@ -275,6 +260,26 @@ function Keywords() {
     setEditSuccessfulAlertOpen(false);
   };
 
+const handleKeywordNameChange = (e) => {
+  let emptyarray = []
+  if (e.target.value === '') {
+    setSuggestedKeywords(emptyarray);
+  }
+  setKeywordName(e.target.value);
+  if(e.target.value.length < 3) return;
+  fetchSuggestedKeywords(e.target.value);
+};
+
+const fetchSuggestedKeywords = async (keywordName) => {
+  try {
+    const response = await axios.get(`${urls.BASE_URL_KEYWORDS}suggestions/${keywordName}`);
+    let data = response.data.titles;
+    setSuggestedKeywords(data);
+  } catch (error) {
+    console.error("Error fetching suggested keywords:", error);
+  }
+};
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -287,203 +292,211 @@ function Keywords() {
     <div>
       <Navbar>
         <div className="App" style={{ marginTop: "60px" }}>
-          <h2 style={{ textAlign: "center" }}>Keywords</h2>
-
-          {/* Add Form */}
-          {showAddForm && (
-            <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
-                <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
-                <Select
-                  labelId="topic-domain-label"
-                  id="topic-domain-select"
-                  value={selectedTopicDomainAddForm}
-                  onChange={(e) => setSelectedTopicDomainAddForm(e.target.value)}
-                  label="Topic Domain"
-                >
-                  {topicDomains.map((topicDomain) => (
-                    <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
-                      {topicDomain.topicDomainName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <TextField
-                label="Keyword Name"
-                variant="outlined"
-                value={keywordName}
-                onChange={(e) => setKeywordName(e.target.value)}
-                error={keywordNameError}
-                style={{ marginRight: "10px" }}
-              />
-              <TextField
-                label="Description"
-                variant="outlined"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                error={descriptionError}
-                style={{ marginRight: "10px" }}
-              />
-              <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
-            </div>
-          )}
-
-          {/* Toggle Add Form Button */}
-          <div style={{ textAlign: "Right", marginBottom: "30px", marginRight: "150px" }}>
-            <Button variant="contained" color="primary" onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
-              {showAddForm ? "Hide Form" : "Show Add Form"}
-            </Button>
-          </div>
-
-
-
-
-          <div style={{ marginBottom: "20px", textAlign: "center" }}>
-            <h4 style={{ textAlign: "center", marginBottom: "10px" }}>Select a Topic Domain to Display Keywords</h4>
-            <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
-              <InputLabel id="topic-domain-label">Filter by Topic Domain</InputLabel>
-              <Select
-                labelId="topic-domain-label"
-                id="topic-domain-select"
-                value={selectedTopicDomain}
-                onChange={handleFilterChange}
-                label="Filter by Topic Domain"
-              >
-                <MenuItem value="all">All</MenuItem>
-                {topicDomains.map((topicDomain) => (
-                  <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
-                    {topicDomain.topicDomainName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
-          {/* Table */}
           <Grid container spacing={1}>
             <Grid item xs={1}></Grid>
             <Grid item xs={10}>
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>
-                        <h4 style={{ color: 'white' }}>Keyword</h4>
-                      </TableCell>
-                      <TableCell>
-                        <h4 style={{ color: 'white' }}>Description</h4>
-                      </TableCell>
-                      <TableCell>
-                        <h4 style={{ color: 'white' }}>Actions</h4>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {data
-                      .filter(row => selectedTopicDomain === 'all' || row.topicDomainId === selectedTopicDomain)
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => (
-                        <TableRow key={row.keywordId}>
-                          <TableCell>{editingRowId === row.keywordId ? (
-                            <input
-                              type="text"
-                              value={row.keywordName}
-                              onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, keywordName: e.target.value } : item)))}
-                            />
-                          ) : (
-                            row.keywordName
-                          )}</TableCell>
-                          <TableCell>{editingRowId === row.keywordId ? (
-                            <input
-                              type="text"
-                              value={row.description}
-                              onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, description: e.target.value } : item)))}
-                            />
-                          ) : (
-                            row.description
-                          )}</TableCell>
-                          <TableCell>{editingRowId === row.keywordId ? (
-                            <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
-                          ) : (
-                            <Box sx={{ display: 'flex', gap: '8px' }}>
-                              <Button variant="contained" color="primary" onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                              <Button variant="contained" color="error" onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
-                            </Box>
-                          )}</TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        style={{ marginLeft: "auto" }}
-                        rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                        colSpan={3}
-                        count={data.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        SelectProps={{
-                          inputProps: {
-                            "aria-label": "rows per page",
-                          },
-                          native: true,
-                        }}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        ActionsComponent={TablePaginationActions}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </TableContainer>
+              <Typography variant="h4" marginBottom={2} color={"primary.dark"} marginTop={2}>Keywords Management </Typography>
+              <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}>  Manage Keywords  </Typography>
+              <Divider />
+              <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+                {/* Add Form */}
+                {showAddForm && (
+                  <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                    <FormControl variant="outlined" style={{ minWidth: 200, marginRight: '10px' }}>
+                      <InputLabel id="topic-domain-label">Topic Domain</InputLabel>
+                      <Select
+                        labelId="topic-domain-label"
+                        id="topic-domain-select"
+                        value={selectedTopicDomainAddForm}
+                        onChange={(e) => setSelectedTopicDomainAddForm(e.target.value)}
+                        label="Topic Domain"
+                      >
+                        {topicDomains.map((topicDomain) => (
+                          <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
+                            {topicDomain.topicDomainName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <TextField
+                      label="Keyword Name"
+                      variant="outlined"
+                      value={keywordName}
+                      onChange={(e) => handleKeywordNameChange(e)}
+                      error={keywordNameError}
+                      style={{ marginRight: "10px" }}
+                    />
+                    <TextField
+                      label="Description"
+                      variant="outlined"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      error={descriptionError}
+                      style={{ marginRight: "10px" }}
+                    />
+                    <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
+                    <div style={{ marginTop: "20px" }}>Suggested Keywords: {
+                    suggestedKeywords.length === 0? <Chip label="No key words right now" color='primary'/>: suggestedKeywords.map(keywordName =>(<Chip key={keywordName} label={keywordName} color='primary' sx={{margin:'5px'}} onClick={()=>setKeywordName(keywordName)}/>))
+                    }</div>
+                  </div>
+                )}
+
+                {/* Toggle Add Form Button */}
+                <div style={{ textAlign: "Right", marginBottom: "30px" }}>
+                  <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => setShowAddForm(!showAddForm)} disabled={editingRowId !== null}>
+                    {showAddForm ? "Cancel" : "Create Keyword"}
+                  </Button>
+                </div>
+
+                <div style={{ marginBottom: "20px", textAlign: "center" }}>
+                  <Box display="flex" justifyContent="space-between" marginY={2}>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12} sm={4}>
+                        <FormControl variant="outlined" fullWidth>
+                          <InputLabel id="topic-domain-label">Filter by Topic Domain</InputLabel>
+                          <Select
+                            labelId="topic-domain-label"
+                            id="topic-domain-select"
+                            value={selectedTopicDomain}
+                            onChange={handleFilterChange}
+                            label="Filter by Topic Domain"
+                          >
+                            <MenuItem value="all">All</MenuItem>
+                            {topicDomains.map((topicDomain) => (
+                              <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
+                                {topicDomain.topicDomainName}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </div>
+
+                {/* Table */}
+                <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>Keywords</Typography>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Keyword</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Description</h4>
+                        </TableCell>
+                        <TableCell>
+                          <h4 style={{ color: 'white' }}>Actions</h4>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {data
+                        .filter(row => selectedTopicDomain === 'all' || row.topicDomainId === selectedTopicDomain)
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((row) => (
+                          <TableRow key={row.keywordId}>
+                            <TableCell>{editingRowId === row.keywordId ? (
+                              <input
+                                type="text"
+                                value={row.keywordName}
+                                onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, keywordName: e.target.value } : item)))}
+                              />
+                            ) : (
+                              row.keywordName
+                            )}</TableCell>
+                            <TableCell>{editingRowId === row.keywordId ? (
+                              <input
+                                type="text"
+                                value={row.description}
+                                onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, description: e.target.value } : item)))}
+                              />
+                            ) : (
+                              row.description
+                            )}</TableCell>
+                            <TableCell>{editingRowId === row.keywordId ? (
+                              <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
+                            ) : (
+                              <Box sx={{ display: 'flex', gap: '8px' }}>
+                                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                                <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                              </Box>
+                            )}</TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TablePagination
+                          style={{ marginLeft: "auto" }}
+                          rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                          colSpan={3}
+                          count={data.length}
+                          rowsPerPage={rowsPerPage}
+                          page={page}
+                          SelectProps={{
+                            inputProps: {
+                              "aria-label": "rows per page",
+                            },
+                            native: true,
+                          }}
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={handleChangeRowsPerPage}
+                          ActionsComponent={TablePaginationActions}
+                        />
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                </TableContainer>
+                
+                <DeleteConfirmationDialog
+                  open={showDeleteConfirmation}
+                  onClose={() => setShowDeleteConfirmation(false)}
+                  onConfirm={handleConfirmDelete}
+                />
+
+                <EditConfirmationDialog
+                  open={showEditConfirmation}
+                  onClose={handleCancelSave}
+                  onConfirm={handleConfirmSave}
+                />
+
+                <AddKeywordConfirmationDialog
+                  open={showAddConfirmation}
+                  onClose={handleCancelAdd}
+                  onConfirm={handleConfirmAdd}
+                  newItem={newItem}
+                  setNewItem={setNewItem}
+                />
+
+                <AlertDialog
+                  open={showAlert}
+                  message="Please fill in all required fields."
+                  onClose={() => setShowAlert(false)}
+                />
+
+                <Snackbar open={deleteSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseDeleteSuccessfulAlertOpen}>
+                  <MuiAlert onClose={handleCloseDeleteSuccessfulAlertOpen} severity="success">
+                    Keyword and related topics deleted successfully!
+                  </MuiAlert>
+                </Snackbar>
+
+                <Snackbar open={addSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseAddSuccessfulAlertOpen}>
+                  <MuiAlert onClose={handleCloseAddSuccessfulAlertOpen} severity="success">
+                    Keyword added successfully!
+                  </MuiAlert>
+                </Snackbar>
+
+                <Snackbar open={editSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseEditSuccessfulAlertOpen}>
+                  <MuiAlert onClose={handleCloseEditSuccessfulAlertOpen} severity="success">
+                    Keyword edited successfully!
+                  </MuiAlert>
+                </Snackbar>
+              </div>
             </Grid>
             <Grid item xs={1}></Grid>
           </Grid>
-
-
-          <DeleteConfirmationDialog
-            open={showDeleteConfirmation}
-            onClose={() => setShowDeleteConfirmation(false)}
-            onConfirm={handleConfirmDelete}
-          />
-
-          <EditConfirmationDialog
-            open={showEditConfirmation}
-            onClose={handleCancelSave}
-            onConfirm={handleConfirmSave}
-          />
-
-          <AddKeywordConfirmationDialog
-            open={showAddConfirmation}
-            onClose={handleCancelAdd}
-            onConfirm={handleConfirmAdd}
-            newItem={newItem}
-            setNewItem={setNewItem}
-          />
-
-          <AlertDialog
-            open={showAlert}
-            message="Please fill in all required fields."
-            onClose={() => setShowAlert(false)}
-          />
-
-          <Snackbar open={deleteSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseDeleteSuccessfulAlertOpen}>
-            <MuiAlert onClose={handleCloseDeleteSuccessfulAlertOpen} severity="success">
-              Keyword and related topics deleted successfully!
-            </MuiAlert>
-          </Snackbar>
-
-          <Snackbar open={addSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseAddSuccessfulAlertOpen}>
-            <MuiAlert onClose={handleCloseAddSuccessfulAlertOpen} severity="success">
-              Keyword added successfully!
-            </MuiAlert>
-          </Snackbar>
-
-          <Snackbar open={editSuccessfulAlertOpen} autoHideDuration={6000} onClose={handleCloseEditSuccessfulAlertOpen}>
-            <MuiAlert onClose={handleCloseEditSuccessfulAlertOpen} severity="success">
-              Keyword edited successfully!
-            </MuiAlert>
-          </Snackbar>
         </div>
       </Navbar >
     </div >

@@ -59,7 +59,7 @@ function Drafts() {
               description: article.content,
               logo: article.coverImage || "https://picsum.photos/600/600", // Use cover image or a random image
               title: article.title,
-              coverImage: `https://picsum.photos/500/300?random=${index}`,
+              coverImage: article.coverImage,
               status: article.status,
             }))
           );
