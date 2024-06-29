@@ -190,8 +190,9 @@ export default function UserRoles() {
     } else {
       setUserSearchTerm(event.target.value);
       let type = "Reader";
+      let username = userSearchTerm;
       const nameResult = axios
-        .get(`${urls.BASE_URL_USER_UTILITY}search/${userSearchTerm}`)
+        .get(`${urls.BASE_URL_USER_UTILITY}search/${username}`)
         .then((res) => {
           setOtherUsers(res.data);
         })
@@ -353,7 +354,7 @@ export default function UserRoles() {
                     </InputAdornment>
                   }
                   label="Search"
-                  onChange={handleUserSearch}
+                  onChange={(e)=>handleUserSearch(e)}
                   value={userSearchTerm}
                 />
               </FormControl>
