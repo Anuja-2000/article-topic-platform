@@ -10,7 +10,7 @@ function PopularArticleBox() {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await fetch(`http://localhost:3001/api/readerArticle/popular-articles`, {
+          const response = await fetch(`https://article-writing-backend.onrender.com/api/readerArticle/popular-articles`, {
             headers: {
               'Content-Type': 'application/json', 
             },

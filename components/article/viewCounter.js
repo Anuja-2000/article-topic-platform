@@ -25,7 +25,7 @@ const ViewCounter = ({ articleId,view, readerId}) => {
       if (!articleId || !readerId) return;
       console.log(":in");
       try {
-        const response = await fetch(`http://localhost:3001/api/view/get`, {
+        const response = await fetch(`https://article-writing-backend.onrender.com/api/view/get`, {
          method: 'POST',
          body: JSON.stringify({
           readerId: readerId,
@@ -55,7 +55,7 @@ const ViewCounter = ({ articleId,view, readerId}) => {
 const updateView = async(newViews)=>{
   
   try {
-    const response = await fetch(`http://localhost:3001/api/readerArticle/updateViews`, {
+    const response = await fetch(`https://article-writing-backend.onrender.com/api/readerArticle/updateViews`, {
     method: 'PUT',
     body: JSON.stringify({
       id: articleId,
@@ -76,7 +76,7 @@ const updateView = async(newViews)=>{
 
 const saveView = async () =>{
   try {
-    const response = await fetch(`http://localhost:3001/api/view/save`, {
+    const response = await fetch(`https://article-writing-backend.onrender.com/api/view/save`, {
     method: 'POST',
     body: JSON.stringify({
       id:viewId,

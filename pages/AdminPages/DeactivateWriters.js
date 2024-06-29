@@ -91,7 +91,7 @@ const DeactivateWriters = () => {
         console.log("Deactivated response.data", response.data);
 
         const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (deactivatedWriter) => {
-          const deactivatedWriterResponse = await axios.get(`http://localhost:3001/api/user/${deactivatedWriter.writerId}`);
+          const deactivatedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${deactivatedWriter.writerId}`);
           const { name, email, savedAt } = deactivatedWriterResponse.data;
           console.log("writer username", username);
           console.log('DeactivatedWriterResponse.data;', deactivatedWriterResponse.data);
@@ -178,7 +178,7 @@ const DeactivateWriters = () => {
 
       await axios.patch(`https://article-writing-backend.onrender.com/api/user/deactivateUser/${deleteTargetId}`);
       await axios.delete(`https://article-writing-backend.onrender.com/api/reportedWriter/delete/${deleteTargetId}`);
-      await axios.post(`http://localhost:3001/api/deactivatedWriter/save/${deleteTargetId}/${username}`, {
+      await axios.post(`https://article-writing-backend.onrender.com/api/deactivatedWriter/save/${deleteTargetId}/${username}`, {
         deactivatedReason: deactivationReason
       });
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
@@ -243,8 +243,8 @@ const DeactivateWriters = () => {
 
   const handleConfirmActivate = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/deactivatedWriter/deleteDeactivateWriter/${deleteTargetId}`);
-      await axios.patch(`http://localhost:3001/api/user/activateUser/${deleteTargetId}`);
+      await axios.delete(`https://article-writing-backend.onrender.com/api/deactivatedWriter/deleteDeactivateWriter/${deleteTargetId}`);
+      await axios.patch(`https://article-writing-backend.onrender.com/api/user/activateUser/${deleteTargetId}`);
       setDeactivatedWriters(deactivatedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowActivateConfirmation(false);
       setActivateSuccessfulAlertOpen(true);

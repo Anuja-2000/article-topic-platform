@@ -13,7 +13,7 @@ const WriterProfile = () => {
     if (writerId) {
       const fetchWriterDetails = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/api/user/${writerId}`);
+          const response = await axios.get(`https://article-writing-backend.onrender.com/api/user/${writerId}`);
           setWriter(response.data);
         } catch (error) {
           console.error('Error fetching writer details:', error);
@@ -22,7 +22,7 @@ const WriterProfile = () => {
   
       const fetchFollowerCount = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/api/follow/count/${writerId}`);
+          const response = await axios.get(`https://article-writing-backend.onrender.com/api/follow/count/${writerId}`);
           if (response.data && response.data.count !== undefined) {
             setFollowerCount(response.data.count);
           }

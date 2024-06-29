@@ -192,7 +192,7 @@ const Profile = () => {
           }
       
           try {
-            const response = await fetch(`http://localhost:3001/api/user/deactiveUser`, {
+            const response = await fetch(`https://article-writing-backend.onrender.com/api/user/deactiveUser`, {
               method: 'PATCH',
               body: JSON.stringify({
                 userId:userId

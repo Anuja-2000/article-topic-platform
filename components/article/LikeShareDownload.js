@@ -41,7 +41,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
     setLikes(initialLikes);
     const getLikes = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/like/get`, {
+        const response = await fetch(`https://article-writing-backend.onrender.com/api/like/get`, {
           method: 'POST',
           body:JSON.stringify({
             readerId: readerId,
@@ -68,7 +68,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
 
   const likeArticle = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/like/save`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/like/save`, {
         method: 'POST',
         body: JSON.stringify(
           {
@@ -89,7 +89,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
 
   const unlikeArticle = async() => {
     try {
-      const response = await fetch(`http://localhost:3001/api/like/delete`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/like/delete`, {
         method: 'DELETE',
         body: JSON.stringify(
           {

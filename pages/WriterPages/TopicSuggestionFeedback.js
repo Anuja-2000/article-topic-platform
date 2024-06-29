@@ -140,7 +140,7 @@ const TopicSuggestionFeedback = () => {
           };
           console.log('Flagged Topic:', flaggedTopic);
 
-          await fetch('http://localhost:3001/api/flaggedTopics/add', {
+          await fetch('https://article-writing-backend.onrender.com/api/flaggedTopics/add', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

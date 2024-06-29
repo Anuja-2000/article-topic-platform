@@ -20,7 +20,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/article/writer/${userId}`);
+        const response = await axios.get(`https://article-writing-backend.onrender.com/api/article/writer/${userId}`);
         if (response.data.success) {
           setArticles(response.data.articles);
         } else {
