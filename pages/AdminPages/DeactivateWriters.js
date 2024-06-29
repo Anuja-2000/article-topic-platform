@@ -35,6 +35,7 @@ const DeactivateWriters = () => {
   const [activateSuccessfulAlertOpen, setActivateSuccessfulAlertOpen] = useState(false);
   const router = useRouter();
   const [deactivationReason, setDeactivationReason] = useState("");
+  const [dataChanged, setDataChanged] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -149,7 +150,7 @@ const DeactivateWriters = () => {
     fetchAdmin();
     fetchData();
     fetchDeactivatedWriters();
-  }, []);
+  }, [dataChanged]);
 
 
 
@@ -183,29 +184,13 @@ const DeactivateWriters = () => {
       });
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
+      setDeactivationReason('');
       setDeactivateSuccessfulAlertOpen(true);
       setTimeout(() => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
-      // Fetch updated list of deactivated writers since new writer added to deactivate
-      const response = await axios.get('http://localhost:3001/api/deactivatedWriter/deactivatedWriters/getAll');
-      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (deactivatedWriter) => {
-        const reportedWriterResponse = await axios.get(`http://localhost:3001/api/user/${deactivatedWriter.writerId}`);
-        const { name, email, savedAt } = reportedWriterResponse.data;
-
-        console.log('deactivatedWriter.deactivatedBy', deactivatedWriter.deactivatedBy);
-        return {
-          deactivatedBy: deactivatedWriter.deactivatedBy,
-          writerName: name,
-          email: email,
-          writerId: deactivatedWriter.writerId,
-          reasons: deactivatedWriter.deactivatedReason,
-          joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date 
-          deactivatedAt: new Date(deactivatedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
-          daysSinceDeactivation: calculateDaysDifference(deactivatedWriter.deactivatedAt)
-        };
-      }));
-      setDeactivatedWriters(deactivatedWritersWithDetails);
+      setDataChanged(prev => !prev);
+      
     } catch (error) {
       console.error("Error deactivating user:", error);
     }
@@ -249,6 +234,7 @@ const DeactivateWriters = () => {
       setTimeout(() => {
         setActivateSuccessfulAlertOpen(false);
       }, 2000);
+      setDataChanged(prev => !prev);
     } catch (error) {
       console.error("Error reactivating writer :", error);
     }
@@ -469,7 +455,7 @@ const DeactivateWriters = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDeactivateConfirmation(false)} color="primary">Cancel</Button>
+          <Button onClick={() => { setShowDeactivateConfirmation(false); setDeactivationReason(''); }}color="primary">Cancel</Button>
           <Button onClick={handleConfirmDeactivate} color="error">Deactivate</Button>
         </DialogActions>
       </Dialog>
