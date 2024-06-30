@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
@@ -7,13 +7,10 @@ import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from "@mui/material/Divider";
-import ArchiveIcon from "@mui/icons-material/Archive";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import SendIcon from '@mui/icons-material/Send';
-
 import { Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
+import AlertDialog from "../../..//pages/WriterPages/AlertDialog";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -59,24 +56,43 @@ const StyledMenu = styled((props) => (
 }));
 
 const ArticlePopup = ({ article, open, onClose }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open2 = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({
+    title: "",
+    description: "",
+    onConfirm: null,
+  });
+
+  const openMenu = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
-  const EditArticle = () => {
-    handleClose();
-  }
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  console.log(article);
+  const handleMoveToTrash = () => {
+    setAlertConfig({
+      title: "Move to Trash?",
+      description: "Are you sure you want to move this article to trash? You can restore it within 30 days, after which it will be deleted automatically.",
+      onConfirm: () => {
+        // TODO: Implement move to trash logic here
+        console.log("Article moved to trash");
+        setAlertOpen(false);
+        handleClose();
+      },
+    });
+    setAlertOpen(true);
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+  };
 
   if (!article) {
-    return null; // Return null if article is null
+    return null;
   }
 
   // Define the createMarkup function inside the component
@@ -107,9 +123,9 @@ const ArticlePopup = ({ article, open, onClose }) => {
 
         <Button
           id="demo-customized-button"
-          aria-controls={open2 ? "demo-customized-menu" : undefined}
+          aria-controls={openMenu ? "demo-customized-menu" : undefined}
           aria-haspopup="true"
-          aria-expanded={open2 ? "true" : undefined}
+          aria-expanded={openMenu ? "true" : undefined}
           variant="contained"
           disableElevation
           onClick={handleClick}
@@ -123,14 +139,14 @@ const ArticlePopup = ({ article, open, onClose }) => {
             "aria-labelledby": "demo-customized-button",
           }}
           anchorEl={anchorEl}
-          open={open2}
+          open={openMenu}
           onClose={handleClose}
         >
-          <MenuItem onClick={EditArticle} disableRipple>
+          <MenuItem onClick={handleClose} disableRipple>
             <EditIcon />
             Edit
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem onClick={handleMoveToTrash} disableRipple>
             <DeleteIcon />
             Move to Trash
           </MenuItem>
@@ -139,12 +155,19 @@ const ArticlePopup = ({ article, open, onClose }) => {
             Duplicate
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-           <MenuItem onClick={handleClose} disableRipple>
-           <FileCopyIcon />
+          <MenuItem onClick={handleClose} disableRipple>
+            <FileCopyIcon />
             Send to Admin
           </MenuItem>
         </StyledMenu>
       </DialogContent>
+      <AlertDialog 
+        open={alertOpen}
+        onClose={handleAlertClose}
+        onConfirm={alertConfig.onConfirm}
+        title={alertConfig.title}
+        description={alertConfig.description}
+      />
     </Dialog>
   );
 };
