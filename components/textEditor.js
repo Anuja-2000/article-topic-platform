@@ -190,6 +190,9 @@ import ImageUploader from "./ImageUploader";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import { alpha } from "@mui/material/styles";
+import TemplateSelector from "./Templates/TemplateSelector";
+import Divider from "@mui/material/Divider";
+import { Typography } from '@mui/material';
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -297,6 +300,10 @@ const TextEditor = () => {
     ],
   };
 
+  const handleTemplateSelect = (templateContent) => {
+    setText(templateContent);
+  };
+
   const formats = [
     "header",
     "font",
@@ -317,6 +324,14 @@ const TextEditor = () => {
     <div className={styles.textEditorArea}>
       <ArticleCoverImageUploader onImageUpload={handleCoverImageUpload} />
       <ImageUploader onImagesChange={setImages} />
+      <Divider />
+      <div style={{ width: "100%", marginTop: "40px", marginBottom: "40px", textAlign: "left" }}>
+        <Typography variant="h4" marginBottom={2} color={"primary.dark"} marginTop={2}>Choose a Template</Typography>
+        <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}> Select a template and make changes according to your preference. </Typography>
+        <Divider />
+        <TemplateSelector onSelectTemplate={handleTemplateSelect} />
+      </div>
+      <Divider />
       <TextField
         label="Name of Article"
         variant="outlined"
