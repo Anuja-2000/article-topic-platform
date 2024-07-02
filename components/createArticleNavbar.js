@@ -38,6 +38,7 @@ import FlagIcon from "@mui/icons-material/Flag";
 import GroupIcon from "@mui/icons-material/Group";
 import CheckIcon from "@mui/icons-material/Check";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 
@@ -115,6 +116,7 @@ export default function Navbar({ children }) {
     Drafts: <SaveAsIcon sx={{ color: "white" }} />,
     Trash: <DeleteSweepIcon sx={{ color: "white" }} />,
     Statistics: <AssessmentIcon sx={{ color: "white" }} />,
+    Settings: <SettingsIcon sx={{ color: "white" }} />,
   };
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -130,6 +132,7 @@ export default function Navbar({ children }) {
       "Drafts",
       "Trash",
       "Statistics",
+      "Settings"
     ].findIndex((text) => path.includes(text.replace(" ", "")));
     setSelectedIndex(index);
   }, [router.pathname]); //only be executed if router.pathname changes between renders.
@@ -235,6 +238,7 @@ export default function Navbar({ children }) {
             "Drafts",
             "Trash",
             "Statistics",
+            "Settings"
           ].map((text, index) => (
             <ListItem
               key={text}
