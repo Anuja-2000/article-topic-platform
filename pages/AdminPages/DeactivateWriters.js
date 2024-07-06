@@ -17,7 +17,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TablePaginationActions from '../../components/TablePaginationActions';
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
-
+import Alert from "@mui/material/Alert";
 
 const DeactivateWriters = () => {
   const [page, setPage] = useState(0);
@@ -190,13 +190,10 @@ const DeactivateWriters = () => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
       setDataChanged(prev => !prev);
-      
+
     } catch (error) {
       console.error("Error deactivating user:", error);
     }
-  };
-  const handleCloseDeleteSuccessfulAlertOpen = () => {
-    setDeactivateSuccessfulAlertOpen(false);
   };
 
   const handleConfirmIgnore = async () => {
@@ -352,14 +349,15 @@ const DeactivateWriters = () => {
               </Grid>
             </Grid>
             {deactivateSuccessfulAlertOpen && (
-              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+              <Alert  severity="success" sx={{ width: '100%' }}>
                 User Deactivated successfully.
-              </div>
+              </Alert>
             )}
+
             {deactivateIgnoreAlertOpen && (
-              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
-                Ignore User Deactivating.
-              </div>
+              <Alert  severity="success" sx={{ width: '100%' }}>
+              Ignore User Deactivating.
+            </Alert>
             )}
 
             <Grid container spacing={1}>
@@ -433,9 +431,9 @@ const DeactivateWriters = () => {
               </Grid>
             </Grid>
             {activateSuccessfulAlertOpen && (
-              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                <Alert  severity="success" sx={{ width: '100%' }}>
                 User Activated successfully.
-              </div>
+              </Alert>
             )}
           </div>
         </Navbar>
@@ -455,7 +453,7 @@ const DeactivateWriters = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setShowDeactivateConfirmation(false); setDeactivationReason(''); }}color="primary">Cancel</Button>
+          <Button onClick={() => { setShowDeactivateConfirmation(false); setDeactivationReason(''); }} color="primary">Cancel</Button>
           <Button onClick={handleConfirmDeactivate} color="error">Deactivate</Button>
         </DialogActions>
       </Dialog>
