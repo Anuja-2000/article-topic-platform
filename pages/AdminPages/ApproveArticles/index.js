@@ -20,7 +20,7 @@ import { set } from "react-hook-form";
 import Skeleton from "@mui/material/Skeleton";
 import { Suspense } from "react";
 import Loading from "./loading";
-import Button  from "@mui/material/Button";
+
 
 
 function CustomTabPanel(props) {
@@ -62,12 +62,6 @@ export default function ApproveArticles() {
   const [approvals, setApprovals] = React.useState([]);
   const [approvalPage, setApprovalPage] = React.useState(0);
   const [rowsPerApprovalPage, setRowsPerApprovalPage] = React.useState(10);
-  const [articleDomain, setArticleDomain] = React.useState({
-    domainId: "",
-    domainName: "",
-    domainDescription: "",
-  });
-  const [domains, setDomains] = React.useState([]);
 
   const [isClient, setIsClient] = React.useState(false)
 
@@ -116,12 +110,6 @@ export default function ApproveArticles() {
         console.log(error);
       });
 
-    const domains = axios.get(`${urls.BASE_URL_ARTICLE_DOMAINS}`).then((response) => {
-      setDomains(response.data);
-    }).catch((error) => {
-      console.log(error);
-    });
-
   }, []);
 
   return (
@@ -135,7 +123,6 @@ export default function ApproveArticles() {
           >
             <Tab label="Pending Approvals" {...a11yProps(0)} />
             <Tab label="Approval History" {...a11yProps(1)} />
-            <Tab label="Article Domains" {...a11yProps(2)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
@@ -200,40 +187,6 @@ export default function ApproveArticles() {
                 ) : (
                   <Loading />
                 )}
-                {/* <Suspense fallback={<Loading />}>
-                  <TableBody>
-                    {articles
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((article) => (
-                        <TableRow
-                          key={article.id}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
-                          <TableCell component="th" scope="row">
-                            {article.title}
-                          </TableCell>
-                          <TableCell>{article.userData[0].name}</TableCell>
-                          <TableCell>
-                            {new Date(article.updatedAt).toDateString()}
-                          </TableCell>
-                          <TableCell align="center">
-                            <Chip
-                              label="View"
-                              component="a"
-                              href={"reviewArticle/" + article.articleId}
-                              color="primary"
-                              clickable
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Suspense> */}
               </Table>
             </TableContainer>
             <TablePagination
@@ -321,47 +274,6 @@ export default function ApproveArticles() {
               onPageChange={handleChangeApprovalPage}
               onRowsPerPageChange={handleChangeRowsPerApprovalPage}
             />
-          </Container>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-          <Container maxWidth="lg">
-            <Box marginBottom={2} justifyContent={"space-between"} display={'flex'}>
-            <Typography variant="h4" marginBottom={2} color={"primary.main"}>
-              Article Domains
-            </Typography>
-            <Button variant="contained" color="primary" sx={{height:'3rem'}}>
-              Add Domain
-            </Button>
-              </Box>            
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontSize: "1.1rem", color: "white" }}>
-                      Domain
-                    </TableCell>
-                    <TableCell sx={{ fontSize: "1.1rem", color: "white" }}>
-                      Description
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {domains.map((domain) => (
-                    <TableRow
-                      key={domain.domainId}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {domain.domainName}
-                      </TableCell>
-                      <TableCell>{domain.domainDescription}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
           </Container>
         </CustomTabPanel>
       </Navbar>
