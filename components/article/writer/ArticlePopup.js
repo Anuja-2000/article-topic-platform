@@ -5,12 +5,13 @@ import Menu from "@mui/material/Menu";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import AlertDialog from "../../..//pages/WriterPages/AlertDialog";
+import { useRouter } from "next/router";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -56,6 +57,7 @@ const StyledMenu = styled((props) => (
 }));
 
 const ArticlePopup = ({ article, open, onClose }) => {
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
@@ -73,10 +75,20 @@ const ArticlePopup = ({ article, open, onClose }) => {
     setAnchorEl(null);
   };
 
+  const handleEdit = () => {
+    router.push({
+      pathname: "/WriterPages/EditArticle",
+      query: {
+        article: JSON.stringify(article),
+      },
+    });
+  };
+
   const handleMoveToTrash = () => {
     setAlertConfig({
       title: "Move to Trash?",
-      description: "Are you sure you want to move this article to trash? You can restore it within 30 days, after which it will be deleted automatically.",
+      description:
+        "Are you sure you want to move this article to trash? You can restore it within 30 days, after which it will be deleted automatically.",
       onConfirm: () => {
         // TODO: Implement move to trash logic here
         console.log("Article moved to trash");
@@ -142,7 +154,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
           open={openMenu}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem onClick={handleEdit} disableRipple>
             <EditIcon />
             Edit
           </MenuItem>
@@ -161,7 +173,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
           </MenuItem>
         </StyledMenu>
       </DialogContent>
-      <AlertDialog 
+      <AlertDialog
         open={alertOpen}
         onClose={handleAlertClose}
         onConfirm={alertConfig.onConfirm}
