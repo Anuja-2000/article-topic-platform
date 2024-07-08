@@ -33,6 +33,7 @@ function Drafts() {
   }, []);
 
   useEffect(() => {
+    console.log("Loading articles")
     const fetchArticles = async () => {
       try {
         if (!userid) {
@@ -44,7 +45,6 @@ function Drafts() {
           `http://localhost:3001/api/article/writer/${userid}`
         );
 
-        console.log("Response: ", response.data);
 
         if (response.data && response.data.success) {
           const filteredArticles = response.data.articles.filter(
@@ -53,7 +53,7 @@ function Drafts() {
 
           setArticles(
             filteredArticles.map((article, index) => ({
-              id: article._id,
+              id: article.articleId,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
               description: article.content,
@@ -63,6 +63,8 @@ function Drafts() {
               status: article.status,
             }))
           );
+
+          console.log("artciles loaded")
         } else {
           console.error("Failed to fetch articles: ", response.data);
         }
@@ -97,7 +99,6 @@ function Drafts() {
               {/* Grid content */}
               {articles.map(
                 (article) => (
-                  console.log(article),
                   (
                     <ArticlesCard
                       article={article}

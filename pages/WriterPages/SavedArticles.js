@@ -48,8 +48,6 @@ function SavedArticles() {
           `http://localhost:3001/api/article/writer/${userid}`
         );
 
-        console.log("Response: ", response.data);
-
         if (response.data && response.data.success) {
 
           const filteredArticles = response.data.articles.filter(
@@ -119,7 +117,6 @@ function SavedArticles() {
               {/* Grid content */}
               {articles.map(
                 (article) => (
-                  console.log(article),
                   (
                     <ArticlesCard
                       article={article}

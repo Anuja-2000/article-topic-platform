@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import AlertDialog from "../../..//pages/WriterPages/AlertDialog";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -92,31 +93,59 @@ const ArticlePopup = ({ article, open, onClose }) => {
       onConfirm: async () => {
         try {
           const response = await fetch(`/api/articles/${articleId}`, {
-            method: 'PATCH',
+            method: "PATCH",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              savedType: 'trashed',
+              savedType: "trashed",
             }),
           });
-  
+
           if (!response.ok) {
-            throw new Error('Failed to move article to trash');
+            throw new Error("Failed to move article to trash");
           }
-  
+
           console.log("Article moved to trash");
           setAlertOpen(false);
           handleClose();
         } catch (error) {
-          console.error('Error moving article to trash:', error);
+          console.error("Error moving article to trash:", error);
         }
       },
     });
     setAlertOpen(true);
   };
-  
-  
+
+  const handleSendToAdmin = async (article) => {
+    console.log("Article in popup: ", article);
+
+    const articledata = {
+      articleId: article.id,
+      status: "pending",
+    };
+
+    console.log("Article data: ", articledata);
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:3001/api/article/update/status`,
+        articledata,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Response from server:", response);
+      alert("Article updated successfully!");
+    } catch (error) {
+      console.error("Error updating article:", error);
+      alert(
+        "Failed to update article. Please check your network and try again."
+      );
+    }
+  };
 
   const handleAlertClose = () => {
     setAlertOpen(false);
@@ -186,7 +215,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
             Duplicate
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem onClick={() => handleSendToAdmin(article)} disableRipple>
             <FileCopyIcon />
             Send to Admin
           </MenuItem>
