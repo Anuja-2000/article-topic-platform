@@ -5,19 +5,22 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 
-function SearchArticleBox({keyword}) {
+function SearchArticleBox({keyword, selectedDomain}) {
 
         const [articleData, setData] = useState([]);
-        const backendApiUrl = process.env.NEXT_PUBLIC_BACKEND_API;
-    
+        
         useEffect(() => {
           const fetchData = async () => {
             try {
               const response = await fetch(`http://localhost:3001/api/readerArticle/search`, {
                 headers: {
-                  'Content-Type': 'application/json', // Adjust the content type if needed
-                  'text':keyword, // Add your custom data in headers
+                  'Content-Type': 'application/json', 
                 },
+                method: 'POST',
+                body: JSON.stringify({
+                  "text":keyword,
+                  "domain": selectedDomain
+                }),
             });
               const jsonData = await response.json();
               setData(jsonData);
@@ -28,7 +31,7 @@ function SearchArticleBox({keyword}) {
           };
       
           fetchData();
-        }, [keyword]);
+        }, [keyword || selectedDomain]);
         
   
 

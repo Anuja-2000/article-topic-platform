@@ -140,15 +140,17 @@ export default function UserRoles() {
     const response = axios
       .get(`${urls.BASE_URL_USER}getAll`)
       .then((res) => {
-        const filteredAdmins = res.data.filter((user) => user.type === "Admin");
-        let others = res.data.filter((user) => user.type != "Admin");
-        setOtherUsers(others);
+        let users = res.data;
+        let filteredUsers = users.filter((user) => user.isDeactived === false && user.isActive === true && user.type != "Admin" );
+        const filteredAdmins = users.filter((user) => (user.isDeactived === false && user.type === "Admin"));
+        setOtherUsers(filteredUsers);
         setAdmins(filteredAdmins);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+
 
   const [adminPage, setAdminPage] = React.useState(0);
   const [adminRowsPerPage, setAdminRowsPerPage] = React.useState(5);
@@ -180,8 +182,9 @@ export default function UserRoles() {
       const result = axios
         .get(`${urls.BASE_URL_USER_UTILITY}get-others`)
         .then((res) => {
-          setOtherUsers(res.data);
-          console.log(res.data);
+          let users = res.data;
+          let filteredUsers = users.filter((user) => user.isDeactived === false && user.isActive === true && user.type != "Admin" );
+          setOtherUsers(filteredUsers);
           return;
         })
         .catch((error) => {
@@ -190,10 +193,13 @@ export default function UserRoles() {
     } else {
       setUserSearchTerm(event.target.value);
       let type = "Reader";
+      let username = userSearchTerm;
       const nameResult = axios
-        .get(`${urls.BASE_URL_USER_UTILITY}search/${userSearchTerm}`)
+        .get(`${urls.BASE_URL_USER_UTILITY}search/${username}`)
         .then((res) => {
-          setOtherUsers(res.data);
+          let users = res.data;
+          let filteredUsers = users.filter((user) => user.isDeactived === false && user.isActive === true && user.type != "Admin" );
+          setOtherUsers(filteredUsers);
         })
         .catch((error) => {
           console.log(error);
@@ -353,7 +359,7 @@ export default function UserRoles() {
                     </InputAdornment>
                   }
                   label="Search"
-                  onChange={handleUserSearch}
+                  onChange={(e)=>handleUserSearch(e)}
                   value={userSearchTerm}
                 />
               </FormControl>

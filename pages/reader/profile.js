@@ -9,6 +9,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useForm } from 'react-hook-form';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -44,6 +45,7 @@ const Profile = () => {
     const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
     const [openErrorAlert, setOpenErrorAlert] = useState(false);
     const [openMissMatchAlert, setOpenMissMatchAlert] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
  
     const handleSuccessAlertClose = () => {
         setOpenSuccessAlert(false);
@@ -180,6 +182,61 @@ const Profile = () => {
           }
     }
 
+    const deleteAccount = async() => { 
+        const userId = localStorage.getItem("userId");
+
+          if(userId == null){
+            alert("user is not valid");
+            return;
+          }
+      
+          try {
+            const response = await fetch(`http://localhost:3001/api/user/deactiveUser`, {
+              method: 'PATCH',
+              body: JSON.stringify({
+                userId:userId
+              }),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+      
+            if (response.ok) {
+                alert("Your Account is deleted");
+                
+                localStorage.removeItem("token");
+                localStorage.removeItem("type");
+                localStorage.removeItem("username");
+                localStorage.removeItem("email");
+                localStorage.removeItem("imgUrl");
+            
+                window.location.href = "/login";
+                
+            } else {
+                console.error('An error occurred:', error);
+                setOpenErrorAlert(true);
+            }
+          } catch (error) {
+            console.error('An error occurred:', error);
+            setOpenErrorAlert(true);
+            // Handle error
+          }
+    }
+
+    const handleConfirm = () => {
+        deleteAccount();
+        setIsModalOpen(false);
+      };
+    
+      const handleCancel = () => {
+        alert('You chose not to proceed.');
+        setIsModalOpen(false);
+      };
+    
+      const handleDeletion = () => {
+        setIsModalOpen(true);
+      };
+
     return (
         <>
             <Navbar />
@@ -279,6 +336,8 @@ const Profile = () => {
                             }}
                         />
                         <Button variant="contained" sx={{ marginTop: 4, width: '100%' }} onClick={sendFileToServer}>Save Changes</Button>
+                        <Button variant="contained" sx={{ marginTop: 2, width: '100%', backgroundColor: '#f44336' }} onClick={handleDeletion}>Delete Account</Button>
+                        <ConfirmModal isOpen={isModalOpen} onConfirm={handleConfirm} onCancel={handleCancel} />
                     </Box>
                 </Paper>
             </Container>
