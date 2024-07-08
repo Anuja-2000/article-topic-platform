@@ -22,6 +22,7 @@ const TextEditor = () => {
   const [coverImage, setCoverImage] = useState(
     parsedArticle.coverImage || null
   );
+  const [articleId, setArticleId] = useState(parsedArticle.id || "");
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const TextEditor = () => {
   };
 
   const handleUpdate = () => {
-    const articleId = articleName + "-" + uuidv4();
     const articleData = {
       userId: userId,
       title: articleName,
@@ -54,7 +54,7 @@ const TextEditor = () => {
 
     axios(config)
       .then((response) => {
-        alert("Article saved successfully");
+        alert("Article updated successfully");
         console.log("Article response: ", response.data);
       })
       .catch((error) => {

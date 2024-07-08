@@ -58,7 +58,7 @@ function SavedArticles() {
 
           setArticles(
             filteredArticles.map((article, index) => ({
-              id: article._id,
+              id: article.articleId,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
 
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
