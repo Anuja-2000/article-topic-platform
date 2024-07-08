@@ -1,5 +1,5 @@
 import ArticlesCard from "../../components/article/writer/ArticlesCard";
-import ArticlePopup from "../../components/article/writer/ArticlePopup";
+import ArticlePopup from "../../components/article/writer/ArticlePopupDraft";
 
 import {
   Box,

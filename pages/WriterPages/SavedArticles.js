@@ -54,6 +54,8 @@ function SavedArticles() {
             (article) => article.savedType === "saved"
           );
 
+          console.log("Filtered articles: ", filteredArticles);
+
           setArticles(
             filteredArticles.map((article, index) => ({
               id: article.articleId,
