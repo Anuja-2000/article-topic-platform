@@ -84,20 +84,39 @@ const ArticlePopup = ({ article, open, onClose }) => {
     });
   };
 
-  const handleMoveToTrash = () => {
+  const handleMoveToTrash = (articleId) => {
     setAlertConfig({
       title: "Move to Trash?",
       description:
         "Are you sure you want to move this article to trash? You can restore it within 30 days, after which it will be deleted automatically.",
-      onConfirm: () => {
-        // TODO: Implement move to trash logic here
-        console.log("Article moved to trash");
-        setAlertOpen(false);
-        handleClose();
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/articles/${articleId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              savedType: 'trashed',
+            }),
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to move article to trash');
+          }
+  
+          console.log("Article moved to trash");
+          setAlertOpen(false);
+          handleClose();
+        } catch (error) {
+          console.error('Error moving article to trash:', error);
+        }
       },
     });
     setAlertOpen(true);
   };
+  
+  
 
   const handleAlertClose = () => {
     setAlertOpen(false);
