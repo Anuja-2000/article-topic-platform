@@ -38,6 +38,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import CheckIcon from '@mui/icons-material/Check';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import GradingIcon from '@mui/icons-material/Grading';
+import DomainIcon from '@mui/icons-material/Domain';
 import AdminContext from '../contex/adminContex';
 
 const drawerWidth = 240;
@@ -120,6 +121,7 @@ export default function Navbar({children}) {
         'Deactivate Writers': <CheckIcon sx={{ color: 'white' }} />,
         'User Roles': <GroupIcon sx={{ color: 'white' }} />,
         'Reports': <AssessmentIcon sx={{ color: 'white' }} />,
+        'Article Domains': <DomainIcon sx={{ color: 'white' }} />,
       };
     const router = useRouter();
 const [selectedIndex, setSelectedIndex] = useState(0);
@@ -128,7 +130,7 @@ const [selectedIndex, setSelectedIndex] = useState(0);
 useEffect(() => {
   // Update the selected index whenever the route changes
   const path = router.pathname;
-  const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'ApproveArticles','DeactivateArticles', 'DeactivateWriters', 'UserRoles', 'Reports'].findIndex((text) => path.includes(text.replace(' ', '')));
+  const index = ['Dashboard', 'TopicDomains', 'Keywords','Topics', 'Flagged Topics', 'ApproveArticles','DeactivateArticles', 'DeactivateWriters', 'UserRoles', 'Reports', 'ArticleDomains'].findIndex((text) => path.includes(text.replace(' ', '')));
   setSelectedIndex(index);
 }, [router.pathname]); //only be executed if router.pathname changes between renders.
 
@@ -214,7 +216,7 @@ const handleListItemClick = (event, index) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Topic Domains', 'Keywords','Topics', 'Flagged Topics', 'Approve Articles', 'Deactivate Articles', 'Deactivate Writers', 'User Roles', 'Reports'].map((text, index) => (
+          {['Dashboard', 'Topic Domains', 'Keywords','Topics', 'Flagged Topics', 'Approve Articles', 'Deactivate Articles', 'Deactivate Writers', 'User Roles', 'Reports' , 'Article Domains'].map((text, index) => (
             <ListItem key={text} disablePadding  sx = {{display: 'block',':hover':{backgroundColor:'primary.dark'}}}>
               <Link href={`/AdminPages/${text.replace(' ', '')}`} passHref>
                 <ListItemButton
