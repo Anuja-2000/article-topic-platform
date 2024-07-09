@@ -293,7 +293,7 @@ const Settings = () => {
                     }}
                   >
                     <Typography variant="subtitle1" color="textSecondary">
-                      Join Date
+                      Joined Date
                     </Typography>
                     <Typography variant="body1">{userCreatedDate}</Typography>
                   </Paper>
@@ -309,7 +309,7 @@ const Settings = () => {
                     }}
                   >
                     <Typography variant="subtitle1" color="textSecondary">
-                      Articles Created
+                      Total Number of Articles Created
                     </Typography>
                     <Typography variant="body1">{articlesCount}</Typography>
                   </Paper>
