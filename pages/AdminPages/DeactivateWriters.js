@@ -236,9 +236,11 @@ const DeactivateWriters = () => {
       console.error("Error reactivating writer :", error);
     }
   };
+
   const handleCloseActivateConfirmation = () => {
     setShowActivateConfirmation(false);
   };
+  
   const handleWriterClick = (writerId) => {
     // Use router to navigate to writer profile page
     router.push(`/writer/${writerId}`);

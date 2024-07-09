@@ -21,7 +21,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import { useRouter } from 'next/router';
 import { Feedback } from '@mui/icons-material';
-
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 const TopicSuggestion = () => {
   const [topicDomains, setTopicDomains] = useState([]);
   const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
@@ -37,7 +37,7 @@ const TopicSuggestion = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [currentPage, setCurrentPage] = useState(0); // Track current page for topics
   const router = useRouter();
-
+  const [copiedTopicId, setCopiedTopicId] = useState(null);
   const steps = ['Select Topic Domain', 'Select Keywords', 'View Suggested Topics'];
 
   useEffect(() => {
@@ -105,15 +105,16 @@ const TopicSuggestion = () => {
     }
   };
 
-  const handleCopySelectedTopicNames = (topicName) => {
+  const handleCopySelectedTopicNames = (topicId, topicName) => {
     navigator.clipboard.writeText(topicName)
       .then(() => {
         setCopiedTopicMessage(`Topic: ${topicName} copied successfully`);
         setShowAlert(true);
-
+        setCopiedTopicId(topicId);
         setTimeout(() => {
           setShowAlert(false);
           setCopiedTopicMessage('');
+          setCopiedTopicId(null);
         }, 3000);
       })
       .catch((error) => console.error('Error copying selected topic name:', error));
@@ -152,8 +153,8 @@ const TopicSuggestion = () => {
                 {topic.description}
               </Typography>
             </div>
-            <IconButton onClick={() => handleCopySelectedTopicNames(topic.topicName)} style={{ marginLeft: 'auto' }}>
-              <ContentCopy />
+            <IconButton onClick={() => handleCopySelectedTopicNames(topic.topicId, topic.topicName)} style={{ marginLeft: 'auto' }}>
+            {copiedTopicId === topic.topicId ? <CheckOutlinedIcon /> : <ContentCopy />}
             </IconButton>
           </CardContent>
         </Card>
