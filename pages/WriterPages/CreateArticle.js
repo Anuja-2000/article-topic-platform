@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-
+import dynamic from "next/dynamic";
 import {
   Box,
-  Button,
-  Container,
   Stack,
-  SvgIcon,
   Typography,
-  Unstable_Grid2 as Grid,
+  Grid,
 } from "@mui/material";
-import dynamic from "next/dynamic";
 import Navbar from "../../components/createArticleNavbar";
+
 const TextEditor = dynamic(() => import("../../components/textEditor"), {
   ssr: false,
 });
@@ -37,45 +33,48 @@ function CreateArticles() {
     console.log(value);
     setEditorValue(value);
   };
+
   return (
-    <div>
+    <Box sx={{ display: 'flex' }}>
       <Navbar /> {/* WriterNavbar here */}
-      <div className="App" style={{ marginTop: "60px" }}>
-        <Stack spacing={3}>
-          <Stack direction="row" justifyContent="center" spacing={4}>
-            <Stack spacing={1}>
-              <Typography
-                variant="h4"
-                noWrap
-                component="div"
-                sx={{
-                  fontFamily: "Montserrat, sans-serif",
-                  fontWeight: 700,
-                  letterSpacing: ".3rem",
-                  color: "black",
-                  textDecoration: "none",
-                  paddingLeft: "10px",
-                  marginBottom: "30px",
-                }}
-              >
-                Write Article
-              </Typography>
-              <Stack alignItems="center" direction="row" spacing={1}></Stack>
-            </Stack>
-          </Stack>
-          <Stack direction="row" justifyContent="center" spacing={4}>
-            <Grid container spacing={3}>
-              {/* ( */}
-              {isQuillLoaded ? (
-                <TextEditor value={editorValue} onChange={handleEditorChange} />
-              ) : (
-                <p>Loading editor...</p>
-              )}
-            </Grid>
-          </Stack>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          marginTop: '60px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Stack spacing={3} alignItems="center" sx={{ width: '100%', maxWidth: '800px', textAlign: 'center' }}>
+          <Typography
+            variant="h4"
+            noWrap
+            component="div"
+            sx={{
+              fontFamily: "Montserrat, sans-serif",
+              fontWeight: 700,
+              letterSpacing: ".3rem",
+              color: "black",
+              textDecoration: "none",
+              marginBottom: "30px",
+            }}
+          >
+            <br></br>
+            <br></br>
+            Write Article
+          </Typography>
+          <Grid container spacing={3} justifyContent="center">
+            {isQuillLoaded ? (
+              <TextEditor value={editorValue} onChange={handleEditorChange} />
+            ) : (
+              <p>Loading Editor...</p>
+            )}
+          </Grid>
         </Stack>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

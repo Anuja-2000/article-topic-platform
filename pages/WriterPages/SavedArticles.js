@@ -48,17 +48,17 @@ function SavedArticles() {
           `http://localhost:3001/api/article/writer/${userid}`
         );
 
-        console.log("Response: ", response.data);
-
         if (response.data && response.data.success) {
 
           const filteredArticles = response.data.articles.filter(
             (article) => article.savedType === "saved"
           );
 
+          console.log("Filtered articles: ", filteredArticles);
+
           setArticles(
             filteredArticles.map((article, index) => ({
-              id: article._id,
+              id: article.articleId,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
 
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
@@ -119,7 +119,6 @@ function SavedArticles() {
               {/* Grid content */}
               {articles.map(
                 (article) => (
-                  console.log(article),
                   (
                     <ArticlesCard
                       article={article}

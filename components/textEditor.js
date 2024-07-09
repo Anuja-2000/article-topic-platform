@@ -176,7 +176,6 @@
 
 // export default TextEditor;
 
-
 import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import dynamic from "next/dynamic";
@@ -186,21 +185,22 @@ import { ARTICLE_ROUTES } from "../public/constants/routes";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import ArticleCoverImageUploader from "./ArticleCoverImageUploader";
-import ImageUploader from "./ImageUploader";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import { alpha } from "@mui/material/styles";
 import TemplateSelector from "./Templates/TemplateSelector";
 import Divider from "@mui/material/Divider";
 import { Typography } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const TextEditor = () => {
   const [text, setText] = useState("");
   const [articleName, setArticleName] = useState("");
+  const [selectedDomain, setSelectedDomain] = useState("");
+  const [domains, setDomains] = useState([]);
   const [userId, setUserId] = useState("");
-  const [images, setImages] = useState([]);
   const [coverImage, setCoverImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -210,6 +210,20 @@ const TextEditor = () => {
     if (!userId) {
       window.location.href = "/login";
     }
+  }, []);
+
+  useEffect(() => {
+    // Fetch article domains from the backend
+    const fetchDomains = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/topicDomains/get');
+        setDomains(response.data);
+      } catch (error) {
+        console.error("Failed to fetch domains", error);
+      }
+    };
+
+    fetchDomains();
   }, []);
 
   const handleChange = (value) => {
@@ -231,6 +245,7 @@ const TextEditor = () => {
       content: text,
       savedType: "saved",
       coverImage: coverImage,
+      domain: selectedDomain, 
     };
 
     console.log(articleData);
@@ -266,6 +281,7 @@ const TextEditor = () => {
       content: text,
       savedType: "draft",
       coverImage: coverImage,
+      domain: selectedDomain, 
     };
 
     const config = {
@@ -323,7 +339,6 @@ const TextEditor = () => {
   return (
     <div className={styles.textEditorArea}>
       <ArticleCoverImageUploader onImageUpload={handleCoverImageUpload} />
-      <ImageUploader onImagesChange={setImages} />
       <Divider />
       <div style={{ width: "100%", marginTop: "40px", marginBottom: "40px", textAlign: "left" }}>
         <Typography variant="h4" marginBottom={2} color={"primary.dark"} marginTop={2}>Choose a Template</Typography>
@@ -364,8 +379,27 @@ const TextEditor = () => {
           },
         }}
       />
+
+      <FormControl fullWidth margin="normal">
+        <InputLabel id="domain-label">Article Domain</InputLabel>
+        <Select
+          labelId="domain-label"
+          id="domain-select"
+          value={selectedDomain}
+          label="Article Domain"
+          onChange={(e) => setSelectedDomain(e.target.value)}
+        >
+          {domains.map((domain) => (
+            <MenuItem key={domain._id} value={domain.topicDomainName}>
+              {domain.topicDomainName}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
       <br />
       <br />
+
       {loading ? (
         <CircularProgress />
       ) : (
@@ -373,11 +407,7 @@ const TextEditor = () => {
           <Button variant="contained" color="primary" onClick={handleSave}>
             Save Article
           </Button>{" "}
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleSaveAsDraft}
-          >
+          <Button variant="contained" color="secondary" onClick={handleSaveAsDraft}>
             Save As Draft
           </Button>
         </>
