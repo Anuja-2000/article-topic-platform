@@ -270,7 +270,6 @@ const handleConfirmReApprove = async () => {
         await axios.patch(`http://localhost:3001/api/article/approveArticles/${deleteTargetId}`, axiosConfig);
         console.log("article Id",deleteTargetId);
         console.log("adminId",localStorage.getItem("userId"));
-        console.log(axiosConfigApproval);
         const response = await axios.post(`http://localhost:3001/api/approval/save`, {
             articleId: deleteTargetId,
             adminId: localStorage.getItem("userId"),
