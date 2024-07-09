@@ -1,5 +1,5 @@
 import ArticlesCard from "../../components/article/writer/ArticlesCard";
-import ArticlePopup from "../../components/article/writer/ArticlePopup";
+import ArticlePopup from "../../components/article/writer/ArticlePopupTrash";
 
 import {
   Box,
@@ -44,7 +44,6 @@ function Trash() {
           `http://localhost:3001/api/article/writer/${userid}`
         );
 
-        console.log("Response: ", response.data);
 
         if (response.data && response.data.success) {
 
@@ -54,7 +53,7 @@ function Trash() {
 
           setArticles(
             filteredArticles.map((article, index) => ({
-              id: article._id,
+              id: article.articleId,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
               description: article.content,
@@ -98,7 +97,6 @@ function Trash() {
               {/* Grid content */}
               {articles.map(
                 (article) => (
-                  console.log(article),
                   (
                     <ArticlesCard
                       article={article}

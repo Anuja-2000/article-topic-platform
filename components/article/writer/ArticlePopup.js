@@ -111,7 +111,8 @@ const ArticlePopup = ({ article, open, onClose }) => {
             }
           );
           console.log("Response from server:", response);
-          alert("Article deleted successfully!");
+          alert("Article moved to trash!");
+          window.location.reload();
         } catch (error) {
           console.error("Error saving article:", error);
           alert(
@@ -122,6 +123,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
     });
     setAlertOpen(true);
   };
+  
   const handleSendToAdmin = async (article) => {
     console.log("Article in popup: ", article);
 
@@ -143,7 +145,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
         }
       );
       console.log("Response from server:", response);
-      alert("Article updated successfully!");
+      alert("Article sent for admin approval");
     } catch (error) {
       console.error("Error updating article:", error);
       alert(

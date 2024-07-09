@@ -76,27 +76,16 @@ const ArticlePopup = ({ article, open, onClose }) => {
     setAnchorEl(null);
   };
 
-  const handleEdit = () => {
-    router.push({
-      pathname: "/WriterPages/EditArticle",
-      query: {
-        article: JSON.stringify(article),
-      },
-    });
-  };
-
-  const handleMoveToTrash = (article) => 
-  {
+  const handleMoveToSaved = (article) => {
     setAlertConfig({
-      title: "Move to Trash?",
-      description:
-        "Are you sure you want to move this article to trash? You can restore it within 30 days, after which it will be deleted automatically.",
+      title: "Move to Saved?",
+      description: "Are you sure you want to move this article to Saved?",
       onConfirm: async () => {
         setAlertOpen(false);
         handleClose();
         const articledata = {
           articleId: article.id,
-          savedType: "trashed",
+          savedType: "saved",
         };
 
         console.log("Article data: ", articledata);
@@ -112,47 +101,93 @@ const ArticlePopup = ({ article, open, onClose }) => {
             }
           );
           console.log("Response from server:", response);
-          alert("Article moved to trash!");
+          alert("Article moved successfully!");
           window.location.reload();
         } catch (error) {
           console.error("Error saving article:", error);
           alert(
-            "Failed to save article. Please check your network and try again."
+            "Failed to move article. Please check your network and try again."
           );
         }
       },
     });
     setAlertOpen(true);
-    
   };
 
-  const SaveArticle = async (article) => {
-    console.log("Article in popup: ", article);
+  const handleMoveToDraft = (article) => {
+    setAlertConfig({
+      title: "Move to Draft?",
+      description: "Are you sure you want to move this article to draft?.",
+      onConfirm: async () => {
+        setAlertOpen(false);
+        handleClose();
+        const articledata = {
+          articleId: article.id,
+          savedType: "draft",
+        };
 
-    const articledata = {
-      articleId: article.id,
-      savedType: "saved",
-    };
+        console.log("Article data MoveToDraft: ", articledata);
 
-    console.log("Article data: ", articledata);
-
-    try {
-      const response = await axios.patch(
-        `http://localhost:3001/api/article/update/savedType`,
-        articledata,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+        try {
+          const response = await axios.patch(
+            `http://localhost:3001/api/article/update/savedType`,
+            articledata,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("Response from server:", response);
+          alert("Article moved successfully!");
+          window.location.reload();
+        } catch (error) {
+          console.error("Error saving article:", error);
+          alert(
+            "Failed to move article. Please check your network and try again."
+          );
         }
-      );
-      console.log("Response from server:", response);
-      alert("Article saved successfully!");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error saving article:", error);
-      alert("Failed to save article. Please check your network and try again.");
-    }
+      },
+    });
+    setAlertOpen(true);
+  };
+
+  const DeleteArticle = (article) => {
+    setAlertConfig({
+      title: "Delete Permenently?",
+      description: "Are you sure you want to delete this article permently?",
+      onConfirm: async () => {
+        setAlertOpen(false);
+        handleClose();
+        const articledata = {
+          articleId: article.id,
+          savedType: "deleted",
+        };
+
+        console.log("Article data deleted: ", articledata);
+
+        try {
+          const response = await axios.patch(
+            `http://localhost:3001/api/article/update/savedType`,
+            articledata,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("Response from server:", response);
+          alert("Article Deleted!");
+          window.location.reload();
+        } catch (error) {
+          console.error("Error saving article:", error);
+          alert(
+            "Failed to delete article. Please check your network and try again."
+          );
+        }
+      },
+    });
+    setAlertOpen(true);
   };
 
   const handleAlertClose = () => {
@@ -210,22 +245,18 @@ const ArticlePopup = ({ article, open, onClose }) => {
           open={openMenu}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleEdit} disableRipple>
-            <EditIcon />
-            Edit
-          </MenuItem>
-          <MenuItem onClick={() => handleMoveToTrash(article)} disableRipple>
+          <MenuItem onClick={() => handleMoveToDraft(article)} disableRipple>
             <DeleteIcon />
-            Move to Trash
+            Restore as draft
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            <FileCopyIcon />
-            Duplicate
+          <MenuItem onClick={() => handleMoveToSaved(article)} disableRipple>
+            <DeleteIcon />
+            Restore as saved
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={() => SaveArticle(article)} disableRipple>
-            <FileCopyIcon />
-            Save
+          <MenuItem onClick={() => DeleteArticle(article)} disableRipple>
+            <DeleteIcon />
+            Delete Permenently
           </MenuItem>
         </StyledMenu>
       </DialogContent>
