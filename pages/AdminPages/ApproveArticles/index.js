@@ -160,7 +160,7 @@ export default function ApproveArticles() {
                       )
                       .map((article) => (
                         <TableRow
-                          key={article.id}
+                          key={article.articleId}
                           sx={{
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
