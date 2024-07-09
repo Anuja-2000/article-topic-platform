@@ -349,6 +349,8 @@ function Keywords() {
                       variant="outlined"
                       value={keywordName}
                       onChange={(e) => setKeywordName(e.target.value)}
+                      /* Commented out due to When more than 5 keywords adding , there was an error from the backend and adding function not worked*/
+                      //onChange={(e) => handleKeywordNameChange(e)}
                       error={keywordNameError}
                       style={{ marginRight: "10px" }}
                     />
