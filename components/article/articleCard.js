@@ -45,11 +45,11 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center">
             <Avatar
-              alt={writer}
-              src={imgUrl}
+              alt={writer.toUpperCase()}
+              src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"}
               style={{ width: '30px', height: '30px', marginRight: '8px' }}
             />
-            <Typography color="text.primary" variant="subtitle1" style={{ fontWeight: 600, fontSize: 12 }}>
+            <Typography color="text.primary" variant="subtitle1" style={{ fontWeight: 600, fontSize: 12, height:20,marginRight:5 }}>
               {writer}
             </Typography>
           </Box>

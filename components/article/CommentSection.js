@@ -47,7 +47,7 @@ const CommentSection = ({ articleId }) => {
     } else {
       setUsername(" ");
     }
-    setuserImg("/path/to/profile.jpg");
+    setuserImg(userImg);
     fetchData();
   }, [artId]);
 
@@ -180,7 +180,7 @@ const CommentSection = ({ articleId }) => {
     {userId!=="" && <CommentForm style={{ marginTop: '16px' }}>
         <Grid container spacing={2}>
           <Grid item>
-            <Avatar alt={username.toUpperCase()} src="/path/to/profile.jpg" />
+            <Avatar alt={username.toUpperCase()} src={userImg!=""?userImg:"/path/to/profile.jpg"} />
           </Grid>
           <Grid item xs>
             <OutlinedInput
