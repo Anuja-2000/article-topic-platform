@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
+import SendIcon from '@mui/icons-material/Send';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
@@ -146,6 +147,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
       );
       console.log("Response from server:", response);
       alert("Article sent for admin approval");
+      window.location.reload();
     } catch (error) {
       console.error("Error updating article:", error);
       alert(
@@ -220,13 +222,9 @@ const ArticlePopup = ({ article, open, onClose }) => {
             <DeleteIcon />
             Move to Trash
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            <FileCopyIcon />
-            Duplicate
-          </MenuItem>
           <Divider sx={{ my: 0.5 }} />
           <MenuItem onClick={() => handleSendToAdmin(article)} disableRipple>
-            <FileCopyIcon />
+            <SendIcon />
             Send to Admin
           </MenuItem>
         </StyledMenu>

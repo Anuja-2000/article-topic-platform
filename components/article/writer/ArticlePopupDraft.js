@@ -124,6 +124,38 @@ const ArticlePopup = ({ article, open, onClose }) => {
     setAlertOpen(true);
   };
 
+  const handleDuplicate = (article) => {
+    setAlertConfig({
+      title: "Duplicate?",
+      description:
+        "Are you sure you want to duplicate this article? This will create a new article with the same content.",
+      onConfirm: async () => {
+        setAlertOpen(false);
+        handleClose();
+
+        try {
+          const response = await axios.post(
+            `http://localhost:3001/api/article/duplicate/${article.id}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("duplicate response from server:", response);
+          alert("Article duplicated!");
+          window.location.reload();
+        } catch (error) {
+          console.log("Error duplicate article:", error);
+          alert(
+            "Failed to duplicate article. Please check your network and try again."
+          );
+        }
+      },
+    });
+    setAlertOpen(true);
+  };
+
   const SaveArticle = async (article) => {
     console.log("Article in popup: ", article);
 
@@ -219,7 +251,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
             <DeleteIcon />
             Move to Trash
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem onClick={()=>handleDuplicate(article)} disableRipple>
             <FileCopyIcon />
             Duplicate
           </MenuItem>

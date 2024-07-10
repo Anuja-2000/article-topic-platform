@@ -56,6 +56,9 @@ const TextEditor = () => {
       .then((response) => {
         alert("Article updated successfully");
         console.log("Article response: ", response.data);
+
+        // router back
+        router.back();
       })
       .catch((error) => {
         alert("Failed to save article: " + error.message);

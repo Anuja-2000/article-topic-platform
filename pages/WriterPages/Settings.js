@@ -576,7 +576,7 @@ const Settings = () => {
     localStorage.removeItem("email");
     localStorage.removeItem("imgUrl");
 
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (

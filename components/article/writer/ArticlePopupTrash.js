@@ -7,7 +7,8 @@ import MenuItem from "@mui/material/MenuItem";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
+import RestoreIcon from '@mui/icons-material/Restore';
+import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import AlertDialog from "../../..//pages/WriterPages/AlertDialog";
@@ -249,11 +250,11 @@ const ArticlePopup = ({ article, open, onClose }) => {
           onClose={handleClose}
         >
           <MenuItem onClick={() => handleMoveToDraft(article)} disableRipple>
-            <DeleteIcon />
+            <RestoreIcon />
             Restore as draft
           </MenuItem>
           <MenuItem onClick={() => handleMoveToSaved(article)} disableRipple>
-            <DeleteIcon />
+            <ModelTrainingIcon />
             Restore as saved
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
