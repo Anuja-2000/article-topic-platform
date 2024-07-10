@@ -85,7 +85,8 @@ const ArticlePopup = ({ article, open, onClose }) => {
     });
   };
 
-  const handleMoveToTrash = (article) => {
+  const handleMoveToTrash = (article) => 
+  {
     setAlertConfig({
       title: "Move to Trash?",
       description:
@@ -121,20 +122,22 @@ const ArticlePopup = ({ article, open, onClose }) => {
       },
     });
     setAlertOpen(true);
+    
   };
-  const handleSendToAdmin = async (article) => {
+
+  const SaveArticle = async (article) => {
     console.log("Article in popup: ", article);
 
     const articledata = {
       articleId: article.id,
-      status: "pending",
+      savedType: "saved",
     };
 
     console.log("Article data: ", articledata);
 
     try {
       const response = await axios.patch(
-        `http://localhost:3001/api/article/update/status`,
+        `http://localhost:3001/api/article/update/savedType`,
         articledata,
         {
           headers: {
@@ -143,12 +146,10 @@ const ArticlePopup = ({ article, open, onClose }) => {
         }
       );
       console.log("Response from server:", response);
-      alert("Article updated successfully!");
+      alert("Article saved successfully!");
     } catch (error) {
-      console.error("Error updating article:", error);
-      alert(
-        "Failed to update article. Please check your network and try again."
-      );
+      console.error("Error saving article:", error);
+      alert("Failed to save article. Please check your network and try again.");
     }
   };
 
@@ -220,9 +221,9 @@ const ArticlePopup = ({ article, open, onClose }) => {
             Duplicate
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={() => handleSendToAdmin(article)} disableRipple>
+          <MenuItem onClick={() => SaveArticle(article)} disableRipple>
             <FileCopyIcon />
-            Send to Admin
+            Save
           </MenuItem>
         </StyledMenu>
       </DialogContent>

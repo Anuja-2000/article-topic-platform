@@ -31,6 +31,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 // Columns for the table
 const columns = [
   { id: 'title', label: 'Article Name', minWidth: 170 },
+  { id: 'domain', label: 'Article Domain', minWidth: 170 },
   { id: 'createdDate', label: 'Created Date', minWidth: 170, align: 'right' },
   { id: 'createdTime', label: 'Created Time', minWidth: 170, align: 'right' },
   { id: 'status', label: 'Status', minWidth: 170, align: 'right' },
