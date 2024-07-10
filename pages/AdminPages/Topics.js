@@ -392,8 +392,25 @@ function Topics() {
         // Fetch data filtered by both topic domain and keyword
         responseData = await api.get(`http://localhost:3001/api/topics/get/${filterSelectedTopicDomain}/${filterSelectedKeyword}`, axiosConfig);
       }
-
-      setData(responseData.data); // Update the data
+      let updatedData = [];
+      if (Array.isArray(responseData.data)) {
+        // If responseData.data is already an array, use it directly
+        updatedData = responseData.data;
+      } else {
+        // Otherwise, it's an object with keys, so flatten it into an array of topics
+        updatedData = Object.values(responseData.data).flatMap(array => array);
+      }
+  
+      // Extract only necessary fields from each topic
+      const topicsArray = updatedData.map(topic => ({
+        topicId: topic.topicId,
+        topicName: topic.topicName,
+        description: topic.description
+      }));
+      const sortedData = topicsArray.sort((a, b) => a.topicName.localeCompare(b.topicNameName));
+      setData(sortedData); // Update the data with mapped topics
+      //setData(responseData.data.data); // Update the data
+      console.log("data", data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -550,12 +567,13 @@ function Topics() {
                     {data.length == 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} align="center">
-
+                           No data
                         </TableCell>
                       </TableRow>
                     ) : (
 
-                      data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                      data
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                         <TableRow key={row.topicId}>
                           <TableCell sx={{ fontWeight: 'bold' }}>
                             {editingRowId === row.topicId ? (

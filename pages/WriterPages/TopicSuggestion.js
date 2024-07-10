@@ -134,7 +134,7 @@ const TopicSuggestion = () => {
       topics.push(...searchResults[keyword]);
     });
 
-    const topicsPerPage = 2;
+    const topicsPerPage = 5;
     const pageCount = Math.ceil(topics.length / topicsPerPage);
 
     if (topics.length === 0) {
