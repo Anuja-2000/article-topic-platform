@@ -554,7 +554,10 @@ const Settings = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/user/${userId}`);
+      const response = await axios.delete(
+        `http://localhost:3001/api/user/deleteUser/${userId}`
+      );
+      console.log(response);
       alert("Account deleted successfully!");
       handleLogout();
     } catch (error) {
