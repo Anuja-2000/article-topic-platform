@@ -489,20 +489,28 @@ const Settings = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedProfilePicture = localStorage.getItem("profilePicture");
-      if (savedProfilePicture) {
-        setPreview(savedProfilePicture);
+    function pfpLoad() {
+      if (typeof window !== "undefined") {
+        const savedProfilePicture = localStorage.getItem(
+          `profilePicture-${userId}`
+        );
+        if (savedProfilePicture) {
+          setPreview(savedProfilePicture);
+        }
       }
     }
-  }, []);
+
+    if (userId) {
+      pfpLoad();
+    }
+  }, [userId]);
 
   const handleProfilePictureChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       resizeImage(file, 150, 150, (base64String) => {
         setPreview(base64String);
-        localStorage.setItem("profilePicture", base64String); // Save base64 string to localStorage
+        localStorage.setItem(`profilePicture-${userId}`, base64String); // Save base64 string to localStorage
         setIsSaveButtonEnabled(true); // Enable save button when profile picture is changed
       });
     }
@@ -733,7 +741,8 @@ const ConfirmationDialog = ({ open, onClose, onConfirm }) => {
       <DialogTitle>Confirm Account Deletion</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete your account? This action cannot be undone.
+          Are you sure you want to delete your account? This action cannot be
+          undone.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
