@@ -39,7 +39,7 @@
 //     const fetchArticles = async () => {
 //       try {
 //         const response = await axios.get(
-//           `http://localhost:3001/api/article/count/${userId}`
+//           `https://article-writing-backend.onrender.com/api/article/count/${userId}`
 //         );
 //         console.log("Articles count:", response.data);
 //         setArticlesCount(response.data);
@@ -60,7 +60,7 @@
 //     const fetchUser = async () => {
 //       try {
 //         const response = await axios.get(
-//           `http://localhost:3001/api/user/${userId}`
+//           `https://article-writing-backend.onrender.com/api/user/${userId}`
 //         );
 //         console.log("User data:", response.data);
 //         const { email, savedAt, type, imgUrl } = response.data;
@@ -158,7 +158,7 @@
 //     console.log("Profile data:", profileData);
 //     try {
 //       const response = axios.patch(
-//         `http://localhost:3001/api/user/update`,
+//         `https://article-writing-backend.onrender.com/api/user/update`,
 //         profileData
 //       );
 //       console.log(response);
@@ -530,7 +530,7 @@ const Settings = () => {
     console.log("Profile data:", profileData);
     try {
       const response = await axios.patch(
-        `http://localhost:3001/api/user/update`,
+        `https://article-writing-backend.onrender.com/api/user/update`,
         profileData
       );
       console.log(response);
@@ -555,7 +555,7 @@ const Settings = () => {
   const handleConfirmDelete = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:3001/api/user/deleteUser/${userId}`
+        `https://article-writing-backend.onrender.com/api/user/deleteUser/${userId}`
       );
       console.log(response);
       alert("Account deleted successfully!");

@@ -135,7 +135,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
 
         try {
           const response = await axios.post(
-            `http://localhost:3001/api/article/duplicate/${article.id}`,
+            `https://article-writing-backend.onrender.com/api/article/duplicate/${article.id}`,
             {
               headers: {
                 "Content-Type": "application/json",

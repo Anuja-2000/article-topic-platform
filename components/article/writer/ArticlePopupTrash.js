@@ -93,7 +93,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
 
         try {
           const response = await axios.patch(
-            `http://localhost:3001/api/article/update/savedType`,
+            `https://article-writing-backend.onrender.com/api/article/update/savedType`,
             articledata,
             {
               headers: {
@@ -131,7 +131,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
 
         try {
           const response = await axios.patch(
-            `http://localhost:3001/api/article/update/savedType`,
+            `https://article-writing-backend.onrender.com/api/article/update/savedType`,
             articledata,
             {
               headers: {
@@ -169,7 +169,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
 
         try {
           const response = await axios.patch(
-            `http://localhost:3001/api/article/update/savedType`,
+            `https://article-writing-backend.onrender.com/api/article/update/savedType`,
             articledata,
             {
               headers: {

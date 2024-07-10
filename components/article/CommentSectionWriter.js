@@ -56,7 +56,7 @@ const CommentSection = ({ articleId }) => {
   const fetchData = async () => {
     if (!artId) return;
     try {
-      const response = await fetch(`http://localhost:3001/api/comment/get`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/comment/get`, {
         method: "POST",
         body: JSON.stringify({
           id: artId,
@@ -102,7 +102,7 @@ const CommentSection = ({ articleId }) => {
 
   const DeleteComment = async (commentId) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/comment/delete`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/comment/delete`, {
         method: "DELETE",
         headers: {
           id: commentId,
@@ -118,7 +118,7 @@ const CommentSection = ({ articleId }) => {
 
   const addComment = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/comment/save`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/comment/save`, {
         method: "POST",
         body: JSON.stringify({
           comId: commentId,
@@ -141,7 +141,7 @@ const CommentSection = ({ articleId }) => {
   const updateComment = async () => {
     try {
       console.log(updateCommentID);
-      const response = await fetch(`http://localhost:3001/api/comment/update`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/comment/update`, {
         method: "PUT",
         body: JSON.stringify({
           comId: updateCommentID,
