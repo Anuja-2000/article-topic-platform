@@ -307,12 +307,8 @@ function Reports() {
       .then((res) => {
         let temp = [];
         let countData = [];
-        let obj = {
-          domain: "Technical",
-          count: 0,
-        }
         res.data.forEach((item) => {
-          if (item.domain != null) {
+          if (item.domain != "") {
             temp.push(item.domain);
             countData.push({
               domain: item.domain,
@@ -553,6 +549,7 @@ function Reports() {
                   <BarChart
                     width={250}
                     height={300}
+                    borderRadius={10}
                     series={[
                       {
                         data: usersCount,
@@ -580,7 +577,7 @@ function Reports() {
                     dataset={domainCountData}
                     width={800}
                     height={300}
-                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain" }]}
+                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain", tickLabelStyles: { fontSize: 5}}]}
                     series={[
                       { dataKey: "count", label: "Count", color: "#0080FE" },
                     ]}
