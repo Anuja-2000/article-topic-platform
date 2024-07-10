@@ -4,6 +4,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import  { Alert } from '@mui/material';
+import { AlertTitle } from '@mui/material';
 const TopicSuggestionFeedback = () => {
   const router = useRouter();
   const [searchResults, setSearchResults] = useState([]);
@@ -117,6 +119,12 @@ const TopicSuggestionFeedback = () => {
     );
   };
   const handleSubmit = async () => {
+    
+   let formValid = false;
+   formValid = searchResults.every(result => {
+      return (result.relevant || result.irrelevant) && (!result.irrelevant || result.reason.trim() !== '');
+    });
+  
     try {
       const irrelevantTopics = searchResults.filter((result) => result.irrelevant);
       const relevantTopics = searchResults.filter((result) => result.relevant);
@@ -126,7 +134,11 @@ const TopicSuggestionFeedback = () => {
         alert('Please provide a reason for all irrelevant topics.');
         return;
       }
-
+      console.log(" isFormValid in submit", formValid);
+      if (!formValid) {
+        alert("Please mark each topic relevant or irrelevant.");
+        return;
+      }
       // Save irrelevant topics as flagged topics
       await Promise.all(
         irrelevantTopics.map(async (topic) => {
@@ -231,15 +243,18 @@ const TopicSuggestionFeedback = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                <Button variant="contained" color="primary" onClick={handleSubmit} style={{ marginTop: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '6px' }}>
+                <Button variant="contained" color="primary" onClick={handleSubmit} style={{ marginTop: '20px' }}   >
                   Submit
                 </Button>
+                </div>
               </div>) :
               <Typography variant="h6" align='center' color={"error"} marginTop={2} >No generated Topics to display</Typography>}
             {showFeedbackSuccessfulAlert && (
-              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
-                Thank you for your feedback!. We will redirect You to Dashboard.
-              </div>
+              <Alert severity="success" style={{ marginTop: '10px' }}>
+              <AlertTitle>Thank you for your feedback!.</AlertTitle>
+               We will redirect You to Dashboard.
+            </Alert>
             )}
           </div>
         </Grid>

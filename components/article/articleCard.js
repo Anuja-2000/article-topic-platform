@@ -40,7 +40,7 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
   
   
   return (
-    <Card style={{ border: '1px solid #ddd', borderRadius: '8px', width: 300, height: '100%', backgroundColor: '#f5f5f5', margin: '10px' }}>
+    <Card style={{ border: '1px solid #ddd', borderRadius: '10px', width: 300, height: '100%', backgroundColor: '#f5f5f5', margin: '10px' }}>
       <CardContent>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center">
@@ -57,21 +57,21 @@ const ArticleCard = ({ title, updatedAt ,coverImage,userId, tags }) => {
             {createdDate}
           </Typography>
         </Box>
-        <Typography variant="h6" component="div" style={{ marginTop: '12px', fontWeight: 700,fontSize: 20 }}>
+        <Typography variant="h6" component="div" style={{ marginTop: '10px', fontWeight: 700,fontSize: 20, height:45 }}>
           {title}
         </Typography>
-        <Box marginTop="10px">
+        {/*<Box marginTop="10px">
           {tags.map((tag, index) => (
             <Chip key={index} label={tag} size="small" style={{ marginRight: '8px', backgroundColor: '#f6e58d'}} />
           ))}
-        </Box>
+        </Box>*/}
       </CardContent>
       <CardMedia
         component="img"
         height="160"
         src={`${coverImage != null ?(coverImage):''}`}
         alt={title}
-        style={{ marginBottom: '0px', borderRadius: '4px' }}
+        style={{ marginTop: '4px', borderRadius: '5px', height:200 }}
       />
       </Card>
   );

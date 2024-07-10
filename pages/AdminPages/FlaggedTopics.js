@@ -13,11 +13,14 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from '@mui/material/DialogActions';
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 const FlaggedTopics = () => {
     const [uniqueTopics, setUniqueTopics] = useState([]);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState(null);
     const [deleteSuccessfulAlertOpen, setDeleteSuccessfulAlertOpen] = useState(false);
+    const [ignoreSuccessfulAlertOpen, setIgnoreSuccessfulAlertOpen] = useState(false);
     const [showDeleteIgnoreConfirmation, setShowDeleteIgnoreConfirmation] = useState(false);
 
     useEffect(() => {
@@ -98,9 +101,9 @@ const FlaggedTopics = () => {
             // Update the state to remove the ignored topic from the UI
             setUniqueTopics(uniqueTopics.filter(item => item.topicId !== deleteTargetId));
             setShowDeleteIgnoreConfirmation(false);
-            setDeleteSuccessfulAlertOpen(true);
+            setIgnoreSuccessfulAlertOpen(true);
             setTimeout(() => {
-                setDeleteSuccessfulAlertOpen(false);
+                setIgnoreSuccessfulAlertOpen(false);
             }, 20000);
         } catch (error) {
             console.error("Error ignoring flagged topic:", error);
@@ -149,28 +152,35 @@ const FlaggedTopics = () => {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-
-                                                {uniqueTopics.map(topic => (
-                                                    <TableRow key={topic.topicId}>
-                                                        <TableCell>{topic.topicName}</TableCell>
-                                                        <TableCell>{topic.keywordName}</TableCell>
-                                                        <TableCell>{topic.topicDomainName}</TableCell>
-                                                        <TableCell>
-                                                            <ul>
-                                                                {topic.reasons?.map((reason, index) => (
-                                                                    <li key={index}>{reason}</li>
-                                                                ))}
-                                                            </ul>
-                                                        </TableCell>
-                                                        <TableCell>{topic.count}</TableCell>
-                                                        <TableCell>
-                                                            <Box sx={{ display: 'flex', gap: '8px' }}>
-                                                                <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(topic.topicId)}>Delete</Button>
-                                                                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleIgnoreClick(topic.topicId)}>Ignore</Button>
-                                                            </Box>
+                                                {uniqueTopics.length == 0 ? (
+                                                    <TableRow>
+                                                        <TableCell colSpan={6} align="center">
+                                                                No data
                                                         </TableCell>
                                                     </TableRow>
-                                                ))}
+                                                ) : (
+                                                        uniqueTopics.map(topic => (
+                                                            <TableRow key={topic.topicId}>
+                                                                <TableCell>{topic.topicName}</TableCell>
+                                                                <TableCell>{topic.keywordName}</TableCell>
+                                                                <TableCell>{topic.topicDomainName}</TableCell>
+                                                                <TableCell>
+                                                                    <ul>
+                                                                        {topic.reasons?.map((reason, index) => (
+                                                                            <li key={index}>{reason}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </TableCell>
+                                                                <TableCell>{topic.count}</TableCell>
+                                                                <TableCell>
+                                                                    <Box sx={{ display: 'flex', gap: '8px' }}>
+                                                                        <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(topic.topicId)}>Delete</Button>
+                                                                        <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleIgnoreClick(topic.topicId)}>Ignore</Button>
+                                                                    </Box>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )))
+                                                    }
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
@@ -178,9 +188,16 @@ const FlaggedTopics = () => {
                             </Grid>
                         </Grid>
                         {deleteSuccessfulAlertOpen && (
-                            <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                            <Alert severity="success" style={{ marginTop: '10px' }}>
+                                <AlertTitle>Successful message</AlertTitle>
                                 Topic deleted successfully.
-                            </div>
+                            </Alert>
+                        )}
+                        {ignoreSuccessfulAlertOpen && (
+                            <Alert severity="success" style={{ marginTop: '10px' }}>
+                                <AlertTitle>Successful message</AlertTitle>
+                                Topic ignored successfully.
+                            </Alert>
                         )}
                     </div>
                 </Navbar>

@@ -8,41 +8,43 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Navbar from "../../components/createArticleNavbar";
-import Image from 'next/image';
-import searchTopicImage from '../../public/asset/searchTopicImage.jpg';
 import ContentCopy from '@mui/icons-material/ContentCopy';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Link from "next/link"
-import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
-
+import Divider from "@mui/material/Divider";
+import { Stepper, Step, StepLabel } from '@mui/material';
+import AssistantIcon from '@mui/icons-material/Assistant';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import { useRouter } from 'next/router';
+import { Feedback } from '@mui/icons-material';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 const TopicSuggestion = () => {
   const [topicDomains, setTopicDomains] = useState([]);
-  //selectedTopicDomain is a ID
   const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
   const [keywords, setKeywords] = useState([]);
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [searchResults, setSearchResults] = useState({});
   const [searchClicked, setSearchClicked] = useState(false);
-
-
-  const [selectedSearchResult, setSelectedSearchResult] = useState(null);
-
-  const [copiedTopic, setCopiedTopic] = useState('');
+  const [copiedTopicMessage, setCopiedTopicMessage] = useState('');
+  const [activeStep, setActiveStep] = useState(0);
+  const [showAlertMessage, setShowAlertMessage] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [hoveredDomain, setHoveredDomain] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(0); // Track current page for topics
   const router = useRouter();
-
+  const [copiedTopicId, setCopiedTopicId] = useState(null);
+  const steps = ['Select Topic Domain', 'Select Keywords', 'View Suggested Topics'];
 
   useEffect(() => {
     const fetchTopicDomains = async () => {
       try {
         const response = await axios.get('https://article-writing-backend.onrender.com/api/topicDomains/get');
         setTopicDomains(response.data);
-        console.log("TopicDomains",topicDomains)
       } catch (error) {
         console.error('Error fetching topic domains:', error);
       }
@@ -51,12 +53,27 @@ const TopicSuggestion = () => {
     fetchTopicDomains();
   }, []);
 
+  const handleNext = () => {
+    if (activeStep === 0 && !selectedTopicDomain) {
+      setAlertMessage('Please select a topic domain.');
+      setShowAlertMessage(true);
+    } else if (activeStep === 1 && selectedKeywords.length === 0) {
+      setAlertMessage('Please select at least one keyword.');
+      setShowAlertMessage(true);
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setShowAlertMessage(false);
+    }
+  };
 
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setShowAlertMessage(false);
+  };
 
   const handleTopicDomainChange = async (event) => {
-    setSelectedKeywords('');
+    setSelectedKeywords([]);
     const selectedDomain = event.target.value;
-    console.log("selectedDomain", selectedDomain)
     setSelectedTopicDomain(selectedDomain);
     try {
       const response = await axios.get(`https://article-writing-backend.onrender.com/api/keywords/get/${selectedDomain}`);
@@ -85,192 +102,284 @@ const TopicSuggestion = () => {
       console.log("searchResults", response.data);
       setSearchResults(response.data);
       setSearchClicked(true);
+      handleNext();
     } catch (error) {
       console.error('Error fetching search results:', error);
     }
   };
-  const handleSelectSearchResult = (resultId) => {
-    setSelectedSearchResult(resultId);
-  };
 
-  const handleCopySelectedTopicNames = (topicName) => {
+  const handleCopySelectedTopicNames = (topicId, topicName) => {
     navigator.clipboard.writeText(topicName)
       .then(() => {
-        console.log('Selected topic name copied:', topicName);
-        setCopiedTopic(topicName);
+        setCopiedTopicMessage(`Topic: ${topicName} copied successfully`);
         setShowAlert(true);
-
+        setCopiedTopicId(topicId);
         setTimeout(() => {
           setShowAlert(false);
-          setCopiedTopic('');
+          setCopiedTopicMessage('');
+          setCopiedTopicId(null);
         }, 3000);
       })
       .catch((error) => console.error('Error copying selected topic name:', error));
   };
 
-
   const handleFeedback = () => {
-    // Pass searchResults to feedback page
     router.push({
       pathname: '/WriterPages/TopicSuggestionFeedback',
       query: { searchResults: JSON.stringify(searchResults) },
     });
   };
 
-  return (
 
-    <div>
-      <Navbar >
-        <Typography variant="h4" marginBottom={2} color={"primary.dark"} marginTop={2}>Topics Suggestion for Your Articles </Typography>
-        <Typography variant="body1" marginBottom={2} color={"primary.dark"} marginTop={2}>  According to  a Topic Domain and  a keyword </Typography>
+  const renderTopics = () => {
+    const topics = [];
+    Object.keys(searchResults).forEach((keyword) => {
+      topics.push(...searchResults[keyword]);
+    });
+
+    const topicsPerPage = 5;
+    const pageCount = Math.ceil(topics.length / topicsPerPage);
+
+    if (topics.length === 0) {
+      return null;
+    }
+
+    const renderedTopics = topics.slice(currentPage * topicsPerPage, (currentPage + 1) * topicsPerPage).map((topic) => (
+      <Grid item xs={12} key={topic.topicId}>
+        <Card style={{ backgroundColor: 'white', padding: '10px', marginTop: '20px', borderRadius: '10px' }}>
+          <CardContent style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <Typography variant="h6" style={{ marginBottom: '10px', fontWeight: 'bold' }}>
+                {topic.topicName}
+              </Typography>
+              <Typography variant="body1" style={{ color: '#333' }}>
+                {topic.description}
+              </Typography>
+            </div>
+            <IconButton onClick={() => handleCopySelectedTopicNames(topic.topicId, topic.topicName)} style={{ marginLeft: 'auto' }}>
+            {copiedTopicId === topic.topicId ? <CheckOutlinedIcon /> : <ContentCopy />}
+            </IconButton>
+          </CardContent>
+        </Card>
+      </Grid>
+    ));
+
+    return (
+      <>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <div style={{ marginRight: '20px' }}>
-              <Card style={{ backgroundColor: '#0080FE', color: 'white', borderRadius: '20px' }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>Topic Domains</Typography>
-                  {topicDomains.map((domain) => (
-                    <FormControlLabel
-                      key={domain.topicDomainId}
-                      control={<Checkbox checked={selectedTopicDomain === domain.topicDomainId} onChange={handleTopicDomainChange} value={domain.topicDomainId}
-                        sx={{
-                          color: 'white',
-                          '&.Mui-checked': {
-                            color: 'black',
-                          },
-                        }} />}
-                      label={domain.topicDomainName}
-                      style={{ color: 'white' }} />
-                  ))}
-                </CardContent>
-              </Card>
-              <Card style={{ backgroundColor: '#0080FE', color: 'white', marginTop: '20px', borderRadius: '20px' }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>Keywords</Typography>
-                  {keywords.map((keyword) => (
-                    <FormControlLabel
-                      key={keyword.keywordId}
-                      control={<Checkbox checked={selectedKeywords.includes(keyword.keywordId)} onChange={handleKeywordChange} value={keyword.keywordId} sx={{
-                        color: 'white',
-                        '&.Mui-checked': {
-                          color: 'black',
-                        },
-                      }} />}
-                      label={keyword.keywordName}
-                      style={{ color: 'white' }} />
-                  ))}
-                </CardContent>
-              </Card>
-              <Card style={{ backgroundColor: '#0080FE', color: 'white', marginTop: '20px',  width: '100%', borderRadius: '20px' }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>Trending Keywords</Typography>
-                  {/* Add trending keywords here */}
-                </CardContent>
-              </Card>
-              <Button variant="contained" color="primary" onClick={handleSearch} disabled={!selectedTopicDomain || selectedKeywords.length === 0} style={{ marginTop: '20px' }}>Search</Button>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-
-
-              {!searchClicked ? (
-
-                <>
-                  <Card style={{ backgroundColor: '#0080FE', padding: '20px', width: '100%', borderRadius: '20px' }}>
-                    <CardContent>
-                      <Typography variant="h6" style={{ marginBottom: '10px', textAlign: 'center', fontWeight: 'bold', fontStyle: 'italic', color: 'white' }}>We will provide topics according to your topic domain & keyword</Typography>
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Image src={searchTopicImage} alt="Placeholder" width={500} height={300} />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </>
-              ) : (
-                <>
-                  {Object.keys(searchResults).map((keywordId) => (
-                    <Card key={keywordId} style={{ backgroundColor: '#0080FE', padding: '20px', marginTop: '20px', width: '100%', borderRadius: '20px' }}>
-                      <CardContent>
-                        <Typography variant="h6" style={{ marginBottom: '10px', color: 'white', fontWeight: 'bold' }}>
-                          {`${keywordId}:`}
-                        </Typography>
-                        {searchResults[keywordId].map((topic) => (
-                          <div key={topic.topicId}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <Typography variant="h6" style={{ color: 'white', fontWeight: 'bold' }}>
-                                {topic.topicName}
-                              </Typography>
-                              <IconButton onClick={() => handleCopySelectedTopicNames(topic.topicName)}>
-                                <ContentCopy />
-                              </IconButton>
-                            </div>
-                            <Typography variant="body1" style={{ color: 'primary.dark' }}>
-                              {topic.description}
-                            </Typography>
-                            {copiedTopic === topic.topicName && (
-                              <Alert severity="success" action={
-                                <IconButton
-                                  aria-label="close"
-                                  color="inherit"
-                                  size="small"
-                                  onClick={() => {
-                                    setShowAlert(false);
-                                    setCopiedTopic('');
-                                  }}
-                                >
-                                  <CloseIcon fontSize="inherit" />
-                                </IconButton>
-                              }
-                                style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999' }}
-                              >
-                                <AlertTitle>Successfully copied</AlertTitle>
-                                {copiedTopic}
-                              </Alert>
-                            )}
-                          </div>
-                        ))}
-                      </CardContent>
-                    </Card>
-                  ))}
-
-
-                  {/* Feedback button and text */}
-                  <Grid container spacing={2} marginTop={2}>
-                    <Grid item xs={12} sm={6}>
-                      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                        <Typography variant="h7" style={{ color: 'primary.dark', fontStyle: 'italic' }}>
-                          Please take a moment to fill this feedback
-                        </Typography>
-                      </div>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
-                        <Button variant="contained" color="primary" onClick={handleFeedback}>
-                          Feedback
-                        </Button>
-                      </div>
-                    </Grid>
-                  </Grid>
-                  {/* Redirect link to writer dashboard */}
-                  {/*<div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
-                    <Link href="http://localhost:3000/WriterPages/CreateArticle">
-                      <Typography variant="body1" style={{ color: 'blue', fontStyle: 'italic' }}>
-                        Redirect to writer dashboard
-                      </Typography>
-                    </Link>
-                  </div>*/}
-
-                </>
-              )}
-
-            </div>
-          </Grid>
+          {renderedTopics}
         </Grid>
+        {pageCount > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+            <IconButton
+              onClick={() => setCurrentPage(currentPage > 0 ? currentPage - 1 : 0)}
+              disabled={currentPage === 0}
+              style={{ visibility: currentPage === 0 ? 'hidden' : 'visible' }}
+            >
+              <ArrowBackIosNewIcon sx={{ color: 'black', backgroundColor: 'white' }} />
+            </IconButton>
+            <Box sx={{ flex: 1 }} /> {/* This box will take up the remaining space */}
+            <IconButton
+              onClick={() => setCurrentPage(currentPage < pageCount - 1 ? currentPage + 1 : pageCount - 1)}
+              disabled={currentPage === pageCount - 1}
+              style={{ visibility: currentPage === pageCount - 1 ? 'hidden' : 'visible' }}
+            >
+              <ArrowForwardIosIcon sx={{ color: 'black', backgroundColor: 'white' }} />
+            </IconButton>
+          </Box>
+        )}
+      </>
+    );
+  };
 
+  return (
+    <div>
+      <Navbar>
+        <Typography variant="h4" marginBottom={2} color="primary.dark" marginTop={2}>Topics Suggestion</Typography>
+        <Typography variant="body1" marginBottom={2} color="primary.dark" marginTop={2}>According to a Topic Domain and a keyword</Typography>
+        <div style={{ marginTop: '20px', marginBottom: '50px' }}>
+          <Divider />
+        </div>
 
-      </Navbar>
+        <Stepper alternativeLabel activeStep={activeStep}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+
+        {activeStep === 0 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Card style={{ backgroundColor: '#0080FE', borderRadius: '20px', padding: '20px', marginTop: '10px', marginLeft: '50px', marginRight: '50px' }}>
+                <CardContent>
+                  <Typography variant="h5" style={{ margin: '10px', color: 'white' }}>Topic Domains</Typography>
+                  {topicDomains.map((domain) => (
+                    <div key={domain.topicDomainId} style={{ margin: '5px' }}>
+                      <Card style={{ backgroundColor: 'white', borderRadius: '15px' }}>
+                        <CardContent>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={selectedTopicDomain === domain.topicDomainId}
+                                onChange={handleTopicDomainChange}
+                                value={domain.topicDomainId}
+                                sx={{
+                                  color: '#0080FE',
+                                  '&.Mui-checked': {
+                                    color: '#0080FE',
+                                  },
+                                }}
+                              />
+                            }
+                            label={domain.topicDomainName}
+                            style={{ color: 'black', fontWeight: 'bold' }}
+                          />
+                          <Typography variant="body2" style={{ color: 'gray' }}>
+                            {domain.description}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
+        {activeStep === 1 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Card style={{ backgroundColor: '#0080FE', borderRadius: '20px', padding: '20px', marginTop: '10px', marginLeft: '50px', marginRight: '50px' }}>
+                <CardContent>
+                  <Typography variant="h5" style={{ margin: '10px', color: 'white' }}>Keywords</Typography>
+                  {keywords.map((keyword) => (
+                    <div key={keyword.keywordId} style={{ margin: '5px' }}>
+                      <Card style={{ backgroundColor: 'white', borderRadius: '15px' }}>
+                        <CardContent>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={selectedKeywords.includes(keyword.keywordId)}
+                                onChange={handleKeywordChange}
+                                value={keyword.keywordId}
+                                sx={{
+                                  color: '#0080FE',
+                                  '&.Mui-checked': {
+                                    color: '#0080FE',
+                                  },
+                                }}
+                              />
+                            }
+                            label={keyword.keywordName}
+                            style={{ color: 'black', fontWeight: 'bold' }}
+                          />
+                          <Typography variant="body2" style={{ color: 'gray' }}>
+                            {keyword.description}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      size="large"
+                      startIcon={<AssistantIcon />}
+                      onClick={handleSearch}
+                      disabled={!selectedTopicDomain || selectedKeywords.length === 0}
+                      sx={{ marginRight: '10px', borderRadius: '4px', textTransform: 'none' }}
+                    >
+                      Generate
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
+        {activeStep === 2 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Card style={{ backgroundColor: '#0080FE', borderRadius: '20px', padding: '20px', marginTop: '10px', marginLeft: '50px', marginRight: '50px' }}>
+                <CardContent>
+                  <Typography variant="h5" style={{ margin: '10px', color: 'white' }}>Topic Suggestion</Typography>
+                  {showAlert && (
+                    <Alert severity="success" style={{ marginTop: '10px' }}>
+                      <AlertTitle>Successfully Copied the Topic</AlertTitle>
+                      {copiedTopicMessage}
+                    </Alert>
+                  )}
+
+                  {/* Render topics */}
+                  {renderTopics()}
+                </CardContent>
+              </Card>
+
+            </Grid>
+          </Grid>
+        )}
+       
+      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2, marginRight: '50px', marginLeft: '50px' }}>
+
+        {activeStep !== 0 && (
+          <Button
+            variant="contained"
+            color="primary"
+            size="medium"
+            sx={{ borderRadius: '4px', textTransform: 'none' }}
+            onClick={handleBack}
+          >
+            Back
+          </Button>
+        )}
+        <Box sx={{ flex: '1 1 auto' }} />
+        {activeStep !== steps.length - 1 && activeStep !== 1 && (
+          <Button
+            variant="contained"
+            color="success"
+            size="medium"
+            sx={{ borderRadius: '4px', textTransform: 'none' }}
+            onClick={handleNext}
+          >
+            Next
+          </Button>
+        )}
+
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1, marginRight: '50px', marginLeft: '50px' }}>
+        {searchClicked && (
+          <Grid container spacing={2} marginTop={2}>
+            <Grid item xs={12} sm={6}>
+              <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '20px', marginTop: '10px', marginLeft: '50px' }}>
+                <Typography variant="h7" style={{ color: 'primary.dark', fontStyle: 'italic' }}>
+                  Please take a moment to fill this feedback
+                </Typography>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '50px' }}>
+                <Button variant="contained" color="primary" onClick={handleFeedback}   startIcon={<FeedbackIcon />}>
+                  Feedback
+                </Button>
+              </div>
+            </Grid>
+          </Grid>
+        )}
+      </Box>
+
+      {showAlertMessage && (
+        <Alert severity="error" style={{ marginTop: '10px' }}>
+          <AlertTitle>Error</AlertTitle>
+          {alertMessage}
+        </Alert>
+      )}
+    </Navbar>
     </div >
-
   );
 };
 

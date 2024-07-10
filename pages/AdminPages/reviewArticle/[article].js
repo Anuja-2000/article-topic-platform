@@ -43,8 +43,9 @@ const ReviewArticlePage = () => {
     handleApproveClose();
     try {
       const response = await axios.patch(
-        `${url.BASE_URL_ARTICLE}${articleId}`,
+        `${url.BASE_URL_ARTICLE}/update/status`,
         {
+          articleId: articleId,
           status: status,
         }
       );

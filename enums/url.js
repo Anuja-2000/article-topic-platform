@@ -11,6 +11,6 @@ const urls = {
     BASE_URL_APPROVAL : `${BASE_URL}approval/`,
     BASE_URL_NOTIFICATION : `${BASE_URL}notification/`,
     BASE_URL_KEYWORDS : `${BASE_URL}keywords/`,
-
+    BASE_URL_ARTICLE_DOMAINS : `${BASE_URL}articleDomain/`,
 }
 export default urls;

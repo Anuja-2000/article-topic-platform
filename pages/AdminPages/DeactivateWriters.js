@@ -17,7 +17,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TablePaginationActions from '../../components/TablePaginationActions';
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
-
+import Alert from "@mui/material/Alert";
 
 const DeactivateWriters = () => {
   const [page, setPage] = useState(0);
@@ -35,6 +35,7 @@ const DeactivateWriters = () => {
   const [activateSuccessfulAlertOpen, setActivateSuccessfulAlertOpen] = useState(false);
   const router = useRouter();
   const [deactivationReason, setDeactivationReason] = useState("");
+  const [dataChanged, setDataChanged] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -149,7 +150,7 @@ const DeactivateWriters = () => {
     fetchAdmin();
     fetchData();
     fetchDeactivatedWriters();
-  }, []);
+  }, [dataChanged]);
 
 
 
@@ -183,37 +184,16 @@ const DeactivateWriters = () => {
       });
       setUniqueReportedWriters(uniqueReportedWriters.filter((writer) => writer.writerId !== deleteTargetId));
       setShowDeactivateConfirmation(false);
+      setDeactivationReason('');
       setDeactivateSuccessfulAlertOpen(true);
       setTimeout(() => {
         setDeactivateSuccessfulAlertOpen(false);
       }, 2000);
-      // Fetch updated list of deactivated writers since new writer added to deactivate
-      const response = await axios.get('https://article-writing-backend.onrender.com/api/deactivatedWriter/deactivatedWriters/getAll');
-      const deactivatedWritersWithDetails = await Promise.all(response.data.map(async (deactivatedWriter) => {
-        const reportedWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${deactivatedWriter.writerId}`);
-        const { name, email, savedAt } = reportedWriterResponse.data;
-        const adminResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${reportedWriter.deactivatedBy}`);
-        console.log('reportedWriter.deactivatedBy', reportedWriter.deactivatedBy);
+      setDataChanged(prev => !prev);
 
-        console.log('deactivatedWriter.deactivatedBy', deactivatedWriter.deactivatedBy);
-        return {
-          deactivatedBy: deactivatedWriter.deactivatedBy,
-          writerName: name,
-          email: email,
-          writerId: deactivatedWriter.writerId,
-          reasons: deactivatedWriter.deactivatedReason,
-          joinedAt: new Date(savedAt).toISOString().substring(0, 10), // Format date 
-          deactivatedAt: new Date(deactivatedWriter.deactivatedAt).toISOString().substring(0, 10), // Format date
-          daysSinceDeactivation: calculateDaysDifference(deactivatedWriter.deactivatedAt)
-        };
-      }));
-      setDeactivatedWriters(deactivatedWritersWithDetails);
     } catch (error) {
       console.error("Error deactivating user:", error);
     }
-  };
-  const handleCloseDeleteSuccessfulAlertOpen = () => {
-    setDeactivateSuccessfulAlertOpen(false);
   };
 
   const handleConfirmIgnore = async () => {
@@ -251,13 +231,16 @@ const DeactivateWriters = () => {
       setTimeout(() => {
         setActivateSuccessfulAlertOpen(false);
       }, 2000);
+      setDataChanged(prev => !prev);
     } catch (error) {
       console.error("Error reactivating writer :", error);
     }
   };
+
   const handleCloseActivateConfirmation = () => {
     setShowActivateConfirmation(false);
   };
+  
   const handleWriterClick = (writerId) => {
     // Use router to navigate to writer profile page
     router.push(`/writer/${writerId}`);
@@ -368,14 +351,15 @@ const DeactivateWriters = () => {
               </Grid>
             </Grid>
             {deactivateSuccessfulAlertOpen && (
-              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+              <Alert  severity="success" sx={{ width: '100%' }}>
                 User Deactivated successfully.
-              </div>
+              </Alert>
             )}
+
             {deactivateIgnoreAlertOpen && (
-              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
-                Ignore User Deactivating.
-              </div>
+              <Alert  severity="success" sx={{ width: '100%' }}>
+              Ignore User Deactivating.
+            </Alert>
             )}
 
             <Grid container spacing={1}>
@@ -449,9 +433,9 @@ const DeactivateWriters = () => {
               </Grid>
             </Grid>
             {activateSuccessfulAlertOpen && (
-              <div style={{ backgroundColor: '#1E1E3C', color: 'white', padding: '10px', marginTop: '10px' }}>
+                <Alert  severity="success" sx={{ width: '100%' }}>
                 User Activated successfully.
-              </div>
+              </Alert>
             )}
           </div>
         </Navbar>
@@ -471,7 +455,7 @@ const DeactivateWriters = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDeactivateConfirmation(false)} color="primary">Cancel</Button>
+          <Button onClick={() => { setShowDeactivateConfirmation(false); setDeactivationReason(''); }} color="primary">Cancel</Button>
           <Button onClick={handleConfirmDeactivate} color="error">Deactivate</Button>
         </DialogActions>
       </Dialog>

@@ -4,53 +4,69 @@ import ArticleCard from '../../components/article/articleCard';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import urls from '../../enums/url';
+import axios from 'axios';
 
 
-function SearchArticleBox({keyword}) {
+function SearchArticleBox({keyword, selectedDomain}) {
 
-        const [articleData, setData] = useState([]);
+  const [articleData, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${urls.BASE_URL_READER_ARTICLE}search`, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+          body: JSON.stringify({
+                  "text":keyword,
+            "domain": selectedDomain
+          }),
+        });
+        const jsonData = await response.json();
+        console.log("jsonData", jsonData);
+
+        const userId = localStorage.getItem('userId');
         
-        useEffect(() => {
-          const fetchData = async () => {
-            try {
-              const response = await fetch(`${urls.BASE_URL_READER_ARTICLE}search`, {
-                headers: {
-                  'Content-Type': 'application/json', // Adjust the content type if needed
-                  'text':keyword, // Add your custom data in headers
-                },
-            });
-              const jsonData = await response.json();
-              setData(jsonData);
-              console.log(articleData);
-            } catch (error) {
-              console.error('Error fetching data:', error);
-            }
-          };
-      
-          fetchData();
-        }, [keyword]);
-        
-  
+        if (userId) {
+          console.log("readerId", userId);
+          const BlockedArticleResponse = await axios.get(`http://localhost:3001/api/blockedArticle/get/${userId}`);
+          console.log("Blocked articles:", BlockedArticleResponse.data);
+          const filteredArticles = jsonData.filter(article => !BlockedArticleResponse.data.includes(article.articleId));
+          console.log("filtered Articles after removing blocked articles", filteredArticles);
+          setData(filteredArticles);
+          console.log(articleData);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-        return (
+    fetchData();
+  }, [keyword || selectedDomain]);
+
+
+
+  return (
           <div style={{marginTop:'20px', width:'100%'}}>
-              <Grid sx={{ flexGrow: 1 }}>
-                <Grid item xs={12}>
-                  <Grid container justifyContent="center" spacing={3}>
-                            {articleData.map((article) => (
+      <Grid sx={{ flexGrow: 1 }}>
+        <Grid item xs={12}>
+          <Grid container justifyContent="center" spacing={3}>
+            {articleData.map((article) => (
                                <Grid key={article.articleId} article style={{marginTop:'20px'}}>
-                                  <Link href={`/article/${article.articleId}`} passHref>
+                <Link href={`/article/${article.articleId}`} passHref>
                                         <ArticleCard {...article}  />
-                                  </Link>
-                                </Grid>
-                             ))}
-                  </Grid>
-                </Grid>
+                </Link>
               </Grid>
-                
-          </div>
-            
-        );
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
+
+    </div>
+
+  );
 }
 
 export default SearchArticleBox;
