@@ -95,7 +95,7 @@ const TextEditor = () => {
         <div className={styles.textEditorArea}>
           <img
             src={coverImage}
-            alt={article.title}
+            alt="Cover Image"
             style={{ width: "15%", height: "15%" }}
           />
           <br />
