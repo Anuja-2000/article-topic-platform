@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
+import SendIcon from '@mui/icons-material/Send';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
@@ -111,7 +112,8 @@ const ArticlePopup = ({ article, open, onClose }) => {
             }
           );
           console.log("Response from server:", response);
-          alert("Article deleted successfully!");
+          alert("Article moved to trash!");
+          window.location.reload();
         } catch (error) {
           console.error("Error saving article:", error);
           alert(
@@ -122,6 +124,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
     });
     setAlertOpen(true);
   };
+
   const handleSendToAdmin = async (article) => {
     console.log("Article in popup: ", article);
 
@@ -143,7 +146,8 @@ const ArticlePopup = ({ article, open, onClose }) => {
         }
       );
       console.log("Response from server:", response);
-      alert("Article updated successfully!");
+      alert("Article sent for admin approval");
+      window.location.reload();
     } catch (error) {
       console.error("Error updating article:", error);
       alert(
@@ -174,7 +178,10 @@ const ArticlePopup = ({ article, open, onClose }) => {
           Status: {article.status}
         </Typography>
         <img
-          src={article.coverImage}
+          src={
+            article.coverImage ||
+            "https://i.ibb.co/DbhGj0C/Copy-of-204069-D-Vehicle-crash-prediction-and-prevention-systems-using-Artificial-Intelligence.png"
+          }
           alt={article.title}
           style={{ width: "100%", height: "auto" }}
         />
@@ -215,13 +222,9 @@ const ArticlePopup = ({ article, open, onClose }) => {
             <DeleteIcon />
             Move to Trash
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
-            <FileCopyIcon />
-            Duplicate
-          </MenuItem>
           <Divider sx={{ my: 0.5 }} />
           <MenuItem onClick={() => handleSendToAdmin(article)} disableRipple>
-            <FileCopyIcon />
+            <SendIcon />
             Send to Admin
           </MenuItem>
         </StyledMenu>
