@@ -72,6 +72,19 @@ const CommentSection = ({ articleId }) => {
     }
   };
 
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    };
+    return date.toLocaleDateString('en-US', options);
+  };
+
   const handleEdit = (comment) => {
     const updateCommentID = comment.comId;
     setCommentBeingEdited(comment);
@@ -186,7 +199,7 @@ const CommentSection = ({ articleId }) => {
             <Grid item xs style={{ marginTop: "8px" }}>
               <Typography variant="body2">
                 <strong>
-                  {comment.commentorName}: {comment.time}
+                  {comment.commentorName} : {formatDate(comment.time)}
                 </strong>
                 <br />
                 {comment.commentContent}
