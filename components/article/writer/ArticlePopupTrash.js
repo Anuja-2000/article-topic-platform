@@ -4,11 +4,11 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
-import SendIcon from '@mui/icons-material/Send';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Divider from "@mui/material/Divider";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
+import RestoreIcon from '@mui/icons-material/Restore';
+import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import AlertDialog from "../../..//pages/WriterPages/AlertDialog";
@@ -77,33 +77,23 @@ const ArticlePopup = ({ article, open, onClose }) => {
     setAnchorEl(null);
   };
 
-  const handleEdit = () => {
-    router.push({
-      pathname: "/WriterPages/EditArticle",
-      query: {
-        article: JSON.stringify(article),
-      },
-    });
-  };
-
-  const handleMoveToTrash = (article) => {
+  const handleMoveToSaved = (article) => {
     setAlertConfig({
-      title: "Move to Trash?",
-      description:
-        "Are you sure you want to move this article to trash? You can restore it within 30 days, after which it will be deleted automatically.",
+      title: "Move to Saved?",
+      description: "Are you sure you want to move this article to Saved?",
       onConfirm: async () => {
         setAlertOpen(false);
         handleClose();
         const articledata = {
           articleId: article.id,
-          savedType: "trashed",
+          savedType: "saved",
         };
 
         console.log("Article data: ", articledata);
 
         try {
           const response = await axios.patch(
-            `https://article-writing-backend.onrender.com/api/article/update/savedType`,
+            `http://localhost:3001/api/article/update/savedType`,
             articledata,
             {
               headers: {
@@ -112,12 +102,12 @@ const ArticlePopup = ({ article, open, onClose }) => {
             }
           );
           console.log("Response from server:", response);
-          alert("Article moved to trash!");
+          alert("Article moved successfully!");
           window.location.reload();
         } catch (error) {
           console.error("Error saving article:", error);
           alert(
-            "Failed to save article. Please check your network and try again."
+            "Failed to move article. Please check your network and try again."
           );
         }
       },
@@ -125,35 +115,80 @@ const ArticlePopup = ({ article, open, onClose }) => {
     setAlertOpen(true);
   };
 
-  const handleSendToAdmin = async (article) => {
-    console.log("Article in popup: ", article);
+  const handleMoveToDraft = (article) => {
+    setAlertConfig({
+      title: "Move to Draft?",
+      description: "Are you sure you want to move this article to draft?.",
+      onConfirm: async () => {
+        setAlertOpen(false);
+        handleClose();
+        const articledata = {
+          articleId: article.id,
+          savedType: "draft",
+        };
 
-    const articledata = {
-      articleId: article.id,
-      status: "pending",
-    };
+        console.log("Article data MoveToDraft: ", articledata);
 
-    console.log("Article data: ", articledata);
-
-    try {
-      const response = await axios.patch(
-        `https://article-writing-backend.onrender.com/api/article/update/status`,
-        articledata,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+        try {
+          const response = await axios.patch(
+            `http://localhost:3001/api/article/update/savedType`,
+            articledata,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("Response from server:", response);
+          alert("Article moved successfully!");
+          window.location.reload();
+        } catch (error) {
+          console.error("Error saving article:", error);
+          alert(
+            "Failed to move article. Please check your network and try again."
+          );
         }
-      );
-      console.log("Response from server:", response);
-      alert("Article sent for admin approval");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error updating article:", error);
-      alert(
-        "Failed to update article. Please check your network and try again."
-      );
-    }
+      },
+    });
+    setAlertOpen(true);
+  };
+
+  const DeleteArticle = (article) => {
+    setAlertConfig({
+      title: "Delete Permenently?",
+      description: "Are you sure you want to delete this article permently?",
+      onConfirm: async () => {
+        setAlertOpen(false);
+        handleClose();
+        const articledata = {
+          articleId: article.id,
+          savedType: "deleted",
+        };
+
+        console.log("Article data deleted: ", articledata);
+
+        try {
+          const response = await axios.patch(
+            `http://localhost:3001/api/article/update/savedType`,
+            articledata,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("Response from server:", response);
+          alert("Article Deleted!");
+          window.location.reload();
+        } catch (error) {
+          console.error("Error saving article:", error);
+          alert(
+            "Failed to delete article. Please check your network and try again."
+          );
+        }
+      },
+    });
+    setAlertOpen(true);
   };
 
   const handleAlertClose = () => {
@@ -214,18 +249,18 @@ const ArticlePopup = ({ article, open, onClose }) => {
           open={openMenu}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleEdit} disableRipple>
-            <EditIcon />
-            Edit
+          <MenuItem onClick={() => handleMoveToDraft(article)} disableRipple>
+            <RestoreIcon />
+            Restore as draft
           </MenuItem>
-          <MenuItem onClick={() => handleMoveToTrash(article)} disableRipple>
-            <DeleteIcon />
-            Move to Trash
+          <MenuItem onClick={() => handleMoveToSaved(article)} disableRipple>
+            <ModelTrainingIcon />
+            Restore as saved
           </MenuItem>
           <Divider sx={{ my: 0.5 }} />
-          <MenuItem onClick={() => handleSendToAdmin(article)} disableRipple>
-            <SendIcon />
-            Send to Admin
+          <MenuItem onClick={() => DeleteArticle(article)} disableRipple>
+            <DeleteIcon />
+            Delete Permenently
           </MenuItem>
         </StyledMenu>
       </DialogContent>

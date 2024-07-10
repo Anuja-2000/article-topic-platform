@@ -54,6 +54,8 @@ function Drafts() {
           setArticles(
             filteredArticles.map((article, index) => ({
               id: article.articleId,
+              likes: article.likes,
+              viewCount: article.viewCount,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
               description: article.content,

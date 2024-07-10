@@ -85,8 +85,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
     });
   };
 
-  const handleMoveToTrash = (article) => 
-  {
+  const handleMoveToTrash = (article) => {
     setAlertConfig({
       title: "Move to Trash?",
       description:
@@ -112,7 +111,8 @@ const ArticlePopup = ({ article, open, onClose }) => {
             }
           );
           console.log("Response from server:", response);
-          alert("Article deleted successfully!");
+          alert("Article moved to trash!");
+          window.location.reload();
         } catch (error) {
           console.error("Error saving article:", error);
           alert(
@@ -122,7 +122,38 @@ const ArticlePopup = ({ article, open, onClose }) => {
       },
     });
     setAlertOpen(true);
-    
+  };
+
+  const handleDuplicate = (article) => {
+    setAlertConfig({
+      title: "Duplicate?",
+      description:
+        "Are you sure you want to duplicate this article? This will create a new article with the same content.",
+      onConfirm: async () => {
+        setAlertOpen(false);
+        handleClose();
+
+        try {
+          const response = await axios.post(
+            `http://localhost:3001/api/article/duplicate/${article.id}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("duplicate response from server:", response);
+          alert("Article duplicated!");
+          window.location.reload();
+        } catch (error) {
+          console.log("Error duplicate article:", error);
+          alert(
+            "Failed to duplicate article. Please check your network and try again."
+          );
+        }
+      },
+    });
+    setAlertOpen(true);
   };
 
   const SaveArticle = async (article) => {
@@ -147,6 +178,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
       );
       console.log("Response from server:", response);
       alert("Article saved successfully!");
+      window.location.reload();
     } catch (error) {
       console.error("Error saving article:", error);
       alert("Failed to save article. Please check your network and try again.");
@@ -175,7 +207,10 @@ const ArticlePopup = ({ article, open, onClose }) => {
           Status: {article.status}
         </Typography>
         <img
-          src={article.coverImage}
+          src={
+            article.coverImage ||
+            "https://i.ibb.co/DbhGj0C/Copy-of-204069-D-Vehicle-crash-prediction-and-prevention-systems-using-Artificial-Intelligence.png"
+          }
           alt={article.title}
           style={{ width: "100%", height: "auto" }}
         />
@@ -216,7 +251,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
             <DeleteIcon />
             Move to Trash
           </MenuItem>
-          <MenuItem onClick={handleClose} disableRipple>
+          <MenuItem onClick={()=>handleDuplicate(article)} disableRipple>
             <FileCopyIcon />
             Duplicate
           </MenuItem>
