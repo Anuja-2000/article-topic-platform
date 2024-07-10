@@ -4,39 +4,48 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import axios from 'axios';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import TextField from '@mui/material/TextField';
-import { v4 as uuidv4 } from 'uuid';
-import axios from 'axios';
-const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
-  const [selectedReason, setSelectedReason] = useState('');
+
+const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
   const [successMessage, setSuccessMessage] = useState('');
-  const [username, setUsername] = useState("");
   const [customReason, setCustomReason] = useState('');
+  const [selectedReason, setSelectedReason] = useState('');
+  const [readerId, setReaderId] = useState('');
+  const [readerName, setReaderName] = useState('');
   const [axiosConfig, setAxiosConfig] = useState({
     headers: {
-        Authorization: "",
+      Authorization: '',
     },
-});
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const username = localStorage.getItem("username");
-        const token = localStorage.getItem("token");
-        console.log("token",token);
-        if (token) {
-            setAxiosConfig({
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+        const storedToken = localStorage.getItem('token');
+
+        if (storedToken) {
+          setAxiosConfig({
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          });
         }
-        if (username) {
-          setUsername(username);
+        const userId = localStorage.getItem("userId");
+        const username = localStorage.getItem("username");
+        
+        if (userId !== null && username !== null) {
+          setReaderName(username);
+          setReaderId(userId);
+          console.log("readerId",readerId);
+          console.log("readerName",readerName);
+          console.log("articleId",articleId);
+          console.log("writerId",writerId);
         } else {
-          setUsername(" ");
+            setReaderName('');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -45,34 +54,35 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
     fetchData();
   }, []);
 
-  const handleReport = async () => {
+
+
+  const handleBlock = async () => {
     let reason = selectedReason;
     if (selectedReason === 'Other' && customReason.trim() !== '') {
       reason = customReason.trim();
     }
     if (reason) {
-      const reportId = 'report' + uuidv4();
-      const reportData = {
-        reportId: reportId,
-        reporterName: username,
-        reportedReason: reason,
-        articleId: articleId,
-        writerId: writerId,
-      };
+        const blockedData = {
+            readerId,
+            readerName: readerName,
+            blockedReason: reason,
+            articleId,
+            writerId,
+          };
       try {
-        const response = await axios.post('http://localhost:3001/api/reportArticle/save', reportData, axiosConfig);
+        const response = await axios.post(`http://localhost:3001/api/blockedArticle/save/${articleId}/${readerId}`, blockedData, axiosConfig);
         if (response.status === 201) {
-          console.log('Reported for:', reason);
-          setSuccessMessage('Article reported successfully!');
+          console.log('Article Blocked Successfully');
+          setSuccessMessage('Article Blocked Successfully!');
           setTimeout(() => {
             setSuccessMessage('');
             handleClose();
           }, 3000);
         } else {
-          console.error('Failed to report article');
+          console.error('Failed to block article');
         }
       } catch (error) {
-        console.error('Error reporting article:', error);
+        console.error('Error blocking article:', error);
       }
     }
   };
@@ -100,12 +110,11 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
 
   return (
     <Dialog open={isOpen} onClose={handleClose} onEnter={handleOpen} maxWidth="sm" fullWidth>
-      <DialogTitle>Report Article</DialogTitle>
+      <DialogTitle>Block Article</DialogTitle>
       <DialogContent dividers>
         <RadioGroup value={selectedReason} onChange={handleChange}>
-          <FormControlLabel value="Harassment" control={<Radio />} label="Harassment" />
-          <FormControlLabel value="Rules Violation" control={<Radio />} label="Rules Violation" />
-          <FormControlLabel value="Spam" control={<Radio />} label="Spam" />
+          <FormControlLabel value="Not Relevant to me" control={<Radio />} label="Not Relevant to me" />
+          <FormControlLabel value="Don't like the post" control={<Radio />} label="Don't like the post" />
           <FormControlLabel value="Other" control={<Radio />} label="Other" />
         </RadioGroup>
         {selectedReason === 'Other' && (
@@ -123,11 +132,11 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
           Cancel
         </Button>
         <Button
-          onClick={handleReport}
+          onClick={handleBlock}
           color="primary"
           disabled={!selectedReason || (selectedReason === 'Other' && customReason.trim() === '')}
         >
-          Report
+          Block
         </Button>
       </DialogActions>
       {successMessage && (
@@ -139,4 +148,4 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
   );
 };
 
-export default ReportDialog;
+export default BlockArticleDialog;

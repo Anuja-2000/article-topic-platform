@@ -9,9 +9,11 @@ import CardContent from '@mui/material';
 import Button from '@mui/material';
 import ReportDialog from './reportDialog';
 import ReportWriterDialog from './reportWriterDialog';
+import BlockArticleDialog from './blockArticleDialog';
 import ViewCounter from './viewCounter';
 import ReportIcon from '@mui/icons-material/Report';
 import ReportProblem from '@mui/icons-material/ReportProblem';
+import BlockIcon from '@mui/icons-material/Block';
 const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, view, readerId }) => {
 
   const router = useRouter();
@@ -23,7 +25,7 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
   const [anchorEl, setAnchorEl] = useState(null);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [isReportWriterDialogOpen, setIsReportWriterDialogOpen] = useState(false);
-
+  const [isBlockArticleDialogOpen, setIsBlockArticleDialogOpen] = useState(false);
 
   //const [readerId, setReaderId] = useState("");
   console.log(readerId);
@@ -192,6 +194,13 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
   const handleCloseReportWriterDialog = () => {
     setIsReportWriterDialogOpen(false);
   };
+  const handleBlockArticleClick = () => {
+    setIsBlockArticleDialogOpen(true);
+    handleMenuClose();
+  };
+  const handleCloseBlockArticleDialog = () => {
+    setIsBlockArticleDialogOpen(false);
+  };
 
   return (
     <>
@@ -228,10 +237,14 @@ const LikeShareDownload = ({ articleTitle, initialLikes, writerId, articleId, vi
         <MenuItem onClick={handleReportWriterClick}>
           <ReportIcon style={{ marginRight: '8px' }} />
           Report Author</MenuItem>
+        <MenuItem onClick={handleBlockArticleClick}>
+          <BlockIcon style={{ marginRight: '8px' }} />
+          Block Article</MenuItem>
       </Menu>
 
       <ReportDialog isOpen={isReportDialogOpen} onClose={handleCloseReportDialog} writerId={writerId} articleId={articleId} />
       <ReportWriterDialog isOpen={isReportWriterDialogOpen} onClose={handleCloseReportWriterDialog} writerId={writerId} />
+      <BlockArticleDialog isOpen={isBlockArticleDialogOpen} onClose={handleCloseBlockArticleDialog} writerId={writerId} articleId={articleId} />
 
       {/*isShareClicked && (
         <Head>

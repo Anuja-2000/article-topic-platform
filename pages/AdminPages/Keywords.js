@@ -40,7 +40,6 @@ function Keywords() {
   const [topicDomains, setTopicDomains] = useState([]);
   const [selectedTopicDomain, setSelectedTopicDomain] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [editingRowId, setEditingRowId] = useState(null);
@@ -63,32 +62,55 @@ function Keywords() {
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
   const [selectedTopicDomainAddForm, setSelectedTopicDomainAddForm] = useState('');
   const [suggestedKeywords, setSuggestedKeywords] = useState([]);
+  const [axiosConfig, setAxiosConfig] = useState({
+    headers: {
+      Authorization: "",
+    },
+  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseData = await api.get("/get");
-        setData(responseData.data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setIsError(true);
-        setIsLoading(false);
-      }
-    };
+    const token = localStorage.getItem("token");
+    console.log("token", token);
+    if (token) {
+      setAxiosConfig({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
 
-    const fetchTopicDomains = async () => {
-      try {
-        const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
-        setTopicDomains(topicDomainsResponse.data);
-      } catch (error) {
-        console.error('Error fetching topic domains:', error);
-      }
-    };
-    fetchData();
-    fetchTopicDomains();
-    setSelectedTopicDomain('all'); // Set 'all' as the default selected topic domain
   }, []);
+
+  useEffect(() => {
+    if (axiosConfig.headers.Authorization !== "") {
+      fetchData();
+      fetchTopicDomains();
+      setSelectedTopicDomain('all');
+    }
+
+  }, [axiosConfig]);
+
+  const fetchData = async () => {
+    try {
+      const responseData = await api.get("/get", axiosConfig);
+      const sortedData = responseData.data.sort((a, b) => a.keywordName.localeCompare(b.keywordName));
+      setData(sortedData);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchTopicDomains = async () => {
+    try {
+      const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get', axiosConfig);
+      const sortedDataTopicDomainsResponse = topicDomainsResponse.data.sort((a, b) => a.topicDomainName.localeCompare(b.topicDomainName));
+      setTopicDomains(sortedDataTopicDomainsResponse);
+    } catch (error) {
+      console.error('Error fetching topic domains:', error);
+    }
+  };
 
 
   const handleFilterChange = async (event) => {
@@ -96,12 +118,15 @@ function Keywords() {
     setSelectedTopicDomain(selectedValue);
     try {
       if (selectedValue === 'all') {
-        const responseData = await api.get("/get");
-        setData(responseData.data);
+        const responseData = await api.get("/get", axiosConfig);
+        const sortedData = responseData.data.sort((a, b) => a.keywordName.localeCompare(b.keywordName));
+        setData(sortedData);
       } else {
-        const response = await api.get(`/get/${selectedValue}`);
+        const response = await api.get(`/get/${selectedValue}`, axiosConfig);
         console.log(`${selectedValue}`);
-        setData(response.data); // Show data filtered by the selected topic domain
+       // Show data filtered by the selected topic domain
+       const sortedData = response.data.sort((a, b) => a.keywordName.localeCompare(b.keywordName));
+      setData(sortedData);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -147,8 +172,10 @@ function Keywords() {
       }
       const newItemWithTopicDomainId = { ...newItem, topicDomainId: selectedTopicDomainAddForm };
       console.log(newItemWithTopicDomainId);
-
-      const response = await api.post("/add", newItemWithTopicDomainId);
+     
+      const response = await api.post("/add", newItemWithTopicDomainId, axiosConfig);
+      
+      console.log("after save",response);
       setData([...data, response.data]); // Update data array with the new item
       setNewItem({ keywordName: '', description: '' });
       setShowAddConfirmation(false);
@@ -160,7 +187,7 @@ function Keywords() {
       setAddSuccessfulAlertOpen(true);
       setTimeout(() => {
         setAddSuccessfulAlertOpen(false);
-      }, 20000);
+      }, 2000);
 
     } catch (error) {
       console.error("Error adding data:", error);
@@ -190,10 +217,10 @@ function Keywords() {
   const handleConfirmSave = async () => {
     try {
       const updatedRow = data.find(item => item.keywordId === editingRowId);
-      await api.patch(`/edit/${editingRowId}`, updatedRow);
+      await api.patch(`/edit/${editingRowId}`, updatedRow, axiosConfig);
       setEditingRowId(null); // Reset editing row ID
       setShowEditConfirmation(false);
-      const response = selectedTopicDomain === 'all' ? await api.get("/get") : await api.get(`/get/${selectedTopicDomain}`);
+      const response = selectedTopicDomain === 'all' ? await api.get("/get", axiosConfig) : await api.get(`/get/${selectedTopicDomain}`, axiosConfig);
       setData(response.data);
       setEditSuccessfulAlertOpen(true);
       setTimeout(() => {
@@ -235,7 +262,7 @@ function Keywords() {
       }
 
       // Delete the keyword itself
-      await axios.delete(`http://localhost:3001/api/keywords/delete/${deleteTargetId}`);
+      await axios.delete(`http://localhost:3001/api/keywords/delete/${deleteTargetId}`, axiosConfig);
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.keywordId !== deleteTargetId));
       setShowDeleteConfirmation(false);
@@ -260,33 +287,31 @@ function Keywords() {
     setEditSuccessfulAlertOpen(false);
   };
 
-const handleKeywordNameChange = (e) => {
-  let emptyarray = []
-  if (e.target.value === '') {
-    setSuggestedKeywords(emptyarray);
-  }
-  setKeywordName(e.target.value);
-  if(e.target.value.length < 3) return;
-  fetchSuggestedKeywords(e.target.value);
-};
+  const handleKeywordNameChange = (e) => {
+    let emptyarray = []
+    if (e.target.value === '') {
+      setSuggestedKeywords(emptyarray);
+    }
+    setKeywordName(e.target.value);
+    if (e.target.value.length < 3) return;
+    fetchSuggestedKeywords(e.target.value);
+  };
 
-const fetchSuggestedKeywords = async (keywordName) => {
-  try {
-    const response = await axios.get(`${urls.BASE_URL_KEYWORDS}suggestions/${keywordName}`);
-    let data = response.data.titles;
-    setSuggestedKeywords(data);
-  } catch (error) {
-    console.error("Error fetching suggested keywords:", error);
-  }
-};
+  const fetchSuggestedKeywords = async (keywordName) => {
+    try {
+      const response = await axios.get(`${urls.BASE_URL_KEYWORDS}suggestions/${keywordName}`);
+      console.log("sugeested",response);
+      let data = response.data.titles;
+      setSuggestedKeywords(data);
+    } catch (error) {
+      console.error("Error fetching suggested keywords:", error);
+    }
+  };
 
-  if (isLoading) {
+  /*if (isLoading) {
     return <div>Loading...</div>;
-  }
+  }*/
 
-  if (isError) {
-    return <Alert severity="error">Error fetching data. Please try again later.</Alert>;
-  }
 
   return (
     <div>
@@ -310,6 +335,7 @@ const fetchSuggestedKeywords = async (keywordName) => {
                         value={selectedTopicDomainAddForm}
                         onChange={(e) => setSelectedTopicDomainAddForm(e.target.value)}
                         label="Topic Domain"
+                        
                       >
                         {topicDomains.map((topicDomain) => (
                           <MenuItem key={topicDomain.topicDomainId} value={topicDomain.topicDomainId}>
@@ -322,7 +348,9 @@ const fetchSuggestedKeywords = async (keywordName) => {
                       label="Keyword Name"
                       variant="outlined"
                       value={keywordName}
-                      onChange={(e) => handleKeywordNameChange(e)}
+                      onChange={(e) => setKeywordName(e.target.value)}
+                      /* Commented out due to When more than 5 keywords adding , there was an error from the backend and adding function not worked*/
+                      //onChange={(e) => handleKeywordNameChange(e)}
                       error={keywordNameError}
                       style={{ marginRight: "10px" }}
                     />
@@ -336,7 +364,7 @@ const fetchSuggestedKeywords = async (keywordName) => {
                     />
                     <Button variant="contained" color="success" onClick={handleAddClick}>Add</Button>
                     <div style={{ marginTop: "20px" }}>Suggested Keywords: {
-                    suggestedKeywords.length === 0? <Chip label="No key words right now" color='primary'/>: suggestedKeywords.map(keywordName =>(<Chip key={keywordName} label={keywordName} color='primary' sx={{margin:'5px'}} onClick={()=>setKeywordName(keywordName)}/>))
+                      suggestedKeywords.length === 0 ? <Chip label="No key words right now" color='primary' /> : suggestedKeywords.map(keywordName => (<Chip key={keywordName} label={keywordName} color='primary' sx={{ margin: '5px' }} onClick={() => setKeywordName(keywordName)} />))
                     }</div>
                   </div>
                 )}
@@ -376,7 +404,7 @@ const fetchSuggestedKeywords = async (keywordName) => {
 
                 {/* Table */}
                 <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>Keywords</Typography>
-                <TableContainer component={Paper}>
+                <TableContainer component={Paper} sx={{ marginBottom: 8 }}>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -392,39 +420,48 @@ const fetchSuggestedKeywords = async (keywordName) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {data
-                        .filter(row => selectedTopicDomain === 'all' || row.topicDomainId === selectedTopicDomain)
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((row) => (
-                          <TableRow key={row.keywordId}>
-                            <TableCell>{editingRowId === row.keywordId ? (
-                              <input
-                                type="text"
-                                value={row.keywordName}
-                                onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, keywordName: e.target.value } : item)))}
-                              />
-                            ) : (
-                              row.keywordName
-                            )}</TableCell>
-                            <TableCell>{editingRowId === row.keywordId ? (
-                              <input
-                                type="text"
-                                value={row.description}
-                                onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, description: e.target.value } : item)))}
-                              />
-                            ) : (
-                              row.description
-                            )}</TableCell>
-                            <TableCell>{editingRowId === row.keywordId ? (
-                              <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
-                            ) : (
-                              <Box sx={{ display: 'flex', gap: '8px' }}>
-                                <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
-                                <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
-                              </Box>
-                            )}</TableCell>
-                          </TableRow>
-                        ))}
+                      {data.length == 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} align="center">
+
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        data
+                          .filter(row => selectedTopicDomain === 'all' || row.topicDomainId === selectedTopicDomain)
+                          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                          .map((row) => (
+                            <TableRow key={row.keywordId}>
+                              <TableCell sx={{ fontWeight: 'bold' }}>{editingRowId === row.keywordId ? (
+                                <input
+                                  type="text"
+                                  value={row.keywordName}
+                                  onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, keywordName: e.target.value } : item)))}
+                                  style={{ width: '100%', height: '50px', padding: '6px' }}
+                                />
+                              ) : (
+                                row.keywordName
+                              )}</TableCell>
+                              <TableCell>{editingRowId === row.keywordId ? (
+                                <input
+                                  type="text"
+                                  value={row.description}
+                                  onChange={(e) => setData(data.map((item) => (item.keywordId === row.keywordId ? { ...item, description: e.target.value } : item)))}
+                                  style={{ width: '100%', height: '50px', padding: '6px' }}
+                                />
+                              ) : (
+                                row.description
+                              )}</TableCell>
+                              <TableCell>{editingRowId === row.keywordId ? (
+                                <Button variant="contained" color="success" onClick={() => handleSaveClick(row)}>Save</Button>
+                              ) : (
+                                <Box sx={{ display: 'flex', gap: '8px' }}>
+                                  <Button variant="contained" color="primary" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleEditClick(row)} disabled={editingRowId !== null || showAddForm}>Edit</Button>
+                                  <Button variant="contained" color="error" sx={{ borderRadius: '4px', textTransform: 'capitalize' }} onClick={() => handleDeleteClick(row.keywordId)} disabled={editingRowId !== null || showAddForm}>Delete</Button>
+                                </Box>
+                              )}</TableCell>
+                            </TableRow>
+                          )))}
                     </TableBody>
                     <TableFooter>
                       <TableRow>
@@ -449,7 +486,7 @@ const fetchSuggestedKeywords = async (keywordName) => {
                     </TableFooter>
                   </Table>
                 </TableContainer>
-                
+
                 <DeleteConfirmationDialog
                   open={showDeleteConfirmation}
                   onClose={() => setShowDeleteConfirmation(false)}
