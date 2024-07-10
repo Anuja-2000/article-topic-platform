@@ -1,10 +1,9 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
-import CommentSection from "../../../components/article/CommentSection";
+import CommentSection from "../../../components/article/CommentSectionWriter";
 
 const ArticlesCard = ({ article }) => {
-
   return (
     <Card style={{ cursor: "pointer" }}>
       <CardContent>
