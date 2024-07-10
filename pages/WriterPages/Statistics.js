@@ -43,7 +43,7 @@ function Stats() {
 
         if (response.data && response.data.success) {
           const filteredArticles = response.data.articles.filter(
-            (article) => article.savedType === "saved"
+            (article) => article.status === "approved"
           );
 
           console.log("Filtered articles: ", filteredArticles);
