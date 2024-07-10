@@ -1,9 +1,12 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
+import CommentSection from "../../../components/article/CommentSection";
 
-const ArticlesCard = ({ article, onClick }) => {
+const ArticlesCard = ({ article }) => {
+
   return (
-    <Card onClick={onClick} style={{ cursor: "pointer" }}>
+    <Card style={{ cursor: "pointer" }}>
       <CardContent>
         {/* Article Title */}
         <Box
@@ -75,6 +78,7 @@ const ArticlesCard = ({ article, onClick }) => {
           Views: {article.viewCount}
         </Typography>
       </CardContent>
+      <CommentSection articleId={article.id} />
     </Card>
   );
 };
