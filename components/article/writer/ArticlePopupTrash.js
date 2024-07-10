@@ -212,7 +212,10 @@ const ArticlePopup = ({ article, open, onClose }) => {
           Status: {article.status}
         </Typography>
         <img
-          src={article.coverImage}
+          src={
+            article.coverImage ||
+            "https://i.ibb.co/DbhGj0C/Copy-of-204069-D-Vehicle-crash-prediction-and-prevention-systems-using-Artificial-Intelligence.png"
+          }
           alt={article.title}
           style={{ width: "100%", height: "auto" }}
         />

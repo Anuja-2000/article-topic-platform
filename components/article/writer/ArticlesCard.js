@@ -9,7 +9,11 @@ const ArticlesCard = ({ article, onClick }) => {
         <Box
           mb={2}
           p={2}
-          style={{ backgroundColor: "#2196f3", color: "white", textAlign: "center" }}
+          style={{
+            backgroundColor: "#2196f3",
+            color: "white",
+            textAlign: "center",
+          }}
         >
           <Typography
             gutterBottom
@@ -40,13 +44,35 @@ const ArticlesCard = ({ article, onClick }) => {
         </Box>
 
         {/* Created At */}
-        <Typography variant="body2" color="text.secondary" style={{ textAlign: "center" }}>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          style={{ textAlign: "center" }}
+        >
           Created At: {article.createdAt}
         </Typography>
-        
+
         {/* Status */}
-        <Typography variant="body2" color="text.secondary" style={{ textAlign: "center" }}>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          style={{ textAlign: "center" }}
+        >
           Status: {article.status}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          style={{ textAlign: "center" }}
+        >
+          Likes: {article.likes}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          style={{ textAlign: "center" }}
+        >
+          Views: {article.viewCount}
         </Typography>
       </CardContent>
     </Card>

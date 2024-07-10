@@ -85,8 +85,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
     });
   };
 
-  const handleMoveToTrash = (article) => 
-  {
+  const handleMoveToTrash = (article) => {
     setAlertConfig({
       title: "Move to Trash?",
       description:
@@ -123,7 +122,6 @@ const ArticlePopup = ({ article, open, onClose }) => {
       },
     });
     setAlertOpen(true);
-    
   };
 
   const SaveArticle = async (article) => {
@@ -177,7 +175,10 @@ const ArticlePopup = ({ article, open, onClose }) => {
           Status: {article.status}
         </Typography>
         <img
-          src={article.coverImage}
+          src={
+            article.coverImage ||
+            "https://i.ibb.co/DbhGj0C/Copy-of-204069-D-Vehicle-crash-prediction-and-prevention-systems-using-Artificial-Intelligence.png"
+          }
           alt={article.title}
           style={{ width: "100%", height: "auto" }}
         />

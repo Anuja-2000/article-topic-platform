@@ -123,7 +123,7 @@ const ArticlePopup = ({ article, open, onClose }) => {
     });
     setAlertOpen(true);
   };
-  
+
   const handleSendToAdmin = async (article) => {
     console.log("Article in popup: ", article);
 
@@ -176,7 +176,10 @@ const ArticlePopup = ({ article, open, onClose }) => {
           Status: {article.status}
         </Typography>
         <img
-          src={article.coverImage}
+          src={
+            article.coverImage ||
+            "https://i.ibb.co/DbhGj0C/Copy-of-204069-D-Vehicle-crash-prediction-and-prevention-systems-using-Artificial-Intelligence.png"
+          }
           alt={article.title}
           style={{ width: "100%", height: "auto" }}
         />
