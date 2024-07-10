@@ -79,7 +79,7 @@ export default function AvatarIcon() {
           >
             <Avatar
               sx={{ width: 32, height: 32, bgcolor: "darkblue" }}
-              src={imgUrl}
+              src={imgUrl!=""? imgUrl:"/path/to/profile.jpg"}
             >
               {username.charAt(0).toUpperCase()}
             </Avatar>
@@ -123,17 +123,17 @@ export default function AvatarIcon() {
       >
         <MenuItem onClick={viewProfile}>
           <Avatar alt={username!==null ?username.toUpperCase():"User"} 
-                src={imgUrl!=""?imgUrl:"/path/to/profile.jpg"} 
+                src={imgUrl!=""? imgUrl:"/path/to/profile.jpg"} 
           /> 
           Profile
         </MenuItem>
         <Divider />
-        <MenuItem onClick={viewSettings}>
+        { userType!="Reader" && <MenuItem onClick={viewSettings}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings
-        </MenuItem>
+        </MenuItem>}
         <MenuItem onClick={logout}>
           <ListItemIcon>
             <Logout fontSize="small" />
