@@ -1,5 +1,5 @@
 import ArticlesCard from "../../components/article/writer/ArticlesCard";
-import ArticlePopup from "../../components/article/writer/ArticlePopup";
+import ArticlePopup from "../../components/article/writer/ArticlePopupTrash";
 
 import {
   Box,
@@ -44,17 +44,16 @@ function Trash() {
           `http://localhost:3001/api/article/writer/${userid}`
         );
 
-        console.log("Response: ", response.data);
-
         if (response.data && response.data.success) {
-
           const filteredArticles = response.data.articles.filter(
             (article) => article.savedType === "trashed"
           );
 
           setArticles(
             filteredArticles.map((article, index) => ({
-              id: article._id,
+              id: article.articleId,
+              likes: article.likes,
+              viewCount: article.viewCount,
               createdAt: new Date(article.createdAt).toLocaleDateString(),
               updatedAt: new Date(article.updatedAt).toLocaleDateString(),
               description: article.content,
@@ -96,18 +95,13 @@ function Trash() {
                 spacing={4}
               ></Stack>
               {/* Grid content */}
-              {articles.map(
-                (article) => (
-                  console.log(article),
-                  (
-                    <ArticlesCard
-                      article={article}
-                      key={article.id}
-                      onClick={() => handleArticleClick(article)} // Pass onClick handler
-                    />
-                  )
-                )
-              )}
+              {articles.map((article) => (
+                <ArticlesCard
+                  article={article}
+                  key={article.id}
+                  onClick={() => handleArticleClick(article)} // Pass onClick handler
+                />
+              ))}
             </Stack>
           </Container>
         </Box>
