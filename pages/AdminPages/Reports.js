@@ -1022,15 +1022,15 @@ function Reports() {
                         onChange={handleChangeDomain}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                       <Paper elevation={3} sx={{ borderRadius: "10px" }}>
                         <Box padding={2} color={"primary.main"} display="flex">
                           <Typography variant="h2">
                             {articles.length}
                           </Typography>
-                          <Box sx={{ marginLeft: "10px" }}>
-                            <Typography variant="h4">Articles</Typography>
-                            <Typography variant="h6">Published</Typography>
+                          <Box sx={{ marginLeft: "2rem" }}>
+                            <Typography variant="h4">{articles.length === 1? 'Article':'Articles'}</Typography>
+                            <Typography variant="h6">Created</Typography>
                           </Box>
                         </Box>
                       </Paper>
