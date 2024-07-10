@@ -69,7 +69,7 @@ const DeactivateArticles = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/reportArticle/get', axiosConfig);
+            const response = await axios.get('https://article-writing-backend.onrender.com/api/reportArticle/get', axiosConfig);
             console.log("response", response.data);
 
             // Iterate over reported articles and fetch details
@@ -77,12 +77,12 @@ const DeactivateArticles = () => {
                 console.log(reportedArticle);
                 console.log("articleId", reportedArticle.articleId); // Access topicId, topicName directly from flagged topics
                 // Fetch article details by articleId
-                const reportedArticleResponse = await axios.get(`http://localhost:3001/api/article/${reportedArticle.articleId}`, axiosConfig);
+                const reportedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/article/${reportedArticle.articleId}`, axiosConfig);
                 const { articleId, title, userId, createdAt } = reportedArticleResponse.data.article; // Destructure response.data
                 console.log("for test", reportedArticleResponse.data)
                 console.log("title", title);
 
-                const articleWriterResponse = await axios.get(`http://localhost:3001/api/user/${userId}`, axiosConfig);
+                const articleWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${userId}`, axiosConfig);
                 console.log(userId);
                 const { name } = articleWriterResponse.data; // Destructure response.data
                 console.log("for user test", articleWriterResponse.data)
@@ -125,14 +125,14 @@ const DeactivateArticles = () => {
 
     const fetchRejectedArticles = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/rejectedArticle/getAll', axiosConfig);
+            const response = await axios.get('https://article-writing-backend.onrender.com/api/rejectedArticle/getAll', axiosConfig);
             console.log("Rejected article response.data", response.data);
 
             const rejectedArticlesWithDetails = await Promise.all(response.data.map(async (rejectedArticle) => {
-                const rejectedArticleResponse = await axios.get(`http://localhost:3001/api/article/${rejectedArticle.articleId}`, axiosConfig);
+                const rejectedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/article/${rejectedArticle.articleId}`, axiosConfig);
                 console.log("article", rejectedArticleResponse.data.data);
                 const { articleId, title, userId, createdAt } = rejectedArticleResponse.data.article;
-                const articleWriterResponse = await axios.get(`http://localhost:3001/api/user/${userId}`, axiosConfig);
+                const articleWriterResponse = await axios.get(`https://article-writing-backend.onrender.com/api/user/${userId}`, axiosConfig);
                 const { name } = articleWriterResponse.data;
                 return {
                     title: title,
@@ -214,9 +214,9 @@ const handleChangeRowsPerPage = (event) => {
 };
 const handleConfirmDelete = async () => {
     try {
-        await axios.patch(`http://localhost:3001/api/article/reportArticle/${deleteTargetId}`, axiosConfig);
-        await axios.delete(`http://localhost:3001/api/reportArticle/delete/${deleteTargetId}`, axiosConfig);
-        await axios.post(`http://localhost:3001/api/rejectedArticle/save/${deleteTargetId}/${deleteTargetTitle}/${deletedArticleWriterID}/${username}`, {
+        await axios.patch(`https://article-writing-backend.onrender.com/api/article/reportArticle/${deleteTargetId}`, axiosConfig);
+        await axios.delete(`https://article-writing-backend.onrender.com/api/reportArticle/delete/${deleteTargetId}`, axiosConfig);
+        await axios.post(`https://article-writing-backend.onrender.com/api/rejectedArticle/save/${deleteTargetId}/${deleteTargetTitle}/${deletedArticleWriterID}/${username}`, {
             rejectedReason: rejectedReason
         }, axiosConfig);
         // Update the state to remove the deactivated article from the UI
@@ -238,7 +238,7 @@ const handleCloseDeleteSuccessfulAlertOpen = () => {
 const handleConfirmIgnore = async () => {
     try {
 
-        await axios.delete(`http://localhost:3001/api/reportArticle/delete/${deleteTargetId}`, axiosConfig);
+        await axios.delete(`https://article-writing-backend.onrender.com/api/reportArticle/delete/${deleteTargetId}`, axiosConfig);
         setUniqueReportedArticles(uniqueReportedArticles.filter(item => item.articleId !== deleteTargetId));
         setShowDeleteIgnoreConfirmation(false);
         setIgnoreSuccessfulAlertOpen(true);
@@ -267,16 +267,16 @@ const handleReApproveClick = (articleId) => {
 
 const handleConfirmReApprove = async () => {
     try {
-        await axios.patch(`http://localhost:3001/api/article/approveArticles/${deleteTargetId}`, axiosConfig);
+        await axios.patch(`https://article-writing-backend.onrender.com/api/article/approveArticles/${deleteTargetId}`, axiosConfig);
         console.log("article Id",deleteTargetId);
         console.log("adminId",localStorage.getItem("userId"));
-        const response = await axios.post(`http://localhost:3001/api/approval/save`, {
+        const response = await axios.post(`https://article-writing-backend.onrender.com/api/approval/save`, {
             articleId: deleteTargetId,
             adminId: localStorage.getItem("userId"),
             status: "approved",
         });
         console.log("response backend", response);
-        await axios.delete(`http://localhost:3001/api/rejectedArticle/delete/${deleteTargetId}`, axiosConfig);
+        await axios.delete(`https://article-writing-backend.onrender.com/api/rejectedArticle/delete/${deleteTargetId}`, axiosConfig);
         setRejectedArticles(rejectedArticles.filter((rejectedArticle) => rejectedArticle.articleId !== deleteTargetId));
         setShowReApproveConfirmation(false);
         setReApproveSuccessfulAlertOpen(true);

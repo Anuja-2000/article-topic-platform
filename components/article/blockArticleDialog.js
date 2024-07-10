@@ -70,7 +70,7 @@ const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
             writerId,
           };
       try {
-        const response = await axios.post(`http://localhost:3001/api/blockedArticle/save/${articleId}/${readerId}`, blockedData, axiosConfig);
+        const response = await axios.post(`https://article-writing-backend.onrender.com/api/blockedArticle/save/${articleId}/${readerId}`, blockedData, axiosConfig);
         if (response.status === 201) {
           console.log('Article Blocked Successfully');
           setSuccessMessage('Article Blocked Successfully!');

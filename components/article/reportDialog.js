@@ -60,7 +60,7 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
         writerId: writerId,
       };
       try {
-        const response = await axios.post('http://localhost:3001/api/reportArticle/save', reportData, axiosConfig);
+        const response = await axios.post('https://article-writing-backend.onrender.com/api/reportArticle/save', reportData, axiosConfig);
         if (response.status === 201) {
           console.log('Reported for:', reason);
           setSuccessMessage('Article reported successfully!');

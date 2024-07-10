@@ -216,7 +216,7 @@ const TextEditor = () => {
     // Fetch article domains from the backend
     const fetchDomains = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/topicDomains/get');
+        const response = await axios.get('https://article-writing-backend.onrender.com/api/topicDomains/get');
         setDomains(response.data);
       } catch (error) {
         console.error("Failed to fetch domains", error);

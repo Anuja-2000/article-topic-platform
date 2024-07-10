@@ -104,7 +104,7 @@ function Keywords() {
 
   const fetchTopicDomains = async () => {
     try {
-      const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get', axiosConfig);
+      const topicDomainsResponse = await axios.get('https://article-writing-backend.onrender.com/api/topicDomains/get', axiosConfig);
       const sortedDataTopicDomainsResponse = topicDomainsResponse.data.sort((a, b) => a.topicDomainName.localeCompare(b.topicDomainName));
       setTopicDomains(sortedDataTopicDomainsResponse);
     } catch (error) {

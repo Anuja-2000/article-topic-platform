@@ -37,7 +37,7 @@ function Search(){
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await fetch(`http://localhost:3001/api/readerArticle/get-domains`, {
+          const response = await fetch(`https://article-writing-backend.onrender.com/api/readerArticle/get-domains`, {
             headers: {
               'Content-Type': 'application/json', // Adjust the content type if needed
             },

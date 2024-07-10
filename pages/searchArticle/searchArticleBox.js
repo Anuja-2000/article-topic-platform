@@ -31,7 +31,7 @@ function SearchArticleBox({keyword, selectedDomain}) {
         
         if (userId) {
           console.log("readerId", userId);
-          const BlockedArticleResponse = await axios.get(`http://localhost:3001/api/blockedArticle/get/${userId}`);
+          const BlockedArticleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/blockedArticle/get/${userId}`);
           console.log("Blocked articles:", BlockedArticleResponse.data);
           const filteredArticles = jsonData.filter(article => !BlockedArticleResponse.data.includes(article.articleId));
           console.log("filtered Articles after removing blocked articles", filteredArticles);
