@@ -9,19 +9,21 @@ import axios from 'axios';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
+import { useRouter } from 'next/router';
 const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [customReason, setCustomReason] = useState('');
   const [selectedReason, setSelectedReason] = useState('');
   const [readerId, setReaderId] = useState('');
   const [readerName, setReaderName] = useState('');
+  const [alreadyBlocked, setAlreadyBlocked] = useState(false);
   const [axiosConfig, setAxiosConfig] = useState({
     headers: {
       Authorization: '',
     },
   });
-
+  const router = useRouter();
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -69,14 +71,45 @@ const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
             articleId,
             writerId,
           };
+
+      
       try {
-        const response = await axios.post(`https://article-writing-backend.onrender.com/api/blockedArticle/save/${articleId}/${readerId}`, blockedData, axiosConfig);
+        const isBlockedResponse = await axios.get(`http://localhost:3001/api/blockedArticle/isBlocked/${articleId}/${readerId}`);
+        console.log("isBlockedResponse", isBlockedResponse.data);
+        const isBlocked = isBlockedResponse.data;
+        if(isBlocked){
+          setAlreadyBlocked(true);
+          return;
+        }   
+        const response = await axios.post(`http://localhost:3001/api/blockedArticle/save/${articleId}/${readerId}`, blockedData, axiosConfig);
         if (response.status === 201) {
           console.log('Article Blocked Successfully');
           setSuccessMessage('Article Blocked Successfully!');
+
+          try {
+            const response = await fetch(`http://localhost:3001/api/like/isLiked/${readerId}/${articleId}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + (localStorage.getItem('token') || ''),
+              },
+            });
+          
+            const data = await response.json();
+            console.log('article isLiked:', data.exists);
+          
+            const isLikedArticle = data.exists;
+            if(isLikedArticle){
+              unlikeArticle();
+            }
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+      
           setTimeout(() => {
             setSuccessMessage('');
             handleClose();
+            router.push('/searchArticle/search');
           }, 3000);
         } else {
           console.error('Failed to block article');
@@ -106,6 +139,27 @@ const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
     setSelectedReason('');
     setCustomReason('');
     setSuccessMessage('');
+  };
+  const unlikeArticle = async() => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/like/delete`, {
+        method: 'DELETE',
+        body: JSON.stringify(
+          {
+            readerId: readerId,
+            articleId:articleId
+          }
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token') || '',
+        },
+      });
+      console.log('article unLiking:', response);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+
   };
 
   return (
@@ -142,6 +196,11 @@ const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
       {successMessage && (
         <div style={{ backgroundColor: 'green', color: 'white', padding: '10px', textAlign: 'center' }}>
           {successMessage}
+        </div>
+      )}
+     {alreadyBlocked && (
+        <div style={{ backgroundColor: 'red', color: 'white', padding: '10px', textAlign: 'center' }}>
+          Sorry, this article is already blocked by you.
         </div>
       )}
     </Dialog>

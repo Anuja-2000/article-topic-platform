@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import style from "../../styles/search.module.css";
 import Head from "next/head"
-import {Box, TextField, IconButton, InputAdornment,InputLabel,Select,MenuItem,Checkbox,ListItemText} from '@mui/material';
+import {Box, TextField, IconButton, InputAdornment,InputLabel,Select,MenuItem,Checkbox,ListItemText, Button} from '@mui/material';
 import styled from 'styled-components';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchArticleBox from './searchArticleBox';
@@ -10,7 +10,8 @@ import { AppBar, Toolbar, Typography } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Navbar from '../../components/navbarReader/Navbar';
-
+import BlockIcon from '@mui/icons-material/Block';
+import { useRouter } from 'next/router';
 
 const SearchTextField = styled(TextField)({
          borderRadius: '20px',
@@ -33,6 +34,7 @@ function Search(){
     const [searchKey, setSearchKey] = useState('');
     const [selectedDomains, setSelectedDomains] = useState("All");
     const [domainsList, setDomainsList] = useState([]);
+    const router = useRouter();
 
     useEffect(() => {
       const fetchData = async () => {
@@ -72,6 +74,10 @@ function Search(){
         typeof value === 'string' ? value.split(',') : value,
       );
     };
+
+    const handleBlockedArticlesClick = () => {
+      router.push('/searchArticle/blockedArticles'); 
+    };
     
     return(
         
@@ -109,6 +115,19 @@ function Search(){
                     </MenuItem>
                   ))}
                 </Select>
+                </Box>
+                <Box>
+                <Button
+                 variant="contained"
+                 color="error"
+                 size="large"
+                 startIcon={<BlockIcon  />}
+                 sx={{ marginRight: '10px', borderRadius: '4px', textTransform: 'none', ml: 2 }}
+                 onClick={handleBlockedArticlesClick}
+                 >
+                      Blocked Articles
+                 </Button>
+         
                 </Box>
             </div> 
             <div className={style.articleBoxOuter}>

@@ -9,17 +9,32 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import { v4 as uuidv4 } from 'uuid';
-
+import axios from 'axios';
 const ReportWriterDialog = ({ isOpen, onClose, writerId }) => {
   const [selectedReason, setSelectedReason] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [username, setUsername] = useState("");
   const [customReason, setCustomReason] = useState('');
 
+  const [axiosConfig, setAxiosConfig] = useState({
+    headers: {
+        Authorization: "",
+    },
+});
   useEffect(() => {
     const fetchData = async () => {
       try {
         const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        console.log("token",token);
+        if (token) {
+            setAxiosConfig({
+                headers: {
+                  'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        }
         if (username) {
           setUsername(username);
         } else {
@@ -55,14 +70,8 @@ const ReportWriterDialog = ({ isOpen, onClose, writerId }) => {
         writerId: writerId,
       };
       try {
-        const response = await fetch('https://article-writing-backend.onrender.com/api/reportedWriter/save', {
-          method: 'POST',
-          body: JSON.stringify(reportData),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.ok) {
+        const response = await axios.post('http://localhost:3001/api/reportedWriter/save', reportData, axiosConfig);
+        if (response.status === 201) {
           console.log('Reported for:', reason);
           setSuccessMessage('Writer reported successfully!');
           setTimeout(() => {

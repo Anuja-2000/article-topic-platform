@@ -242,7 +242,7 @@ function TopicDomains() {
       setDeleteSuccessfulAlertOpen(true);
       setTimeout(() => {
         setDeleteSuccessfulAlertOpen(false);
-      }, 20000);
+      }, 2000);
     } catch (error) {
       console.error("Error deleting data:", error);
     }
