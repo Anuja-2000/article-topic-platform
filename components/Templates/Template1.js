@@ -6,13 +6,41 @@ import { Typography } from '@mui/material';
 const Template1 = ({ onSelect }) => {
   const [image1Base64, setImage1Base64] = useState('');
   const [image2Base64, setImage2Base64] = useState('');
-
-  const handleFileInputChange = (event, setImageBase64) => {
+  const handleFileInputChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageBase64(reader.result);
+        const image = new Image();
+        image.src = reader.result;
+        image.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxWidth = 500; 
+          const maxHeight = 300; 
+          let width = image.width;
+          let height = image.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(image, 0, 0, width, height);
+
+          const resizedBase64 = canvas.toDataURL(file.type);
+          setImage1Base64(resizedBase64);
+        };
       };
       reader.readAsDataURL(file);
     }
