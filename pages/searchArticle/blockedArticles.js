@@ -60,11 +60,11 @@ function BlockedArticlesPage() {
     const fetchBlockedArticles = async () => {
 
         try {
-            const response = await axios.get(`http://localhost:3001/api/blockedArticle/get/${readerId}`);
+            const response = await axios.get(`https://article-writing-backend.onrender.com/api/blockedArticle/get/${readerId}`);
             setBlockedArticles(response.data);
 
             const articlePromises = response.data.map(async (articleId) => {
-                const articleResponse = await axios.get(`http://localhost:3001/api/article/${articleId}`, axiosConfig);
+                const articleResponse = await axios.get(`https://article-writing-backend.onrender.com/api/article/${articleId}`, axiosConfig);
                 console.log(articleResponse);
                 return { articleId, articleName: articleResponse.data.article.title };
             });
@@ -86,7 +86,7 @@ function BlockedArticlesPage() {
     const handleConfirmUnblock = async () => {
         try {
 
-            const response = await axios.delete(`http://localhost:3001/api/blockedArticle/delete/${articleToUnblock}/${readerId}`);
+            const response = await axios.delete(`https://article-writing-backend.onrender.com/api/blockedArticle/delete/${articleToUnblock}/${readerId}`);
             console.log('Blocked article deleted successfully:', response.data);
             setArticleUnblockedSuccessfully(true);
             //setArticleDetails(articleDetails.filter(id => id !== articleToUnblock));

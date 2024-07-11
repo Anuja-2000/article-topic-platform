@@ -74,20 +74,20 @@ const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
 
       
       try {
-        const isBlockedResponse = await axios.get(`http://localhost:3001/api/blockedArticle/isBlocked/${articleId}/${readerId}`);
+        const isBlockedResponse = await axios.get(`https://article-writing-backend.onrender.com/api/blockedArticle/isBlocked/${articleId}/${readerId}`);
         console.log("isBlockedResponse", isBlockedResponse.data);
         const isBlocked = isBlockedResponse.data;
         if(isBlocked){
           setAlreadyBlocked(true);
           return;
         }   
-        const response = await axios.post(`http://localhost:3001/api/blockedArticle/save/${articleId}/${readerId}`, blockedData, axiosConfig);
+        const response = await axios.post(`https://article-writing-backend.onrender.com/api/blockedArticle/save/${articleId}/${readerId}`, blockedData, axiosConfig);
         if (response.status === 201) {
           console.log('Article Blocked Successfully');
           setSuccessMessage('Article Blocked Successfully!');
 
           try {
-            const response = await fetch(`http://localhost:3001/api/like/isLiked/${readerId}/${articleId}`, {
+            const response = await fetch(`https://article-writing-backend.onrender.com/api/like/isLiked/${readerId}/${articleId}`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ const BlockArticleDialog = ({ isOpen, onClose, writerId, articleId }) => {
   };
   const unlikeArticle = async() => {
     try {
-      const response = await fetch(`http://localhost:3001/api/like/delete`, {
+      const response = await fetch(`https://article-writing-backend.onrender.com/api/like/delete`, {
         method: 'DELETE',
         body: JSON.stringify(
           {
