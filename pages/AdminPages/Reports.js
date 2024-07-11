@@ -307,12 +307,8 @@ function Reports() {
       .then((res) => {
         let temp = [];
         let countData = [];
-        let obj = {
-          domain: "Technical",
-          count: 0,
-        }
         res.data.forEach((item) => {
-          if (item.domain != null) {
+          if (item.domain != "") {
             temp.push(item.domain);
             countData.push({
               domain: item.domain,
@@ -553,6 +549,7 @@ function Reports() {
                   <BarChart
                     width={250}
                     height={300}
+                    borderRadius={10}
                     series={[
                       {
                         data: usersCount,
@@ -580,7 +577,7 @@ function Reports() {
                     dataset={domainCountData}
                     width={800}
                     height={300}
-                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain" }]}
+                    xAxis={[{ scaleType: "band", dataKey: "domain", label: "Domain", tickLabelStyles: { fontSize: 5}}]}
                     series={[
                       { dataKey: "count", label: "Count", color: "#0080FE" },
                     ]}
@@ -1022,15 +1019,15 @@ function Reports() {
                         onChange={handleChangeDomain}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                       <Paper elevation={3} sx={{ borderRadius: "10px" }}>
                         <Box padding={2} color={"primary.main"} display="flex">
                           <Typography variant="h2">
                             {articles.length}
                           </Typography>
-                          <Box sx={{ marginLeft: "10px" }}>
-                            <Typography variant="h4">Articles</Typography>
-                            <Typography variant="h6">Published</Typography>
+                          <Box sx={{ marginLeft: "2rem" }}>
+                            <Typography variant="h4">{articles.length === 1? 'Article':'Articles'}</Typography>
+                            <Typography variant="h6">Created</Typography>
                           </Box>
                         </Box>
                       </Paper>

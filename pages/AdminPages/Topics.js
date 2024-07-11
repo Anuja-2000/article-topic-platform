@@ -71,49 +71,75 @@ function Topics() {
   const [addSuccessfulAlertOpen, setAddSuccessfulAlertOpen] = React.useState(false);
   const [editSuccessfulAlertOpen, setEditSuccessfulAlertOpen] = React.useState(false);
   const [topicDomainKeywords, setTopicDomainKeywords] = React.useState(false);
+  const [axiosConfig, setAxiosConfig] = useState({
+    headers: {
+      Authorization: "",
+    },
+  });
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseData = await api.get("/get");
-        setData(responseData.data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setIsError(true);
-        setIsLoading(false);
-      }
-    };
+    const token = localStorage.getItem("token");
+    console.log("token", token);
+    if (token) {
+      setAxiosConfig({
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
 
-    const fetchTopicDomains = async () => {
-      try {
-        const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get');
-        console.log("'http://localhost:3001/api/topicDomains/get",topicDomainsResponse.data);
-        setTopicDomains(topicDomainsResponse.data);
-      } catch (error) {
-        console.error('Error fetching topic domains:', error);
-      }
-    };
-
-    const fetchKeywords = async () => {
-      try {
-        const keywordResponse = await axios.get('http://localhost:3001/api/keywords/get');
-        setKeywords(keywordResponse.data);
-      } catch (error) {
-        console.error('Error fetching keywords:', error);
-      }
-    };
-
-    fetchData();
-    fetchTopicDomains();
-    fetchKeywords();
   }, []);
+
+  useEffect(() => {
+    if (axiosConfig.headers.Authorization !== "") {
+      fetchData();
+      fetchTopicDomains();
+      fetchKeywords();
+    }
+
+  }, [axiosConfig]);
+
+
+  const fetchData = async () => {
+    try {
+      const responseData = await api.get("/get", axiosConfig);
+      const sortedData = responseData.data.sort((a, b) => a.topicName.localeCompare(b.topicName));
+      setData(sortedData);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchTopicDomains = async () => {
+    try {
+      const topicDomainsResponse = await axios.get('http://localhost:3001/api/topicDomains/get', axiosConfig);
+      console.log("'http://localhost:3001/api/topicDomains/get", topicDomainsResponse.data);
+      const sortedData = topicDomainsResponse.data.sort((a, b) => a.topicDomainName.localeCompare(b.topicDomainName));
+      setTopicDomains(sortedData);
+    } catch (error) {
+      console.error('Error fetching topic domains:', error);
+    }
+  };
+
+  const fetchKeywords = async () => {
+    try {
+      const keywordResponse = await axios.get('http://localhost:3001/api/keywords/get', axiosConfig);
+      const sortedData = keywordResponse.data.sort((a, b) => a.keywordName.localeCompare(b.keywordName));
+      setKeywords(sortedData);
+    } catch (error) {
+      console.error('Error fetching keywords:', error);
+    }
+  };
+
 
   // Fetch keywords associated with the selected topic domain
   useEffect(() => {
     const fetchKeywordsByTopicDomain = async () => {
       try {
         if (selectedTopicDomain) {
-          const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedTopicDomain}`);
+          const response = await axios.get(`http://localhost:3001/api/keywords/get/${selectedTopicDomain}`, axiosConfig);
           setTopicDomainKeywords(response.data);
           console.log(response.data);
         } else {
@@ -135,13 +161,13 @@ function Topics() {
     const fetchFilteredTopicDomainKeywords = async () => {
       try {
         if (filterSelectedTopicDomain) {
-          const response = await axios.get(`http://localhost:3001/api/keywords/get/${filterSelectedTopicDomain}`);
+          const response = await axios.get(`http://localhost:3001/api/keywords/get/${filterSelectedTopicDomain}`,axiosConfig);
           setFilteredTopicDomainKeywords(response.data); // Assuming response.data.keywords contains the array of keywords
           console.log(response.data);
 
         } else {
           // If no keyword is selected
-          const response = await axios.get(`http://localhost:3001/api/keywords/get`);
+          const response = await axios.get(`http://localhost:3001/api/keywords/get`, axiosConfig);
           setFilteredTopicDomainKeywords(response.data);
         }
       } catch (error) {
@@ -178,13 +204,13 @@ function Topics() {
 
     try {
       if (selectedValue === 'allTopicDomains') {
-        const responseData = await api.get(`http://localhost:3001/api/topics/get`);
+        const responseData = await api.get(`http://localhost:3001/api/topics/get`,axiosConfig);
         setData(responseData.data); // Show all data
 
-        setFilteredTopicDomainKeywords((await api.get(`http://localhost:3001/api/keywords/get`)).data);
+        setFilteredTopicDomainKeywords((await api.get(`http://localhost:3001/api/keywords/get`,axiosConfig)).data);
 
       } else {
-        const response = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
+        const response = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`, axiosConfig);
         setData(response.data); // Show data filtered by the selected topic domain
 
       }
@@ -239,7 +265,7 @@ function Topics() {
       const newItemWithIds = { ...newItem, topicDomainId: selectedTopicDomain, keywordId: selectedKeyword };
       console.log(newItemWithIds);
       //console.log(selectedTopicDomain);
-      const response = await api.post("/addTopic", newItemWithIds);
+      const response = await api.post("/addTopic", newItemWithIds, axiosConfig);
 
       setData([...data, response.data]); // Update data array with the new item
       setNewItem({ keywordName: '', description: '' }); // Clear newItem state
@@ -289,10 +315,10 @@ function Topics() {
   const handleConfirmSave = async () => {
     try {
       const updatedRow = data.find(item => item.topicId === editingRowId);
-      await api.patch(`/edit/${editingRowId}`, updatedRow);
+      await api.patch(`/edit/${editingRowId}`, updatedRow, axiosConfig);
       setEditingRowId(null); // Reset editing row ID
       setShowEditConfirmation(false);
-      const response = filterSelectedTopicDomain === 'all' ? await api.get("/get") : await api.get(`/get/${filterSelectedTopicDomain}`);
+      const response = filterSelectedTopicDomain === 'all' ? await api.get("/get", axiosConfig) : await api.get(`/get/${filterSelectedTopicDomain}`, axiosConfig);
       setData(response.data);
       setEditSuccessfulAlertOpen(true);
       setTimeout(() => {
@@ -325,7 +351,7 @@ function Topics() {
   const handleConfirmDelete = async () => {
     try {
       // Delete the topic
-      await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`);
+      await axios.delete(`http://localhost:3001/api/topics/delete/${deleteTargetId}`,axiosConfig);
       // Update the state to remove the deleted keyword from the UI
       setData(data.filter(item => item.topicId !== deleteTargetId));
       setShowDeleteConfirmation(false);
@@ -355,32 +381,42 @@ function Topics() {
       let responseData;
       if (filterSelectedTopicDomain === 'allTopicDomains' && filterSelectedKeyword === 'allKeywords') {
         // Fetch all data when both topic domain and keyword are 'all'
-        responseData = await api.get("http://localhost:3001/api/topics/get");
+        responseData = await api.get("http://localhost:3001/api/topics/get", axiosConfig);
       } else if (filterSelectedTopicDomain === 'allTopicDomains') {
         // Fetch data filtered by keyword when only topic domain is 'all'
-        responseData = await api.get(`http://localhost:3001/api/topics/getByKeyword/${filterSelectedKeyword}`);
+        responseData = await api.get(`http://localhost:3001/api/topics/getByKeyword/${filterSelectedKeyword}`, axiosConfig);
       } else if (filterSelectedKeyword === 'allKeywords') {
         // Fetch data filtered by topic domain when only keyword is 'all'
-        responseData = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`);
+        responseData = await api.get(`http://localhost:3001/api/topics/${filterSelectedTopicDomain}`, axiosConfig);
       } else {
         // Fetch data filtered by both topic domain and keyword
-        responseData = await api.get(`http://localhost:3001/api/topics/get/${filterSelectedTopicDomain}/${filterSelectedKeyword}`);
+        responseData = await api.get(`http://localhost:3001/api/topics/get/${filterSelectedTopicDomain}/${filterSelectedKeyword}`, axiosConfig);
       }
-
-      setData(responseData.data); // Update the data
+      let updatedData = [];
+      if (Array.isArray(responseData.data)) {
+        // If responseData.data is already an array, use it directly
+        updatedData = responseData.data;
+      } else {
+        // Otherwise, it's an object with keys, so flatten it into an array of topics
+        updatedData = Object.values(responseData.data).flatMap(array => array);
+      }
+  
+      // Extract only necessary fields from each topic
+      const topicsArray = updatedData.map(topic => ({
+        topicId: topic.topicId,
+        topicName: topic.topicName,
+        description: topic.description
+      }));
+      const sortedData = topicsArray.sort((a, b) => a.topicName.localeCompare(b.topicNameName));
+      setData(sortedData); // Update the data with mapped topics
+      //setData(responseData.data.data); // Update the data
+      console.log("data", data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <Alert severity="error">Error fetching data. Please try again later.</Alert>;
-  }
 
   return (
     <div>
@@ -512,7 +548,7 @@ function Topics() {
 
               </div>
               <Typography variant="h5" marginBottom={2} color={"primary.dark"} marginTop={2}>  Topics</Typography>
-              <TableContainer component={Paper}>
+              <TableContainer component={Paper} sx={{ marginBottom: 8 }}>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -528,15 +564,24 @@ function Topics() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {data
+                    {data.length == 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center">
+                           No data
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+
+                      data
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                         <TableRow key={row.topicId}>
-                          <TableCell>
+                          <TableCell sx={{ fontWeight: 'bold' }}>
                             {editingRowId === row.topicId ? (
                               <input
                                 type="text"
                                 value={row.topicName}
                                 onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, topicName: e.target.value } : item)))}
+                                style={{ width: '100%', height: '50px', padding: '6px' }}
                               />
                             ) : (
                               row.topicName
@@ -548,6 +593,7 @@ function Topics() {
                                 type="text"
                                 value={row.description}
                                 onChange={(e) => setData(data.map((item) => (item.topicId === row.topicId ? { ...item, description: e.target.value } : item)))}
+                                style={{ width: '100%', height: '50px', padding: '6px' }}
                               />
                             ) : (
                               row.description
@@ -566,7 +612,7 @@ function Topics() {
                             )}
                           </TableCell>
                         </TableRow>
-                      ))}
+                      )))}
                   </TableBody>
                   <TableFooter>
                     <TableRow>

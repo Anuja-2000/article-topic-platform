@@ -47,10 +47,7 @@ const TemplateSelector = ({ onSelectTemplate }) => {
         <Template2 onSelect={handleTemplateSelect} />
       </TemplateContainer>
       <TemplateContainer>
-        <Template2 onSelect={handleTemplateSelect} />
-      </TemplateContainer>
-      <TemplateContainer>
-        <Template2 onSelect={handleTemplateSelect} />
+        <Template3 onSelect={handleTemplateSelect} />
       </TemplateContainer>
     </ScrollableBox>
   );

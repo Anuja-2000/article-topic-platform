@@ -9,17 +9,30 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import { v4 as uuidv4 } from 'uuid';
-
+import axios from 'axios';
 const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
   const [selectedReason, setSelectedReason] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [username, setUsername] = useState("");
   const [customReason, setCustomReason] = useState('');
-
+  const [axiosConfig, setAxiosConfig] = useState({
+    headers: {
+        Authorization: "",
+    },
+});
   useEffect(() => {
     const fetchData = async () => {
       try {
         const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        console.log("token",token);
+        if (token) {
+            setAxiosConfig({
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        }
         if (username) {
           setUsername(username);
         } else {
@@ -47,14 +60,8 @@ const ReportDialog = ({ isOpen, onClose, writerId, articleId }) => {
         writerId: writerId,
       };
       try {
-        const response = await fetch('http://localhost:3001/api/reportArticle/save', {
-          method: 'POST',
-          body: JSON.stringify(reportData),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.ok) {
+        const response = await axios.post('http://localhost:3001/api/reportArticle/save', reportData, axiosConfig);
+        if (response.status === 201) {
           console.log('Reported for:', reason);
           setSuccessMessage('Article reported successfully!');
           setTimeout(() => {

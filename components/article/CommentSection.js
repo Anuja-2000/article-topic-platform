@@ -19,6 +19,7 @@ const CommentForm = styled('form')(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'stretch',
 }));
+import { timeSince } from '../timeSince';
 
 const CommentSection = ({ articleId }) => {
   const [articleData, setData] = useState([]);
@@ -33,6 +34,7 @@ const CommentSection = ({ articleId }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const commentId = "com" + uuidv4();
   const artId = articleId;
+  
 
 
   useEffect(() => {
@@ -45,7 +47,7 @@ const CommentSection = ({ articleId }) => {
     } else {
       setUsername(" ");
     }
-    setuserImg("/path/to/profile.jpg");
+    setuserImg(userImg);
     fetchData();
   }, [artId]);
 
@@ -178,7 +180,7 @@ const CommentSection = ({ articleId }) => {
     {userId!=="" && <CommentForm style={{ marginTop: '16px' }}>
         <Grid container spacing={2}>
           <Grid item>
-            <Avatar alt={username.toUpperCase()} src="/path/to/profile.jpg" />
+            <Avatar alt={username.toUpperCase()} src={userImg!=""?userImg:"/path/to/profile.jpg"} />
           </Grid>
           <Grid item xs>
             <OutlinedInput
@@ -210,9 +212,9 @@ const CommentSection = ({ articleId }) => {
             <Grid item>
               <Avatar alt={comment.commentorName.toUpperCase()} src={comment.profilePic} />
             </Grid>
-            <Grid item xs style={{ marginTop: '8px' }}>
+            <Grid item xs style={{ marginTop: '8px'}}>
               <Typography variant="body2">
-                <strong>{comment.commentorName}: {comment.time}</strong><br />{comment.commentContent}
+                <strong>{comment.commentorName}</strong> <l style={{ fontSize:12 }}>{timeSince(comment.time)}</l><br />{comment.commentContent}
               </Typography>
             </Grid>
            { (userId===comment.userId) && ( <IconButton

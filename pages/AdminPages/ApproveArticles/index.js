@@ -21,9 +21,7 @@ import Skeleton from "@mui/material/Skeleton";
 import { Suspense } from "react";
 import Loading from "./loading";
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -111,6 +109,7 @@ export default function ApproveArticles() {
       .catch((error) => {
         console.log(error);
       });
+
   }, []);
 
   return (
@@ -152,7 +151,7 @@ export default function ApproveArticles() {
                     </TableCell>
                   </TableRow>
                 </TableHead>
-                 {articles.length != 0 ? (
+                {articles.length != 0 ? (
                   <TableBody suppressHydrationWarning>
                     {articles
                       .slice(
@@ -161,7 +160,7 @@ export default function ApproveArticles() {
                       )
                       .map((article) => (
                         <TableRow
-                          key={article.id}
+                          key={article.articleId}
                           sx={{
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
@@ -186,42 +185,8 @@ export default function ApproveArticles() {
                       ))}
                   </TableBody>
                 ) : (
-                  <Loading/>
+                  <Loading />
                 )}
-                {/* <Suspense fallback={<Loading />}>
-                  <TableBody>
-                    {articles
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((article) => (
-                        <TableRow
-                          key={article.id}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
-                          <TableCell component="th" scope="row">
-                            {article.title}
-                          </TableCell>
-                          <TableCell>{article.userData[0].name}</TableCell>
-                          <TableCell>
-                            {new Date(article.updatedAt).toDateString()}
-                          </TableCell>
-                          <TableCell align="center">
-                            <Chip
-                              label="View"
-                              component="a"
-                              href={"reviewArticle/" + article.articleId}
-                              color="primary"
-                              clickable
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Suspense> */}
               </Table>
             </TableContainer>
             <TablePagination
